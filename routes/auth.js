@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
     res.send('hello world')
 });
 
-//login form / we wont be using sessions 
+//login form / implement JWT
 router.post('/', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -102,7 +102,7 @@ router.post('/prereg', (req, res) => {
     prereg.save()
     .then(result => {
         console.log('prereg created, database connection successful, check mongo atlas');
-        res.send('<h1>prereg created!</h1>'); // this will be what is sent to the user
+        res.send('<h1>prereg created!</h1>'); // this will be what is sent to the user, json file siguro
     })
     .catch(err => {
         console.log(err);
