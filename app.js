@@ -2,22 +2,27 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const session = require('express-session'); //probably dont need this anymore
 
 const app = express();
 
 //middleware (ease of life)
 app.use(bodyParser.urlencoded({extended: true})); //not sure wtf extended is for
+app.use(session({secret: 'changethis', resave: false, saveUninitialized: false})) //you can also set cookie age here, probably dont need this anymore
 
 //connecting app to routes
 const authRoutes = require('./routes/auth');
-app.use(authRoutes); //"use" keyword is for all type of requests, "get" n others match path exactly
+const adminRoutes = require('./routes/admin');
 
-//404
+app.use(authRoutes); //"use" keyword is for all type of requests, "get" n others match path exactly
+app.use(adminRoutes);
+
+//404 probably best to put this in some route
 app.use((req, res) => {
     res.status(404).send('<h1>error 404</h1>');
 });
 
-//connect to database
+//connect to database and fires up server
 mongoose.connect('mongodb+srv://tmis_connection:1KtH1OKL8VH8V6Vo@development.lkjit.mongodb.net/tmis_database?retryWrites=true&w=majority',{ 
 useNewUrlParser: true , useUnifiedTopology: true 
 }).then(result => {

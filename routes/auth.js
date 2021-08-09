@@ -1,15 +1,37 @@
 const router = require('express').Router();
+const bcrypt = require('bcryptjs');
 
 const Prereg = require('../models/prereg');
+const User = require('../models/user');
 
 //home page / announcements
 router.get('/', (req, res) => {
     res.send('hello world')
 });
 
-//login form
+//login form / we wont be using sessions 
 router.post('/', (req, res) => {
-    res.send('<h1>login(shouldnt show up)</h1>')
+    const email = req.body.email;
+    const password = req.body.password;
+    User.findOne({email: email})//searches for user in database
+        .then(user => {
+            if (!user){//no user found
+                return res.send('no user found');//response if no user found
+            }
+            bcrypt.compare(password, user.password)//checks if hashed password is same as stored in database
+            .then(result => {
+                if (result) {
+                    return res.send('correct password!');//if passwords match
+                }
+                res.send('incorrect password!');//if passwords dont match
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
 });
 
 //prereg page / link in home page
