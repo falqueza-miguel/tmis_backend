@@ -67,6 +67,3 @@ router.post('/prereg', (req, res) => {
         console.log(err);
     })
 });
-
-//testt //test again
-//
