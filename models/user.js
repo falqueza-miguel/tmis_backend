@@ -7,9 +7,11 @@ const UserSchema = new Schema({
     lastName: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     phoneNum: { type: Number },
-    password: {type: String, required: true},
+    password: {type: String, required: true}, //hashed
     role: {type: Number, required: true},
-    active: {type: Boolean, required: true}
+    active: {type: Boolean, required: true},
+    resetToken: {type: String},
+    resetTokenExpiration: {type: Date}
 });
 
 //no pw encryption yet
