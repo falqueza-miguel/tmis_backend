@@ -104,7 +104,7 @@ router.post('/prereg', (req, res) => {
         console.log('prereg created, database connection successful, check mongo atlas');
         res.send('<h1>prereg created!</h1>'); // this will be what is sent to the user, json file siguro
     })
-    .catch(err => {
+    .catch(err => {//duplicate key error if both
         console.log(err);
     })
 });

@@ -2,13 +2,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const session = require('express-session'); //probably dont need this anymore
 
 const app = express();
 
 //middleware (ease of life)
 app.use(bodyParser.urlencoded({extended: true})); //not sure wtf extended is for
-app.use(session({secret: 'changethis', resave: false, saveUninitialized: false})) //you can also set cookie age here, probably dont need this anymore
 
 //connecting app to routes
 const authRoutes = require('./routes/auth');
