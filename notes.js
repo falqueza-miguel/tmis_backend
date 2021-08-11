@@ -2,7 +2,8 @@
 // isusertype middleware
 // create move route functions to controllers?
 
-// send emails for reset token, admin edit and archive, optimize code at reset password
+// set password limit?
+// send emails for reset token, admin edit and archive
 // res.json na gamitin mo for route responses to client
 // github edu, use it, use learn_one email api
 
@@ -15,5 +16,7 @@
 // parent: 5
 // student: 6
 
-//change the last res.something() of each last .then() for reach route
-//check semicolons on if and then and catch blocks, weird
+// change the last res.something() of each last .then() for reach route / res.status is important
+// check semicolons on if and then and catch blocks, weird
+
+// cors jwt <- learn what for

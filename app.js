@@ -2,6 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv').config();
 
 const app = express();
 
@@ -22,9 +23,8 @@ app.use((req, res) => {
 });
 
 //connect to database and fires up server
-mongoose.connect('mongodb+srv://tmis_connection:1KtH1OKL8VH8V6Vo@development.lkjit.mongodb.net/tmis_database?retryWrites=true&w=majority',{ 
-useNewUrlParser: true , useUnifiedTopology: true 
-}).then(result => {
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true , useUnifiedTopology: true })
+.then(result => {
     console.log('connected to database!');
     app.listen(3000); //request listener, only fires when successfully connected to database
 }).catch(err => {
