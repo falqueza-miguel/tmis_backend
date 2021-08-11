@@ -12,21 +12,21 @@ router.get('/', (req, res) => {
 });
 
 //test lang delete later
-router.get('/email', (req, res) => {
-const mailgun = require("mailgun-js");
-const APIKEY = '78f310b811677d45428024a109a80a04-9ad3eb61-01d06eae';
-const DOMAIN = 'sandboxc0239df2a35b4fa6963da4e16a8ee67e.mailgun.org';
-const mg = mailgun({apiKey: APIKEY, domain: DOMAIN});
-const data = {
-	from: 'Excited User <me@samples.mailgun.org>',
-	to: 'falquezamiguel@gmail.com',
-	subject: 'Hello',
-	text: 'Testing some Mailgun awesomness!'
-};
-mg.messages().send(data, function (error, body) {
-	console.log(body);
-});
-});
+// router.get('/email', (req, res) => {
+// const mailgun = require("mailgun-js");
+// const APIKEY = '78f310b811677d45428024a109a80a04-9ad3eb61-01d06eae';
+// const DOMAIN = 'sandboxc0239df2a35b4fa6963da4e16a8ee67e.mailgun.org';
+// const mg = mailgun({apiKey: APIKEY, domain: DOMAIN});
+// const data = {
+// 	from: 'Excited User <me@samples.mailgun.org>',
+// 	to: 'falquezamiguel@gmail.com',
+// 	subject: 'Hello',
+// 	text: 'Testing some Mailgun awesomness!'
+// };
+// mg.messages().send(data, function (error, body) {
+// 	console.log(body);
+// });
+// });
 
 //login form / implement JWT
 router.post('/', body('email').isEmail(), (req, res) => {
@@ -50,7 +50,11 @@ router.post('/', body('email').isEmail(), (req, res) => {
             .then(result => {
                 if (result) {
                     console.log('correct password logging you in!')
-                    return res.send('correct password!');//if password is correct, next probably see what role
+                    
+                    return res.send('correct password!');
+                    //if password is correct, next probably see what role
+                    //next step here
+
                 }
                 console.log('incorrect password!');
                 res.send('incorrect password!');//if passwords dont match
@@ -98,9 +102,11 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
             user.resetToken = token; //token being saved in database
             user.resetTokenExpiration = Date.now() + 3600000; //1 hour from now
             return user.save().then(result => {
-                console.log(result);//user object successfully updated
+                console.log(result);//user object successfully has reset token and exp in database
+
                 //send email here
                 //link to reset = /reset/{token}here
+
                 res.send('email and token sent!');//redirect to homepage probably
             }); //updates user in database
         })
@@ -171,135 +177,132 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
     const email = req.body.email;
     const parentEmail = req.body.parentEmail;
 
-    //can be shortened, runtime error if both student and parent email already exist in database bc a 2nd res is tried to be sent.
     User.findOne({ email: email })//checks if student email in form already exists in user and prereg collection
     .then(userDoc => {
         if (userDoc){
-            console.log('email is in use! 1');
-            return res.send('email is in use! 1');
+            console.log('student email exists in users');
+            return res.send('email is in use!');
         }
+        Prereg.findOne({ email: email })
+        .then(userDoc => {
+            if (userDoc){
+                console.log('student email exists as student in prereg')
+                return res.send('email is in use!')
+            }
+            Prereg.findOne({ parentEmail: email })
+            .then(userDoc => {
+                if (userDoc){
+                    console.log('student email exists as parent in prereg')
+                    return res.send('email is in use!')
+                }
+                User.findOne({ email: parentEmail })//checks if parent email in form already exists in user and prereg collection
+                .then(userDoc => {
+                    if (userDoc){
+                        console.log('parent email exists in users')
+                        return res.send('email is in use!')
+                    }
+                    Prereg.findOne({ email: parentEmail })
+                    .then(userDoc => {
+                        if (userDoc){
+                            console.log('parent email exists as student in prereg')
+                            return res.send('email is in use!')
+                        }
+                        Prereg.findOne({ parentEmail: parentEmail })
+                        .then(userDoc => {
+                            if (userDoc){
+                                console.log('parent email exists as parent in prereg')
+                                return res.send('email is in use!')
+                            }
+                            const prereg = new Prereg({
+                                schoolYear: req.body.schoolYear,
+                                levelEnroll: req.body.levelEnroll,
+                                hasLRN: req.body.hasLRN,
+                                returning: req.body.returning,
+                            
+                                //student
+                                PSANo: req.body.PSANo,
+                                LRNNo: req.body.LRNNo,
+                                studentFirstName: req.body.studentFirstName,
+                                studentMiddleName: req.body.studentMiddleName,
+                                studentLastName: req.body.studentLastName,
+                                birthDate: req.body.birthDate,
+                                gender: req.body.gender,
+                                indig: req.body.indig,
+                                indigSpec: req.body.indigSpec,
+                                motherTongue: req.body.motherTongue,
+                                address1: req.body.address1,
+                                address2: req.body.address2,
+                                zipCode: req.body.zipCode,
+                                email: req.body.email,
+                                phoneNum: req.body.phoneNum,
+                            
+                                //parent/guardian
+                                motherFirstName: req.body.motherFirstName,
+                                motherMiddleName: req.body.motherMiddleName,
+                                motherLastName: req.body.motherLastName,
+                                fatherFirstName: req.body.fatherFirstName,
+                                fatherMiddleName: req.body.fatherMiddleName,
+                                fatherLastName: req.body.fatherLastName,
+                                guardianFirstName: req.body.guardianFirstName,
+                                guardianMiddleName: req.body.guardianMiddleName,
+                                guardianLastName: req.body.guardianLastName,
+                                parentEmail: req.body.parentEmail,
+                                parentPhoneNum: req.body.parentPhoneNum,
+                            
+                                //for returning students
+                                lastGradeLevel: req.body.lastGradeLevel,
+                                lastSchoolYear: req.body.lastSchoolYear,
+                                schoolName: req.body.schoolName,
+                                schoolAddress: req.body.schoolAddress,
+                            
+                                //for shs students
+                                semester: req.body.semester,
+                                track: req.body.track,
+                                strand: req.body.strand, 
+                            
+                                //prefered learning modes
+                                modularP: req.body.modularP,
+                                modularD: req.body.modularD,
+                                online: req.body.online,
+                                educTV: req.body.educTV,
+                                radioBased: req.body.radioBased,
+                                homeschool: req.body.homeschool,
+                                blended: req.body.blended,
+                                facetoface: req.body.facetoface
+                            
+                            });
+                            prereg.save()
+                            .then(result => {
+                                console.log('prereg created, database connection successful, check mongo atlas');
+                                res.send('prereg created!'); // this will be what is sent to the user, json file siguro
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            })
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        })
+        .catch(err => {
+            console.log(err);
+        })
     })
     .catch(err => {
         console.log(err);
     });
-    Prereg.findOne({ email: email })
-    .then(userDoc => {
-        if (userDoc){
-            console.log('email is in use! 2')
-            return res.send('email is in use! 2')
-        }
-    })
-    .catch(err => {
-        console.log(err);
-    })
-    Prereg.findOne({ parentEmail: email })
-    .then(userDoc => {
-        if (userDoc){
-            console.log('email is in use! 3')
-            return res.send('email is in use! 3')
-        }
-    })
-    .catch(err => {
-        console.log(err);
-    })
-
-    User.findOne({ email: parentEmail })//checks if parent email in form already exists in user and prereg collection
-    .then(userDoc => {
-        if (userDoc){
-            console.log('email is in use! 4')
-            return res.send('email is in use! 4')
-        }
-    })
-    .catch(err => {
-        console.log(err);
-    })
-    Prereg.findOne({ email: parentEmail })
-    .then(userDoc => {
-        if (userDoc){
-            console.log('email is in use! 5')
-            return res.send('email is in use! 5')
-        }
-    })
-    .catch(err => {
-        console.log(err);
-    })
-    Prereg.findOne({ parentEmail: parentEmail })
-    .then(userDoc => {
-        if (userDoc){
-            console.log('email is in use! 6')
-            return res.send('email is in use! 6')
-        }
-    })
-    .catch(err => {
-        console.log(err);
-    })
-
-    const prereg = new Prereg({
-        schoolYear: req.body.schoolYear,
-        levelEnroll: req.body.levelEnroll,
-        hasLRN: req.body.hasLRN,
-        returning: req.body.returning,
-    
-        //student
-        PSANo: req.body.PSANo,
-        LRNNo: req.body.LRNNo,
-        studentFirstName: req.body.studentFirstName,
-        studentMiddleName: req.body.studentMiddleName,
-        studentLastName: req.body.studentLastName,
-        birthDate: req.body.birthDate,
-        gender: req.body.gender,
-        indig: req.body.indig,
-        indigSpec: req.body.indigSpec,
-        motherTongue: req.body.motherTongue,
-        address1: req.body.address1,
-        address2: req.body.address2,
-        zipCode: req.body.zipCode,
-        email: req.body.email,
-        phoneNum: req.body.phoneNum,
-    
-        //parent/guardian
-        motherFirstName: req.body.motherFirstName,
-        motherMiddleName: req.body.motherMiddleName,
-        motherLastName: req.body.motherLastName,
-        fatherFirstName: req.body.fatherFirstName,
-        fatherMiddleName: req.body.fatherMiddleName,
-        fatherLastName: req.body.fatherLastName,
-        guardianFirstName: req.body.guardianFirstName,
-        guardianMiddleName: req.body.guardianMiddleName,
-        guardianLastName: req.body.guardianLastName,
-        parentEmail: req.body.parentEmail,
-        parentPhoneNum: req.body.parentPhoneNum,
-    
-        //for returning students
-        lastGradeLevel: req.body.lastGradeLevel,
-        lastSchoolYear: req.body.lastSchoolYear,
-        schoolName: req.body.schoolName,
-        schoolAddress: req.body.schoolAddress,
-    
-        //for shs students
-        semester: req.body.semester,
-        track: req.body.track,
-        strand: req.body.strand, 
-    
-        //prefered learning modes
-        modularP: req.body.modularP,
-        modularD: req.body.modularD,
-        online: req.body.online,
-        educTV: req.body.educTV,
-        radioBased: req.body.radioBased,
-        homeschool: req.body.homeschool,
-        blended: req.body.blended,
-        facetoface: req.body.facetoface
-    
-    });
-    prereg.save()
-    .then(result => {
-        console.log('prereg created, database connection successful, check mongo atlas');
-        res.send('prereg created!'); // this will be what is sent to the user, json file siguro
-    })
-    .catch(err => {
-        console.log(err);
-    })
 });
 
 module.exports = router;
