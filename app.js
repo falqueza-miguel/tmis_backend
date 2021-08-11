@@ -6,7 +6,8 @@ const mongoose = require('mongoose');
 const app = express();
 
 //middleware (ease of life)
-app.use(bodyParser.urlencoded({extended: true})); //not sure wtf extended is for
+app.use(bodyParser.json()); //application/json, parses incoming json data
+app.use(bodyParser.urlencoded({extended: true})); //x-www-form-urlencoded, not sure wtf extended is for
 
 //connecting app to routes
 const authRoutes = require('./routes/auth');
