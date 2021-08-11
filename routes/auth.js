@@ -126,30 +126,32 @@ router.post('/reset/:token', (req, res) => {
     const newPassword = req.body.password;
     const confirmNewPassword = req.body.confirmPassword;
 
-    if (!(newPassword == confirmNewPassword)){
-        console.log('passwords are not the same');
-        return res.send('passwords are not the same');
-    }
-
     let resetUser;
     User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})//finds user with token and checks if in time
     .then(user => {
+        if (newPassword !== confirmNewPassword){
+            console.log('passwords are not the same');
+            return res.send('passwords are not the same');
+        }
         resetUser = user;//puts user object into var for later thenfuncs
-        return bcrypt.hash(newPassword, 12); //hashes new password
-    })
-    .then(hashedPassword =>{
-        resetUser.password = hashedPassword;//puts new password in user obj
-        resetUser.resetToken = undefined;//clears token and exp in user obj
-        resetUser.resetTokenExpiration = undefined;
-        return resetUser.save();//updates obj in database
-    })
-    .then(result => {
-        console.log(result);//final updated user obj here
-        console.log('password reset!');
-        res.send('password reset!'); //redirect to login probably
+        return bcrypt.hash(newPassword, 12)    
+        .then(hashedPassword =>{
+            resetUser.password = hashedPassword;//puts new password in user obj
+            resetUser.resetToken = undefined;//clears token and exp in user obj
+            resetUser.resetTokenExpiration = undefined;
+            return resetUser.save();//updates obj in database
+        })
+        .then(result => {
+            console.log(result);//final updated user obj here
+            console.log('password reset!');
+            res.send('password reset!'); //redirect to login probably
+        })
+        .catch(err => {
+            console.log(err);
+        });
     })
     .catch(err => {
-        console.log('no user found!');
+        console.log('no user found or passwords are not the same!');
         console.log(err);
     });
 })
