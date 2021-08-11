@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
 
 const Prereg = require('../models/prereg');
 const User = require('../models/user');
