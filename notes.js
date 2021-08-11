@@ -2,7 +2,7 @@
 // isusertype middleware
 // create move route functions to controllers?
 
-// send emails for reset token, admin edit and archive, optimize code at prereg submit and admin create user
+// send emails for reset token, admin edit and archive, optimize code at prereg submit and admin create user and reset password
 // res.json na gamitin mo for route responses to client
 // github edu, use it, use learn_one email api
 
