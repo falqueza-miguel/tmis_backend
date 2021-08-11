@@ -5,8 +5,10 @@ const { body, validationResult } = require('express-validator');
 const User = require('../models/user');
 const Prereg = require('../models/prereg');
 
+const isAuth = require('../middleware/is-auth');
+
 //deal with default passwords later, could use birthdate for students and parents only
-router.post('/admin/createuser', body('email').isEmail(), (req, res) => {
+router.post('/admin/createuser', isAuth, body('email').isEmail(), (req, res) => {
 
     //add check if logged in and check if admin
 
