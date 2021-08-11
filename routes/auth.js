@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
+const { body, validationResult } = require('express-validator');
 
 const Prereg = require('../models/prereg');
 const User = require('../models/user');
@@ -10,10 +11,35 @@ router.get('/', (req, res) => {
     res.send('hello world')
 });
 
+//test lang delete later
+router.get('/email', (req, res) => {
+const mailgun = require("mailgun-js");
+const APIKEY = '78f310b811677d45428024a109a80a04-9ad3eb61-01d06eae';
+const DOMAIN = 'sandboxc0239df2a35b4fa6963da4e16a8ee67e.mailgun.org';
+const mg = mailgun({apiKey: APIKEY, domain: DOMAIN});
+const data = {
+	from: 'Excited User <me@samples.mailgun.org>',
+	to: 'falquezamiguel@gmail.com',
+	subject: 'Hello',
+	text: 'Testing some Mailgun awesomness!'
+};
+mg.messages().send(data, function (error, body) {
+	console.log(body);
+});
+});
+
 //login form / implement JWT
-router.post('/', (req, res) => {
-    const email = req.body.email;
+router.post('/', body('email').isEmail(), (req, res) => {
+
+    const errors = validationResult(req); //validates if email is an actual email
+    if (!errors.isEmpty()){
+        console.log(errors);
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const email = req.body.email;//inputs
     const password = req.body.password;
+
     User.findOne({email: email})//searches for user in database
         .then(user => {
             if (!user){//no user found
@@ -44,7 +70,14 @@ router.get('/forgotpassword', (req, res) => {
 });
 
 //submit email for reset password
-router.post('/forgotpassword', (req, res) => {
+router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
+    
+    const errors = validationResult(req); //validates if email is an actual email
+    if (!errors.isEmpty()){
+        console.log(errors);
+        return res.status(400).json({ errors: errors.array() });
+    }    
+    
     crypto.randomBytes(32, (err, buffer) => {//creating reset token
         if (err){
             console.log(err);
@@ -81,10 +114,17 @@ router.post('/forgotpassword', (req, res) => {
 
 //need pa ba get request for '/reset/:token'?
 
-//resetting of password, link clicked (NOT SURE YET)
+//resetting of password
 router.post('/reset/:token', (req, res) => {
     const token = req.params.token;//takes token from url
     const newPassword = req.body.password;
+    const confirmNewPassword = req.body.confirmPassword;
+
+    if (!(newPassword == confirmNewPassword)){
+        console.log('passwords are not the same');
+        return res.send('passwords are not the same');
+    }
+
     let resetUser;
     User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})//finds user with token and checks if in time
     .then(user => {
@@ -99,14 +139,14 @@ router.post('/reset/:token', (req, res) => {
     })
     .then(result => {
         console.log(result);//final updated user obj here
-        console.log('password reset!')
+        console.log('password reset!');
         res.send('password reset!'); //redirect to login probably
     })
     .catch(err => {
+        console.log('no user found!');
         console.log(err);
     });
 })
-
 
 
 //prereg page / link in home page
@@ -115,7 +155,85 @@ router.get('/prereg', (req, res) => {
 });
 
 //submit prereg (check if emails are valid and unique(?))
-router.post('/prereg', (req, res) => {
+router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (req, res) => {
+
+    const errors = validationResult(req); //validates if emails are actual emails
+    if (!errors.isEmpty()){
+        console.log(errors);
+        return res.status(400).json({ errors: errors.array() });
+    }
+    
+    if (req.body.email == req.body.parentEmail){ //checks if both are different emails
+        console.log('cannot use same email for 2 fields');
+        return res.send('cannot use same email for 2 fields')
+    }
+
+    const email = req.body.email;
+    const parentEmail = req.body.parentEmail;
+
+    //can be shortened, runtime error if both student and parent email already exist in database bc a 2nd res is tried to be sent.
+    User.findOne({ email: email })//checks if student email in form already exists in user and prereg collection
+    .then(userDoc => {
+        if (userDoc){
+            console.log('email is in use! 1');
+            return res.send('email is in use! 1');
+        }
+    })
+    .catch(err => {
+        console.log(err);
+    });
+    Prereg.findOne({ email: email })
+    .then(userDoc => {
+        if (userDoc){
+            console.log('email is in use! 2')
+            return res.send('email is in use! 2')
+        }
+    })
+    .catch(err => {
+        console.log(err);
+    })
+    Prereg.findOne({ parentEmail: email })
+    .then(userDoc => {
+        if (userDoc){
+            console.log('email is in use! 3')
+            return res.send('email is in use! 3')
+        }
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
+    User.findOne({ email: parentEmail })//checks if parent email in form already exists in user and prereg collection
+    .then(userDoc => {
+        if (userDoc){
+            console.log('email is in use! 4')
+            return res.send('email is in use! 4')
+        }
+    })
+    .catch(err => {
+        console.log(err);
+    })
+    Prereg.findOne({ email: parentEmail })
+    .then(userDoc => {
+        if (userDoc){
+            console.log('email is in use! 5')
+            return res.send('email is in use! 5')
+        }
+    })
+    .catch(err => {
+        console.log(err);
+    })
+    Prereg.findOne({ parentEmail: parentEmail })
+    .then(userDoc => {
+        if (userDoc){
+            console.log('email is in use! 6')
+            return res.send('email is in use! 6')
+        }
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
     const prereg = new Prereg({
         schoolYear: req.body.schoolYear,
         levelEnroll: req.body.levelEnroll,
@@ -179,7 +297,7 @@ router.post('/prereg', (req, res) => {
         console.log('prereg created, database connection successful, check mongo atlas');
         res.send('prereg created!'); // this will be what is sent to the user, json file siguro
     })
-    .catch(err => {//duplicate key error if both
+    .catch(err => {
         console.log(err);
     })
 });

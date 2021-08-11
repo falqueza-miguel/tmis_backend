@@ -14,6 +14,4 @@ const UserSchema = new Schema({
     resetTokenExpiration: {type: Date}
 });
 
-//no pw encryption yet
-
 module.exports = mongoose.model('User', UserSchema)

@@ -2,8 +2,9 @@
 // isusertype middleware
 // create move route functions to controllers?
 
-// wake up, ask michael what they use for emails, do [16 17 18 19 22]
-// send emails
+// send emails for reset token, admin edit and archive, optimize code at prereg submit and admin create user
+// res.json na gamitin mo for route responses to client
+// github edu, use it, use learn_one email api
 
 // roles: int
 // admin: 0
@@ -15,3 +16,4 @@
 // student: 6
 
 //change the last res.something() of each last .then() for reach route
+//check semicolons on if and then and catch blocks, weird
