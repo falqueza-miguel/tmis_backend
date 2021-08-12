@@ -4,9 +4,12 @@ const { body, validationResult } = require('express-validator');
 
 const User = require('../models/user');
 const Prereg = require('../models/prereg');
+const Annc = require('../models/annc');
 
 const isAuth = require('../middleware/is-auth');
 const { isPrincipal } = require('../middleware/is-role')
+
+//MANAGE TEACHER MODULE
 
 //create teacher
 router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEmail(), (req, res) => {
@@ -55,7 +58,7 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
                     return user.save();//saving user object to database
                 })
                 .then(result => {
-                    res.send('<h1>account created!</h1>');
+                    res.send('<h1>account created!</h1>');//set status code here
                 });
             })
             .catch(err => {
@@ -131,7 +134,7 @@ router.put('/principal/teachers/:id', isAuth, isPrincipal, async (req, res) => {
 });
 
 //archive teacher
-router.delete('/principal/archive/:id', isAuth, isPrincipal, async (req, res) => {
+router.delete('/principal/archiveteacher/:id', isAuth, isPrincipal, async (req, res) => {
     try {
         let user = await User.findOneAndUpdate({ _id: req.params.id }, {active: false}, {new: true}); //fix
         res.json({
@@ -146,5 +149,105 @@ router.delete('/principal/archive/:id', isAuth, isPrincipal, async (req, res) =>
         });
     }
 });
+
+//MANAGE ANNOUNCEMENTS MODULE
+
+//create announcement
+router.post('/principal/createannc', isAuth, isPrincipal, (req, res) => {
+
+    let annc = new Annc({
+        title: req.body.title,
+        content: req.body.content
+    });
+    annc.save()
+    .then(result => {
+        res.json({
+            success: true,
+            annc: annc
+        });
+    })
+    .catch(error => {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    })
+});
+
+//get all announcements
+router.get('/principal/annc', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let anncs = await Annc.find();
+        res.json({
+            success: true,
+            anncs: anncs
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//get one announcement
+router.get('/principal/annc/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let annc = await Annc.findOne({ _id: req.params.id });
+        res.json({
+            success: true,
+            annc: annc
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
+//edit announcement
+router.put('/principal/annc/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        console.log('trying to update!');
+        let annc = await Annc.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: { 
+            title: req.body.title,
+            content: req.body.content }},
+        { new: true });
+        res.json({
+            success: true,
+            annc: annc
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
+//delete announcement (like actually delete)
+router.delete('/principal/annc/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let annc = await Annc.findOneAndDelete( {_id: req.params.id });
+        res.json({
+            success: true,
+            annc: annc
+        })
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
+//MANAGE SECTIONS MODULE
 
 module.exports = router;
