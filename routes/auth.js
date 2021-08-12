@@ -51,7 +51,7 @@ router.post('/', body('email').isEmail(), (req, res) => {
             .then(result => {
                 if (result) {
                     console.log('correct password logging you in!');
-                    const token = jwt.sign({ _id: user._id, email: user.email, phoneNum: user.phoneNum, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2m'}); //probably keep _id, email, and role in jwt
+                    const token = jwt.sign({ _id: user._id, email: user.email, phoneNum: user.phoneNum, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h'}); //probably keep _id, email, and role in jwt
                     return res.status(200).json({ token: token }); // Authorization: Bearer <TOKEN> << set as header in front end
                     //if password is correct, next probably see what role and redirect to new route
                     //next step here
@@ -123,6 +123,7 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
 
 //resetting of password
 router.post('/reset/:token', (req, res) => {
+    
     const token = req.params.token;//takes token from url
     const newPassword = req.body.password;
     const confirmNewPassword = req.body.confirmPassword;

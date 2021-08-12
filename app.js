@@ -3,12 +3,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
 
 //middleware (ease of life)
 app.use(bodyParser.json()); //application/json, parses incoming json data
 app.use(bodyParser.urlencoded({extended: true})); //x-www-form-urlencoded, not sure wtf extended is for
+app.use(cors());
 
 //cors, test this first then install npm cors
 // app.use((req, res, next) => {

@@ -6,11 +6,10 @@ const User = require('../models/user');
 const Prereg = require('../models/prereg');
 
 const isAuth = require('../middleware/is-auth');
+const { isAdmin } = require('../middleware/is-role')
 
 //deal with default passwords later, could use birthdate for students and parents only
-router.post('/admin/createuser', isAuth, body('email').isEmail(), (req, res) => {
-
-    //add check if logged in and check if admin
+router.post('/admin/createuser', isAuth, isAdmin, body('email').isEmail(), (req, res) => {
 
     const errors = validationResult(req); //validates if email is an actual email
     if (!errors.isEmpty()){
@@ -18,7 +17,7 @@ router.post('/admin/createuser', isAuth, body('email').isEmail(), (req, res) => 
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const email = req.body.email;
+    const email = req.body.email;//input from frontend here
     const password = 'password';//default password here
 
     User.findOne({ email: email })
@@ -72,7 +71,9 @@ router.post('/admin/createuser', isAuth, body('email').isEmail(), (req, res) => 
     }); 
 });
 
-//edit user
+router.put('/admin/:id', isAuth, isAdmin, (req, res) => {
+
+});
 
 //archive user
 
