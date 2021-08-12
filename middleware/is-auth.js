@@ -26,6 +26,6 @@ module.exports = (req, res, next) => {
     res.locals._id = decodedToken._id;
     res.locals.email = decodedToken.email;
     res.locals.role = decodedToken.role;
-    console.log(decodedToken);
+    console.log('user logged in!');
     next();
 }//middlewares dont need semicolons?

@@ -15,9 +15,11 @@ app.use(cors());
 //connecting app to routes
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
+const principalRoutes = require('./routes/principal');
 
 app.use(authRoutes); //"use" keyword is for all type of requests, "get" n others match path exactly
 app.use(adminRoutes);
+app.use(principalRoutes);
 
 //404 probably best to put this in some route
 app.use((req, res) => {
