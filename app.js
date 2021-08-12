@@ -12,14 +12,6 @@ app.use(bodyParser.json()); //application/json, parses incoming json data
 app.use(bodyParser.urlencoded({extended: true})); //x-www-form-urlencoded, not sure wtf extended is for
 app.use(cors());
 
-//cors, test this first then install npm cors
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, POST, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Heathers', 'Content-Type, Authorization');
-//     next();
-// })
-
 //connecting app to routes
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');

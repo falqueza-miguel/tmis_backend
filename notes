@@ -20,4 +20,4 @@ student: 6
 change the last res.something() of each last .then() for reach route / res.status is important
 check semicolons on if and then and catch blocks, weird
 
-cors (added)(cant test w postman) <- learn what for
+cors (added)(cant test w postman) <- learn what for (5)
