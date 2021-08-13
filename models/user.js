@@ -11,7 +11,8 @@ const UserSchema = new Schema({
     role: {type: Number, required: true},
     active: {type: Boolean, required: true},
     resetToken: {type: String},
-    resetTokenExpiration: {type: Date}
+    resetTokenExpiration: {type: Date},
+    student_id: {type: String}
 });
 
 module.exports = mongoose.model('User', UserSchema)

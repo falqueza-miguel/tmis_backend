@@ -3,66 +3,63 @@ const Schema = mongoose.Schema;
 
 const StudentInfoSchema = new Schema({
   
-    user: { type: Schema.Types.ObjectId, ref: 'User' , required: true }, //need ata dbref?
+    student: { type: String, required: true }, //manually reference student_id so create user muna and extract id
 
-    schoolYear: { type: string, required: true },
-    levelEnroll: { type: string, required: true },
-    hasLRN: { type: boolean, required: true },
-    returning: { type: boolean, required: true },
-
-    //student number (given after registration)
-    studentNo: { type: string, required: true },
+    schoolYear: { type: String, required: true },
+    levelEnroll: { type: String, required: true },
+    hasLRN: { type: Boolean, required: true },
+    returning: { type: Boolean, required: true },
 
     //student
-    PSANo: { type: string },
-    LRNNo: { type: string },
+    PSANo: { type: String },
+    LRNNo: { type: String },
     //studentFirstName: { type: string, required: true },
     //studentMiddleName: { type: string, required: true },
     //studentLastName: { type: string, required: true },
-    birthDate: { type: string, required: true },
-    gender: { type: string, required: true },
-    indig: { type: boolean, required: true },
-    indigSpec: { type: string },
-    motherTongue: { type: string, required: true },
-    address1: { type: string, required: true },
-    address2: { type: string, required: true },
-    zipCode: { type: number, required: true },
+    birthDate: { type: String, required: true },
+    gender: { type: String, required: true },
+    indig: { type: Boolean, required: true },
+    indigSpec: { type: String },
+    motherTongue: { type: String, required: true },
+    address1: { type: String, required: true },
+    address2: { type: String, required: true },
+    zipCode: { type: Number, required: true },
     //email: { type: string, unique: true, required: true },
     //phoneNum: { type: number },
 
     //parent/guardian
-    motherFirstName: { type: string, required: true },
-    motherMiddleName: { type: string, required: true },
-    motherLastName: { type: string, required: true },
-    fatherFirstName: { type: string, required: true },
-    fatherMiddleName: { type: string, required: true },
-    fatherLastName: { type: string, required: true },
-    guardianFirstName: { type: string, required: true },
-    guardianMiddleName: { type: string, required: true },
-    guardianLastName: { type: string, required: true },
+    motherFirstName: { type: String, required: true },
+    motherMiddleName: { type: String, required: true },
+    motherLastName: { type: String, required: true },
+    fatherFirstName: { type: String, required: true },
+    fatherMiddleName: { type: String, required: true },
+    fatherLastName: { type: String, required: true },
+    guardianFirstName: { type: String, required: true },
+    guardianMiddleName: { type: String, required: true },
+    guardianLastName: { type: String, required: true },
     //parentEmail: { type: string, unique: true, required: true },
     //parentPhoneNum: { type: number },
 
     //for returning students
-    lastGradeLevel: { type: string },
-    lastSchoolYear: { type: string },
-    schoolName: { type: string },
-    schoolAddress: { type: string },
+    lastGradeLevel: { type: String },
+    lastSchoolYear: { type: String },
+    schoolName: { type: String },
+    schoolAddress: { type: String },
 
     //for shs students
-    semester: { type: string },
-    track: { type: string },
-    strand: { type: string }, 
+    semester: { type: String },
+    track: { type: String },
+    strand: { type: String }, 
 
     //prefered learning modes
-    modularP: { type: boolean },
-    modulard: { type: boolean },
-    online: { type: boolean },
-    educTV: { type: boolean },
-    radioBased: { type: boolean },
-    homeschool: { type: boolean },
-    blended: { type: boolean },
-    facetoface: { type: boolean }
+    modularP: { type: Boolean },
+    modularD: { type: Boolean },
+    online: { type: Boolean },
+    educTV: { type: Boolean },
+    radioBased: { type: Boolean },
+    homeschool: { type: Boolean },
+    blended: { type: Boolean },
+    facetoface: { type: Boolean }
 
 });
 

@@ -17,9 +17,13 @@ const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const principalRoutes = require('./routes/principal');
 
+const registrarRoutes = require('./routes/registrar');
+
 app.use(authRoutes); //"use" keyword is for all type of requests, "get" n others match path exactly
 app.use(adminRoutes);
 app.use(principalRoutes);
+
+app.use(registrarRoutes);
 
 //404 probably best to put this in some route
 app.use((req, res) => {

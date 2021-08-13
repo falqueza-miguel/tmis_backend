@@ -133,7 +133,7 @@ router.put('/admin/users/:id', isAuth, isAdmin, async (req, res) => {
 //archive user
 router.delete('/admin/archive/:id', isAuth, isAdmin, async (req, res) => {
     try {
-        let user = await User.findOneAndUpdate({ _id: req.params.id }, {active: false}, {new: true}); //fix
+        let user = await User.findOneAndUpdate({ _id: req.params.id }, {active: false}, {new: true});
         res.json({
             success: true,
             user: user

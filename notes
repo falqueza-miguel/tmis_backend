@@ -1,9 +1,10 @@
 create move route functions to controllers?
 
-set password limit? (?)
+set password limit in reset password (?)
 send emails for reset token (?)
-admin edit and archive (2)
-registrar functions and improve studentinfo schema (4)
+registrar functions and improve studentinfo schema (1) / add student number?
+principal manage section functions (2)
+teacher functions (3)
 
 res.json na gamitin mo for route responses to client
 github edu, use it, use learn_one email api
@@ -20,4 +21,4 @@ student: 6
 change the last res.something() of each last .then() for reach route / res.status is important
 check semicolons on if and then and catch blocks, weird
 
-cors (added)(cant test w postman) <- learn what for (5)
+cors (added)(cant test w postman) <- learn what for (?)
