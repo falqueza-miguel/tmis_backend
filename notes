@@ -1,13 +1,28 @@
-create move route functions to controllers?
 
+// requirements
+send announcements to home page (5)
+big3: {
+principal manage section functions (1)
+teacher functions (2)
+registrar functions (3)
+}
+only view functions: {
+student and parent functions (4)
+}
+
+// optimization
 set password limit in reset password (?)
 send emails for reset token (?)
-registrar functions and improve studentinfo schema (1) / add student number?
-principal manage section functions (2)
-teacher functions (3)
+send sms and email for announcements (?)
+add student number (?) registrar module / auth module
+cors (added)(cant test w postman) <- learn what for (?)
+change the last res.something() of each last .then() for reach route / res.status is important ata?
 
+// polishing
+check semicolons on if and then and catch blocks, weird
 res.json na gamitin mo for route responses to client
 github edu, use it, use learn_one email api
+create move route functions to controllers?
 
 roles: int
 admin: 0
@@ -17,8 +32,3 @@ registrar: 3
 teacher: 4
 parent: 5
 student: 6
-
-change the last res.something() of each last .then() for reach route / res.status is important
-check semicolons on if and then and catch blocks, weird
-
-cors (added)(cant test w postman) <- learn what for (?)

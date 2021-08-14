@@ -5,6 +5,8 @@ const { body, validationResult } = require('express-validator');
 const User = require('../models/user');
 const Prereg = require('../models/prereg');
 const Annc = require('../models/annc');
+const Section = require('../models/section');
+const Grade = require('../models/grade');
 
 const isAuth = require('../middleware/is-auth');
 const { isPrincipal } = require('../middleware/is-role')
@@ -52,7 +54,7 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
                         phoneNum: req.body.phoneNum,
                         password: hashedPassword,
                         role: 4,
-                        active: 1
+                        active: true
                     });
                     console.log('account successfully created!');
                     return user.save();//saving user object to database
@@ -249,5 +251,123 @@ router.delete('/principal/annc/:id', isAuth, isPrincipal, async (req, res) => {
 });
 
 //MANAGE SECTIONS MODULE
+
+//create section, subsequently create grade object for each student
+router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) => {
+    try{
+        let section = new Section({
+            SchoolYear: req.body.schoolYear,
+            yearLevel: req.body.yearLevel,
+            sectionName: req.body.sectionName,
+            students: req.body.students, //either database id's or student numbers
+    
+            subjects: req.body.subjects, //all three must be same length
+            schedule: req.body.schedule,
+            teachers: req.body.teachers, //teacher ids
+        
+            active: true
+        });
+        await section.save();
+
+        //create grades object for each student
+        for (var i = 0, l = section.students.length; i < l; i++) {
+            var studentID = section.students[i];
+            let grade = new Grade({
+                studentID: studentID,
+                sectionID: section._id,
+                subjects: section.subjects,
+                teachers: section.teachers
+            });
+            console.log(studentID);
+            await grade.save();
+        }
+        res.json({
+            success: true,
+            section: section
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//get all active sections
+router.get('/principal/sections', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let sections = await Section.find( {active: true} );
+        res.json({
+            success: true,
+            sections: sections
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+
+//get one section
+router.get('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let section = await Section.findOne( {_id: req.params.id} );
+        res.json({
+            success: true,
+            section: section
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//edit section (best not enable this yet)
+router.put('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let section = await Section.findOneAndUpdate(
+            { _id: req.params.id },
+            { $set: { 
+                SchoolYear: req.body.schoolYear,
+                yearLevel: req.body.yearLevel,
+                sectionName: req.body.sectionName
+            }},
+            { new: true });
+            res.json({
+                success: true,
+                section: section
+            });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//archive section
+router.delete('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let section = await Section.findOneAndUpdate({_id: req.params.id}, {active: false}, {new: true});
+        res.json({
+            success: true,
+            section: section
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 module.exports = router;

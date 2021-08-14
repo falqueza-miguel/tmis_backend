@@ -171,7 +171,8 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
                 firstName: req.body.firstName,
                 middleName: req.body.middleName,
                 lastName: req.body.lastName,
-                phoneNum: req.body.phoneNum }},
+                phoneNum: req.body.phoneNum 
+            }},
             { new: true });
             res.json({
                 success: true,
