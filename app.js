@@ -9,7 +9,7 @@ const app = express();
 
 //middleware (ease of life)
 app.use(bodyParser.json()); //application/json, parses incoming json data
-app.use(bodyParser.urlencoded({extended: true})); //x-www-form-urlencoded, not sure wtf extended is for
+app.use(bodyParser.urlencoded({extended: true})); //x-www-form-urlencoded, para san extended?
 app.use(cors());
 
 //connecting app to routes

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const User = require('../models/user');
 const Prereg = require('../models/prereg');
+const Counter = require('../models/counter');
 
 const isAuth = require('../middleware/is-auth');
 const { isRegistrar } = require('../middleware/is-role');
@@ -42,38 +43,53 @@ router.get('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
     }
 });
 
+//function for student ID generation
+
 
 //register student and parent account and creates student info
 //could add student number
 router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
     try {
+
+        const password = "password"; // DEFAULT PASSWORD
+        let hashedPassword = await bcrypt.hash(password, 12);
         let prereg = await Prereg.findOne({ _id: req.params.id });//look for prereg id
+        let sequenceDocument = await Counter.findOneAndUpdate( //student id counter (START WITH 111110)
+            { counter: true },
+            { $inc:{sequence_value:1} },
+            { new: true }
+        );
+
         let student = new User({//create student user
             firstName: prereg.studentFirstName,
             middleName: prereg.studentMiddleName,
             lastName: prereg.studentLastName,
             email: prereg.email,
             phoneNum: prereg.phoneNum,
-            password: 'test',
+            password: hashedPassword,
             role: 6,
-            active: 1
+            active: 1,
+            studentNumber: parseInt("" + prereg.schoolYearFrom + sequenceDocument.sequence_value) // APPEND YEARFROM BEFORE SEQUENCE_VALUE
         });
         await student.save();
+
         let parent = new User({//create parent user (uses mother name)
             firstName: prereg.motherFirstName,
             middleName: prereg.motherMiddleName,
             lastName: prereg.motherLastName,
             email: prereg.parentEmail,
             phoneNum: prereg.parentPhoneNum,
-            password: 'test',
+            password: hashedPassword,
             role: 5,
             active: 1,
             student_id: student._id
         });
         await parent.save();
+
         let studentinfo = new StudentInfo({
             student: student._id,
-            schoolYear: prereg.schoolYear,
+            schoolYearFrom: prereg.schoolYearFrom,
+            schoolYearTo: prereg.schoolYearTo,
             levelEnroll: prereg.levelEnroll,
             hasLRN: prereg.hasLRN,
             returning: prereg.returning,
@@ -113,6 +129,7 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
             facetoface: prereg.facetoface
         });
         await studentinfo.save();
+
         prereg = await Prereg.findOneAndDelete({ _id: req.params.id });
         res.json({
             success: true,
@@ -203,6 +220,5 @@ router.delete('/registrar/students/:id', isAuth, isRegistrar, async (req, res) =
         });
     }
 });
-
 
 module.exports = router;

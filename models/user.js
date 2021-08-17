@@ -7,12 +7,13 @@ const UserSchema = new Schema({
     lastName: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     phoneNum: { type: Number },
-    password: {type: String, required: true}, //hashed
-    role: {type: Number, required: true},
-    active: {type: Boolean, required: true},
-    resetToken: {type: String},
-    resetTokenExpiration: {type: Date},
-    student_id: {type: String}
+    password: { type: String, required: true }, //hashed
+    role: { type: Number, required: true },
+    active: { type: Boolean, required: true },
+    resetToken: { type: String },
+    resetTokenExpiration: { type: Date },
+    student_id: { type: String }, // links parent to student
+    studentNumber: { type: String } // system generated student number
 });
 
 module.exports = mongoose.model('User', UserSchema)

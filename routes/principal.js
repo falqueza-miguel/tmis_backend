@@ -23,7 +23,7 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
     }
 
     const email = req.body.email;//input from frontend here
-    const password = 'password';//default password here
+    const password = 'password';// DEFAULT PASSWORD HERE
 
     User.findOne({ email: email })
     .then(userDoc => {//authentication and creation
@@ -255,30 +255,74 @@ router.delete('/principal/annc/:id', isAuth, isPrincipal, async (req, res) => {
 //create section, subsequently create grade object for each student
 router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) => {
     try{
+
+        // check student numbers if exists in database
+        for (var i = 0, l = req.body.students.length; i < l; i++){
+            try {
+            var student = req.body.students[i];
+            let user = await User.findOne({studentNumber: student});
+            if (!user) {
+                console.log(req.body.students[i] +" doesnt exist");
+                return res.send(req.body.students[i] +" doesnt exist");
+            }
+            }
+            catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: error.message
+                });
+            }
+        }
+
+        // check teacher email if exists in database
+        for (var i = 0, l = req.body.teachers.length; i < l; i++){
+            try {
+            var teacher = req.body.teachers[i];
+            let user = await User.findOne({email: teacher});
+            if (!user) {
+                console.log(req.body.teachers[i] +" doesnt exist");
+                return res.send(req.body.teachers[i] +" doesnt exist");
+            }
+            }
+            catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: error.message
+                });
+            }
+        }
+
         let section = new Section({
-            SchoolYear: req.body.schoolYear,
+            schoolYearFrom: req.body.schoolYearFrom,
+            schoolYearTo: req.body.schoolYearTo,
             yearLevel: req.body.yearLevel,
             sectionName: req.body.sectionName,
-            students: req.body.students, //either database id's or student numbers
+            students: req.body.students, // studentNumber
     
             subjects: req.body.subjects, //all three must be same length
             schedule: req.body.schedule,
-            teachers: req.body.teachers, //teacher ids
+            teachers: req.body.teachers, // DATABASE _id OR email
         
             active: true
         });
         await section.save();
 
-        //create grades object for each student
+        //create grades object for each student in section object
         for (var i = 0, l = section.students.length; i < l; i++) {
-            var studentID = section.students[i];
+            var studentNumber = section.students[i];
             let grade = new Grade({
-                studentID: studentID,
+                studentNumber: studentNumber,
                 sectionID: section._id,
+
+                schoolYearFrom: section.schoolYearFrom,
+                schoolYearTo: section.schoolYearTo, // reference section schoolyear
+                yearLevel: section.yearLevel, // reference section yearlevel
+                sectionName: section.sectionName, // reference section sectionname
+
                 subjects: section.subjects,
                 teachers: section.teachers
             });
-            console.log(studentID);
+            console.log("created grade for " + studentNumber);
             await grade.save();
         }
         res.json({
@@ -329,13 +373,13 @@ router.get('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
     }
 });
 
-//edit section (best not enable this yet)
+//edit section (best not enable this yet)(these fields are also referenced in grade, find fix)
 router.put('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
     try {
         let section = await Section.findOneAndUpdate(
             { _id: req.params.id },
             { $set: { 
-                SchoolYear: req.body.schoolYear,
+                schoolYear: req.body.schoolYear,
                 yearLevel: req.body.yearLevel,
                 sectionName: req.body.sectionName
             }},

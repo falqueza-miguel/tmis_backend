@@ -28,4 +28,6 @@ module.exports = (req, res, next) => {
     res.locals.role = decodedToken.role;
     console.log('user logged in!');
     next();
-}//middlewares dont need semicolons?
+}
+
+//middlewares dont need semicolons?

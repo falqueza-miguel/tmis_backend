@@ -18,7 +18,7 @@ router.post('/admin/createuser', isAuth, isAdmin, body('email').isEmail(), (req,
     }
 
     const email = req.body.email;//input from frontend here
-    const password = 'password';//default password here
+    const password = 'password';// DEFAULT PASSWORD HERE
 
     User.findOne({ email: email })
     .then(userDoc => {//authentication and creation

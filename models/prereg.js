@@ -3,7 +3,8 @@ const Schema = mongoose.Schema;
 
 const PreregSchema = new Schema({
 
-    schoolYear: { type: String, required: true },
+    schoolYearFrom: { type: String, required: true },
+    schoolYearTo: { type: String, required: true },
     levelEnroll: { type: String, required: true },
     hasLRN: { type: Boolean, required: true },
     returning: { type: Boolean, required: true },

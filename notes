@@ -1,8 +1,7 @@
 
 // requirements
 send announcements to home page (5)
-big3: {
-principal manage section functions (1)
+big2: {
 teacher functions (2)
 registrar functions (3)
 }
@@ -10,19 +9,27 @@ only view functions: {
 student and parent functions (4)
 }
 
+finalize login json response (1)
+add student number (?) registrar module(done) / auth module / teacher module / principal module(done) / student and parent module (ongoing)
+
+// bugs
+edit section reference values for grades object tied to that section will not be updated
+
 // optimization
-set password limit in reset password (?)
+set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
 send emails for reset token (?)
 send sms and email for announcements (?)
-add student number (?) registrar module / auth module
-cors (added)(cant test w postman) <- learn what for (?)
-change the last res.something() of each last .then() for reach route / res.status is important ata?
 
 // polishing
 check semicolons on if and then and catch blocks, weird
+change the last res.something() of each last .then() for reach route / res.status is important ata?
 res.json na gamitin mo for route responses to client
+
+// ideas 
 github edu, use it, use learn_one email api
 create move route functions to controllers?
+could merge subject and teacher in section
+cors (added)(cant test w postman) <- learn what for (?)
 
 roles: int
 admin: 0
