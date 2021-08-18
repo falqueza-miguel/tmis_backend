@@ -24,7 +24,7 @@ module.exports = (req, res, next) => {
         throw error
     }
     res.locals._id = decodedToken._id; // ALL THESE REACH ROUTES
-    res.locals.email = decodedToken.email; // email might not be used
+    res.locals.email = decodedToken.email; // email used for teacherroutes
     res.locals.role = decodedToken.role;
     console.log('user logged in!');
     next();

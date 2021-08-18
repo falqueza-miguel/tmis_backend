@@ -19,6 +19,8 @@ edit section reference values for grades object tied to that section will not be
 set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
 send emails for reset token (?)
 send sms and email for announcements (?)
+send email for grade encoding (?)
+send sms and email for balance encoding (?)
 
 // polishing
 check semicolons on if and then and catch blocks, weird

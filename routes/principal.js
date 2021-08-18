@@ -292,24 +292,75 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
             }
         }
 
-        let section = new Section({
+        // ALPHABETIZE STUDENTS BEFORE CREATING SECTION
+        // cross link student numbers to last names and arrange accordingly
+
+        let alphabetizedStudentNumbers = [];
+        let alphabetizedStudentNames = [];
+        let unorganizedStudentNames = [];
+        // get array of student names
+        for (student in req.body.students) {
+            try {
+                let user = await User.findOne({studentNumber: req.body.students[student]});
+                let fullName = user.lastName + " " + user.firstName + " " + user.middleName + " " + user.studentNumber;
+                unorganizedStudentNames.push(fullName);
+            }
+            catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: error.message
+                });                
+            }
+        }
+
+        unorganizedStudentNames.sort(); // sort student names with numbers alphabetically by last name
+
+        for (student in unorganizedStudentNames){ // slices student numbers from names
+            try {
+                let name = unorganizedStudentNames[student];
+                let studName = name.slice(0, name.length - 10)
+                let studNumber = name.slice(name.length - 10);
+                alphabetizedStudentNames.push(studName.trim());
+                alphabetizedStudentNumbers.push(studNumber);
+            }
+            catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: error.message
+                });                  
+            }
+        }
+
+        // SECTION CREATION
+        let section = new Section({ 
             schoolYearFrom: req.body.schoolYearFrom,
             schoolYearTo: req.body.schoolYearTo,
             yearLevel: req.body.yearLevel,
+            strand: req.body.strand,
+            semester: req.body.semester,
             sectionName: req.body.sectionName,
-            students: req.body.students, // studentNumber
+
+            studentNumbers: alphabetizedStudentNumbers,
+            studentNames: alphabetizedStudentNames,
     
             subjects: req.body.subjects, //all three must be same length
             schedule: req.body.schedule,
-            teachers: req.body.teachers, // DATABASE _id OR email
+            teachers: req.body.teachers, // emails
         
             active: true
         });
         await section.save();
 
+        //NA placeholder for grades
+        let blankGrades =   [];
+        for (subject in section.subjects) {
+            let blank = " ";
+            blankGrades.push(blank);
+        }
+
         //create grades object for each student in section object
-        for (var i = 0, l = section.students.length; i < l; i++) {
-            var studentNumber = section.students[i];
+        for (var i = 0, l = section.studentNumbers.length; i < l; i++) {
+            var studentNumber = section.studentNumbers[i];
             let grade = new Grade({
                 studentNumber: studentNumber,
                 sectionID: section._id,
@@ -317,10 +368,16 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
                 schoolYearFrom: section.schoolYearFrom,
                 schoolYearTo: section.schoolYearTo, // reference section schoolyear
                 yearLevel: section.yearLevel, // reference section yearlevel
+                semester: section.semester,
+                strand: section.strand,
                 sectionName: section.sectionName, // reference section sectionname
 
                 subjects: section.subjects,
-                teachers: section.teachers
+                teachers: section.teachers,
+                q1Grades: blankGrades,
+                q2Grades: blankGrades,
+                q3Grades: blankGrades,
+                q4Grades: blankGrades  
             });
             console.log("created grade for " + studentNumber);
             await grade.save();

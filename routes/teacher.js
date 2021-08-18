@@ -1,5 +1,6 @@
 const router = require('express').Router();
 
+const User = require('../models/user');
 const Section = require('../models/section');
 const Grade = require('../models/grade');
 
@@ -45,12 +46,11 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
     }
 });
 
-//get all sections taught by subject teached
-//might use id now here
+//get all ACTIVE(3:05PM 18/08/21 change after class) sections taught by subject teached
 router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
     try {
         //find sections by email
-        let sections = await Section.find({teachers: res.locals.email});
+        let sections = await Section.find({$and:[{teachers: res.locals.email}, {active: true}]});
         let section_ids = [];
         let section_names = [];
         let subjects = [];
@@ -85,10 +85,126 @@ router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
     }
 });
 
-//open section , list students , show schedule (get one section)
+//open section , show sched, list students , populate grade fields
+router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
+    try {
+        let section = await Section.findOne({ _id: req.params.id });
+        let grades = await Grade.find({ sectionID: req.params.id });
 
-//print class list/info (one section)
+        // get teacher subject and index of subject
+        let teacherArray = section.teachers
+        let index = teacherArray.indexOf(res.locals.email);
+        let subject = section.subjects[index]; //subject and index
 
-//encode student grade 
+        // get encoded grades for subject
+        let students = []
+        let q1SubjGrades = []
+        let q2SubjGrades = []
+        let q3SubjGrades = []
+        let q4SubjGrades = []
+        for (grade in grades) {
+            try {
+                let subjectArray = grades[grade].subjects;
+                let subjIndex = subjectArray.indexOf(subject);
+                let stud = section.studentNumbers[grade];
+                students.push(stud)
+                q1SubjGrades.push(grades[grade].q1Grades[subjIndex]);
+                q2SubjGrades.push(grades[grade].q2Grades[subjIndex]);
+                q3SubjGrades.push(grades[grade].q3Grades[subjIndex]);
+                q4SubjGrades.push(grades[grade].q4Grades[subjIndex]);     
+            }
+            catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: error.message
+                });                
+            }
+        }
+
+        console.log(students);// same
+        console.log(section.studentNumbers); // same
+        console.log(section.studentNames)
+
+        console.log(q1SubjGrades)
+        console.log(q2SubjGrades)
+        console.log(q3SubjGrades)
+        console.log(q4SubjGrades)
+
+        res.json({
+            success: true,
+            section: section,
+            grades: grades
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//view class list (pdf)
+
+
+//encode students grades
+router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
+    try {
+        let section = await Section.findOne({ _id: req.params.id });
+
+        // get teacher subject and index of subject
+        let teacherArray = section.teachers
+        let index = teacherArray.indexOf(res.locals.email);
+        let subject = section.subjects[index]; //subject and index
+        let q1SubjGrades = req.body.q1Grades;
+        let q2SubjGrades = req.body.q2Grades;
+        let q3SubjGrades = req.body.q3Grades;
+        let q4SubjGrades = req.body.q4Grades;
+
+
+        for (student in section.studentNumbers) {
+
+            let studNum = section.studentNumbers[student];
+
+            let q1g = q1SubjGrades[student];
+            let q2g = q2SubjGrades[student];
+            let q3g = q3SubjGrades[student];
+            let q4g = q4SubjGrades[student];
+
+            let grade = await Grade.findOne({ $and: [{ sectionID: req.params.id }, { studentNumber: studNum }] });
+            let q_one = grade.q1Grades;
+            let q_two = grade.q2Grades;
+            let q_three = grade.q3Grades;
+            let q_four = grade.q4Grades;
+            
+
+            q_one.splice(index, 1, q1g);
+            q_two.splice(index, 1, q2g);
+            q_three.splice(index, 1, q3g);
+            q_four.splice(index, 1, q4g);
+
+
+            await Grade.findOneAndUpdate(
+                { $and: [{ sectionID: req.params.id }, { studentNumber: studNum }] }, 
+                { $set: { 
+                    q1Grades: q_one,
+                    q2Grades: q_two,
+                    q3Grades: q_three,
+                    q4Grades: q_four
+                }},
+                { new: true });
+            console.log(grade);
+        }
+        res.json({
+            success: true,
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 module.exports = router;

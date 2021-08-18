@@ -13,7 +13,7 @@ const UserSchema = new Schema({
     resetToken: { type: String },
     resetTokenExpiration: { type: Date },
     student_id: { type: String }, // links parent to student
-    studentNumber: { type: String } // system generated student number
+    studentNumber: { type: Number } // system generated student number
 });
 
 module.exports = mongoose.model('User', UserSchema)

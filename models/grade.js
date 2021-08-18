@@ -2,17 +2,22 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const GradeSchema = new Schema({
-    studentNumber: { type: String, required: true }, // studentNumber
+    studentNumber: { type: Number, required: true }, // studentNumber
     sectionID: { type: String, required: true }, // reference section _id here when creating 
 
     schoolYearFrom: { type: String, required: true }, // reference section schoolyear
     schoolYearTo: { type: String, required: true },
     yearLevel: { type: String, required: true }, // reference section yearlevel
+    semester: { type: String }, // for shs only
+    strand: { type: String }, // for shs only
     sectionName: { type: String, required: true }, // reference section sectionname
 
-    subjects: { type: Array, required: true }, // all three must be same length
-    teachers: { type: Array, required: true }, // DATABASE _id or Email
-    grades: { type: Array } //array of arrays
+    subjects: [{ type: String, required: true }], // must be same length
+    teachers: [{ type: String, required: true }], // email
+    q1Grades: [{ type: String }], //shs prelim
+    q2Grades: [{ type: String }], //shs final
+    q3Grades: [{ type: String }],
+    q4Grades: [{ type: String }],
 });
 
 module.exports = mongoose.model('Grade', GradeSchema)

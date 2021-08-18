@@ -20,7 +20,7 @@ const principalRoutes = require('./routes/principal');
 const registrarRoutes = require('./routes/registrar');
 const teacherRoutes = require('./routes/teacher');
 
-//turn into app.use('/api', sampleRoutes);s
+//turn into app.use('/api', sampleRoutes);
 app.use(authRoutes); //"use" keyword is for all type of requests, "get" n others match path exactly
 app.use(adminRoutes);
 app.use(principalRoutes);
