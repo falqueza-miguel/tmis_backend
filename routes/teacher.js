@@ -106,8 +106,8 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
             try {
                 let subjectArray = grades[grade].subjects;
                 let subjIndex = subjectArray.indexOf(subject);
-                let stud = section.studentNumbers[grade];
-                students.push(stud)
+                //let stud = section.studentNumbers[grade];
+                //students.push(stud)
                 q1SubjGrades.push(grades[grade].q1Grades[subjIndex]);
                 q2SubjGrades.push(grades[grade].q2Grades[subjIndex]);
                 q3SubjGrades.push(grades[grade].q3Grades[subjIndex]);
@@ -121,7 +121,7 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
             }
         }
 
-        console.log(students);// same
+        // console.log(students);// same
         console.log(section.studentNumbers); // same
         console.log(section.studentNames)
 

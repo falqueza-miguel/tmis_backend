@@ -302,7 +302,7 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         for (student in req.body.students) {
             try {
                 let user = await User.findOne({studentNumber: req.body.students[student]});
-                let fullName = user.lastName + " " + user.firstName + " " + user.middleName + " " + user.studentNumber;
+                let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.studentNumber;
                 unorganizedStudentNames.push(fullName);
             }
             catch (error) {
@@ -321,7 +321,7 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
                 let studName = name.slice(0, name.length - 10)
                 let studNumber = name.slice(name.length - 10);
                 alphabetizedStudentNames.push(studName.trim());
-                alphabetizedStudentNumbers.push(studNumber);
+                alphabetizedStudentNumbers.push(studNumber.trim());
             }
             catch (error) {
                 res.status(500).json({
@@ -352,9 +352,9 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         await section.save();
 
         //NA placeholder for grades
-        let blankGrades =   [];
+        let blankGrades = [];
         for (subject in section.subjects) {
-            let blank = " ";
+            let blank = "";
             blankGrades.push(blank);
         }
 
