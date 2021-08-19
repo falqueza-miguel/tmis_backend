@@ -16,17 +16,19 @@ app.use(cors());
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const principalRoutes = require('./routes/principal');
-//accountant
+const accountantRoutes = require('./routes/accountant');
 const registrarRoutes = require('./routes/registrar');
 const teacherRoutes = require('./routes/teacher');
+const parent_studentRoutes = require('./routes/parent_student');
 
 //turn into app.use('/api', sampleRoutes);
 app.use(authRoutes); //"use" keyword is for all type of requests, "get" n others match path exactly
 app.use(adminRoutes);
 app.use(principalRoutes);
-//accountant
+app.use(accountantRoutes);
 app.use(registrarRoutes);
 app.use(teacherRoutes);
+app.use(parent_studentRoutes);
 
 //404 probably best to put this in some route
 app.use((req, res) => {

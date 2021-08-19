@@ -2,15 +2,16 @@
 // requirements
 send announcements to home page (5)
 big2: {
-teacher functions (2)
-registrar functions (3)
+accountant functions (3)
 }
 only view functions: {
 student and parent functions (4)
 }
 
 finalize login json response (not necessary atm (1:30pm 17 aug 2021)
-add student number (?) registrar module(done) / auth module / teacher module / principal module(done) / student and parent module (ongoing)
+finalize get single grade for parent and student (5:16am 19 aug 2021)
+finalize balance object and accountant functions (5:16am 19 aug 2021)
+add student number (?) registrar module(done) / auth module / teacher module(done) / principal module(done) / student and parent module (ongoing)
 
 // bugs
 edit section reference values for grades object tied to that section will not be updated
@@ -41,3 +42,50 @@ registrar: 3
 teacher: 4
 parent: 5
 student: 6
+
+//PARENT STUDENT
+//view old grades (baka pwede na extrapolate data from last page to here sa react (allGrades))
+router.get('/mygrades/:id', isAuth, isPS, async (req, res) => {
+    try {
+        let grade = await Grade.findOne({ _id: req.params.id });
+        let user = await User.findOne({ _id: res.locals._id })
+        if (!grade.studentNumber == user.studentNumber){
+            res.status(500).json({ success: false, message: "not your grade!"}).redirect("/");
+        }
+        res.json({
+            success: true,
+            grade: grade
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//PRINCIPAL
+//edit section (best not enable this yet)(these fields are also referenced in grade, find fix)
+router.put('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let section = await Section.findOneAndUpdate(
+            { _id: req.params.id },
+            { $set: { 
+                schoolYear: req.body.schoolYear,
+                yearLevel: req.body.yearLevel,
+                sectionName: req.body.sectionName
+            }},
+            { new: true });
+            res.json({
+                success: true,
+                section: section
+            });
+     } 
+    catch (error) {
+         res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});

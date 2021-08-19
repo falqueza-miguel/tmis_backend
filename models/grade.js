@@ -18,6 +18,6 @@ const GradeSchema = new Schema({
     q2Grades: [{ type: String }], //shs final
     q3Grades: [{ type: String }],
     q4Grades: [{ type: String }],
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Grade', GradeSchema)

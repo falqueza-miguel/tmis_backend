@@ -74,3 +74,14 @@ exports.isStudent = (req, res, next) => {
     console.log('user is student!');
 	next();
 };
+
+exports.isPS = (req, res, next) => {
+    if (!(res.locals.role == 6 || res.locals.role == 5)) {
+        console.log ('not student or parent!');
+		return res.status(403).json({
+			error: "Student or Parent Only. Access Denied",
+		});
+	}
+    console.log('user is student or parent!');
+	next();
+};

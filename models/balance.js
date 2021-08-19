@@ -6,7 +6,7 @@ const BalanceSchema = new Schema({
     schoolYearTo : { type: String, required: true },
     semester : { type: String },
 
-    student : { type: String, required: true },
+    student : { type: String, required: true }, //student _id
 
     paymentTerms: { type: String },
     modeOfPayment: { type: String },
@@ -15,6 +15,6 @@ const BalanceSchema = new Schema({
     transactionType: { type: Array },
     debit: { type: Array },
     credit: { type: Array }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Balance', BalanceSchema)

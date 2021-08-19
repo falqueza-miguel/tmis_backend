@@ -12,7 +12,7 @@ const UserSchema = new Schema({
     active: { type: Boolean, required: true },
     resetToken: { type: String },
     resetTokenExpiration: { type: Date },
-    student_id: { type: String }, // links parent to student
+    student_id: { type: String }, // links parent to student (student._id)
     studentNumber: { type: Number } // system generated student number
 });
 

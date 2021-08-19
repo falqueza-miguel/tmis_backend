@@ -430,31 +430,9 @@ router.get('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
     }
 });
 
-//edit section (best not enable this yet)(these fields are also referenced in grade, find fix)
-router.put('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
-    try {
-        let section = await Section.findOneAndUpdate(
-            { _id: req.params.id },
-            { $set: { 
-                schoolYear: req.body.schoolYear,
-                yearLevel: req.body.yearLevel,
-                sectionName: req.body.sectionName
-            }},
-            { new: true });
-            res.json({
-                success: true,
-                section: section
-            });
-    } 
-    catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-});
 
-//archive section
+
+//edit / archive section
 router.delete('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
     try {
         let section = await Section.findOneAndUpdate({_id: req.params.id}, {active: false}, {new: true});
