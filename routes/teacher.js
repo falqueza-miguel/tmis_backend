@@ -7,11 +7,11 @@ const Grade = require('../models/grade');
 const isAuth = require('../middleware/is-auth');
 const { isTeacher } = require('../middleware/is-role')
 
-//view teacher schedule (all section schedules)
+//view teacher schedule (all section schedules) (ACTIVE ONLY)
 router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
     try {
         //find sections by email
-        let sections = await Section.find({teachers: res.locals.email});
+        let sections = await Section.find({$and: [{teachers: res.locals.email}, {active: true}]});
         let section_names = [];
         let subjects = [];
         let schedules = [];
@@ -46,7 +46,7 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
     }
 });
 
-//get all ACTIVE(3:05PM 18/08/21 change after class) sections taught by subject teached
+//get all ACTIVE sections taught by subject teached
 router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
     try {
         //find sections by email

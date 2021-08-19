@@ -1,20 +1,10 @@
 
 // requirements
 send announcements to home page (5)
-big2: {
-accountant functions (3)
-}
-only view functions: {
-student and parent functions (4)
-}
 
-finalize login json response (not necessary atm (1:30pm 17 aug 2021)
-finalize get single grade for parent and student (5:16am 19 aug 2021)
-finalize balance object and accountant functions (5:16am 19 aug 2021)
-add student number (?) registrar module(done) / auth module / teacher module(done) / principal module(done) / student and parent module (ongoing)
-
-// bugs
-edit section reference values for grades object tied to that section will not be updated
+finalize login json response (not necessary atm (1:30pm 17 aug 2021))
+finalize get old grade for parent and student (5:16am 19 aug 2021) (10:30pm 19 aug 2021)
+finalize accountant functions (5:16am 19 aug 2021) (10:30pm 19 aug 2021)
 
 // optimization
 set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
@@ -22,10 +12,11 @@ send emails for reset token (?)
 send sms and email for announcements (?)
 send email for grade encoding (?)
 send sms and email for balance encoding (?)
+use student number for students logging in (?)
 
 // polishing
 check semicolons on if and then and catch blocks, weird
-change the last res.something() of each last .then() for reach route / res.status is important ata?
+change the last res.something() of each last .then() for reach route / res.status is important ata? (frontend)
 res.json na gamitin mo for route responses to client
 
 // ideas 
@@ -89,3 +80,5 @@ router.put('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
         });
     }
 });
+
+heavily modified as of commit "added yearLevel to balance object", check github for older version of notes
