@@ -6,10 +6,23 @@ const jwt = require('jsonwebtoken');
 
 const Prereg = require('../models/prereg');
 const User = require('../models/user');
+const Annc = require('../models/annc');
 
 //home page / announcements
-router.get('/', (req, res) => {
-    res.send('hello world')
+router.get('/', async (req, res) => {
+    try {
+        let anncs = await Annc.find().sort({ createdAt: -1});
+        res.json({
+            success: true,
+            anncs: anncs
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
 });
 
 //test lang delete later

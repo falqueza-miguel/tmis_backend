@@ -179,7 +179,7 @@ router.post('/principal/createannc', isAuth, isPrincipal, (req, res) => {
 //get all announcements
 router.get('/principal/annc', isAuth, isPrincipal, async (req, res) => {
     try {
-        let anncs = await Annc.find();
+        let anncs = await Annc.find().sort({ createdAt: -1});
         res.json({
             success: true,
             anncs: anncs

@@ -3,15 +3,19 @@
 send announcements to home page (5)
 
 finalize login json response (not necessary atm (1:30pm 17 aug 2021))
-finalize get old grade for parent and student (5:16am 19 aug 2021) (10:30pm 19 aug 2021)
-finalize accountant functions (5:16am 19 aug 2021) (10:30pm 19 aug 2021)
+finalize get old grade for parent and student (5:16am 19 aug 2021) (10:30pm 19 aug 2021) ( probably sa frontend )
+finalize get old balance for parent (2:30 am 20 aug 2021) ( probably sa frontend )
+finalize accountant functions (5:16am 19 aug 2021) (10:30pm 19 aug 2021) ( probably sa frontend )
+finalize accountant edit information page and parent payment information page (2:30 am 20 aug 2021)
 
 // optimization
 set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
+
 send emails for reset token (?)
 send sms and email for announcements (?)
 send email for grade encoding (?)
 send sms and email for balance encoding (?)
+
 use student number for students logging in (?)
 
 // polishing
