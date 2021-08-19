@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const BalanceSchema = new Schema({
     schoolYearFrom : { type: String, required: true },
     schoolYearTo : { type: String, required: true },
+    yearLevel : { type: String },
     semester : { type: String },
 
     student : { type: String, required: true }, //student _id

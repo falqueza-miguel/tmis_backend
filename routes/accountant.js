@@ -51,6 +51,7 @@ router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (
         let balance = new Balance({
             schoolYearFrom : req.body.schoolYearFrom,
             schoolYearTo : req.body.schoolYearTo,
+            yearLevel : req.body.yearLevel,
             semester : req.body.semester,
         
             student : req.params.id, //student _id
