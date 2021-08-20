@@ -22,13 +22,13 @@ const teacherRoutes = require('./routes/teacher');
 const parent_studentRoutes = require('./routes/parent_student');
 
 //turn into app.use('/api', sampleRoutes);
-app.use(authRoutes); //"use" keyword is for all type of requests, "get" n others match path exactly
-app.use(adminRoutes);
-app.use(principalRoutes);
-app.use(accountantRoutes);
-app.use(registrarRoutes);
-app.use(teacherRoutes);
-app.use(parent_studentRoutes);
+app.use('/api', authRoutes); //"use" keyword is for all type of requests, "get" n others match path exactly
+app.use('/api', adminRoutes);
+app.use('/api', principalRoutes);
+app.use('/api', accountantRoutes);
+app.use('/api', registrarRoutes);
+app.use('/api', teacherRoutes);
+app.use('/api', parent_studentRoutes);
 
 //404 probably best to put this in some route
 app.use((req, res) => {
