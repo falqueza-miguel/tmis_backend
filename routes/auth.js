@@ -5,17 +5,14 @@ const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 
-const email = "tmis.capstone@outlook.com";
-
+const email = "tierramonte.system@gmail.com";
 const transporter = nodemailer.createTransport({
-    service: "hotmail",
+    service: "gmail",
     auth: {
         user: email,
-        pass: "Capstone2021"
+        pass: "Notifications2021"
     }
 });
-
-
 
 const Prereg = require('../models/prereg');
 const User = require('../models/user');
@@ -38,23 +35,6 @@ router.get('/', async (req, res) => {
         });
     }
 });
-
-//test lang delete later
-// router.get('/email', (req, res) => {
-// const mailgun = require("mailgun-js");
-// const APIKEY = '78f310b811677d45428024a109a80a04-9ad3eb61-01d06eae';
-// const DOMAIN = 'sandboxc0239df2a35b4fa6963da4e16a8ee67e.mailgun.org';
-// const mg = mailgun({apiKey: APIKEY, domain: DOMAIN});
-// const data = {
-// 	from: 'Excited User <me@samples.mailgun.org>',
-// 	to: 'falquezamiguel@gmail.com',
-// 	subject: 'Hello',
-// 	text: 'Testing some Mailgun awesomness!'
-// };
-// mg.messages().send(data, function (error, body) {
-// 	console.log(body);
-// });
-// });
 
 //login form 
 router.post('/', body('email').isEmail(), (req, res) => {
