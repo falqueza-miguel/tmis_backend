@@ -10,7 +10,8 @@ finalize accountant edit information page and parent payment information page (2
 // optimization
 set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
 
-send emails for reset token (?)
+/ emails are sent to spam, find fix
+send emails for reset token (done)
 send sms and email for announcements (?)
 send email for grade encoding (?)
 send sms and email for balance encoding (?)

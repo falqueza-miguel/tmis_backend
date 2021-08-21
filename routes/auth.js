@@ -3,15 +3,29 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
+const email = "tmis.capstone@outlook.com";
+
+const transporter = nodemailer.createTransport({
+    service: "hotmail",
+    auth: {
+        user: email,
+        pass: "Capstone2021"
+    }
+});
+
+
 
 const Prereg = require('../models/prereg');
 const User = require('../models/user');
 const Annc = require('../models/annc');
+const user = require('../models/user');
 
 //home page / announcements
 router.get('/', async (req, res) => {
     try {
-        let anncs = await Annc.find().sort({ createdAt: -1});
+        let anncs = await Annc.find().sort({ createdAt: -1 }).limit(5);
         res.json({
             success: true,
             anncs: anncs
@@ -68,7 +82,7 @@ router.post('/', body('email').isEmail(), (req, res) => {
                         { _id: user._id, 
                         email: user.email, // email might not be used
                         role: user.role 
-                        }, process.env.JWT_SECRET, { expiresIn: '1h'}); //probably keep _id, email, and role in jwt
+                        }, process.env.JWT_SECRET, { expiresIn: '1d'}); //probably keep _id, email, and role in jwt
                     return res.status(200).json({ token: token }); // Authorization: Bearer <TOKEN> << set as header in front end
                     
                     //if password is correct, next probably see what role and redirect to new route
@@ -123,10 +137,19 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
             return user.save().then(result => {
                 console.log(result);//user object successfully has reset token and exp in database
 
-                //send email here
-                //link to reset = /reset/{token}here
+                const resetPasswordEmail = {
+                    from: email,
+                    to: user.email,
+                    subject: "TMIS reset password",
+                    html: "<h1>go to this link to reset your password /reset/</h1>" + token
+                };
 
-                res.send('email and token sent!');//redirect to homepage probably
+                transporter.sendMail(resetPasswordEmail).then(result => {
+                    res.send('email and token sent!');
+                })
+                .catch(err => {
+                    console.log(err);
+                });
             }); //updates user in database
         })
         .catch(err, user => {
