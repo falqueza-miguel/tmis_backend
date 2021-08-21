@@ -11,9 +11,9 @@ finalize accountant edit information page and parent payment information page (2
 set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
 
 / emails are sent to spam, find fix
-send emails for reset token (done)
+send emails for reset token (logic done, make it pretty)
 send sms and email for announcements (?)
-send email for grade encoding (?)
+send email for grade encoding (logic done, make it pretty)
 send sms and email for balance encoding (?)
 
 use student number for students logging in (?)

@@ -3,6 +3,16 @@ const router = require('express').Router();
 const User = require('../models/user');
 const Section = require('../models/section');
 const Grade = require('../models/grade');
+const nodemailer = require('nodemailer');
+
+const email = "tierramonte.system@gmail.com";
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: email,
+        pass: "Notifications2021"
+    }
+});
 
 const isAuth = require('../middleware/is-auth');
 const { isTeacher } = require('../middleware/is-role')
@@ -165,6 +175,8 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
         for (student in section.studentNumbers) {
 
             let studNum = section.studentNumbers[student];
+            let user = await User.findOne({ studentNumber: studNum });
+            let userParent = await User.findOne({ student_id: user._id })
 
             let q1g = q1SubjGrades[student];
             let q2g = q2SubjGrades[student];
@@ -194,7 +206,19 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                 }},
                 { new: true });
             console.log(grade);
+
+            userEmails = [user.email, userParent.email];
+            console.log(userEmails);
+            var gradeEncodedEmail = {
+                from: email,
+                to: userEmails,
+                subject: "TMIS grades notification!",
+                html: "<h1>merry christmas you filthy animal</h1>" + user.firstName + " " + user.middleName + " " + user.lastName + " your parent is " + userParent.firstName + " " + userParent.middleName + " " + userParent.lastName
+            };
+    
+            transporter.sendMail(gradeEncodedEmail);
         }
+
         res.json({
             success: true,
         });
