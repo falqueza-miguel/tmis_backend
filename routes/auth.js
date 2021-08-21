@@ -5,12 +5,11 @@ const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 
-const email = "tierramonte.system@gmail.com";
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: process.env.EMAIL_SRV,
     auth: {
-        user: email,
-        pass: "Notifications2021"
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PW
     }
 });
 
@@ -118,10 +117,10 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
                 console.log(result);//user object successfully has reset token and exp in database
 
                 const resetPasswordEmail = {
-                    from: email,
+                    from: process.env.EMAIL,
                     to: user.email,
                     subject: "TMIS reset password",
-                    html: "<h1>go to this link to reset your password /reset/</h1>" + token
+                    html: "<h1>go to this link to reset your password /reset/</h1>" + token + process.env.EMAIL + process.env.EMAIL_PW
                 };
 
                 transporter.sendMail(resetPasswordEmail).then(result => {

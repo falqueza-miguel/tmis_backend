@@ -5,12 +5,11 @@ const Section = require('../models/section');
 const Grade = require('../models/grade');
 const nodemailer = require('nodemailer');
 
-const email = "tierramonte.system@gmail.com";
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: process.env.EMAIL_SRV,
     auth: {
-        user: email,
-        pass: "Notifications2021"
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PW
     }
 });
 
@@ -210,10 +209,10 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
             userEmails = [user.email, userParent.email];
             console.log(userEmails);
             var gradeEncodedEmail = {
-                from: email,
+                from: process.env.EMAIL,
                 to: userEmails,
                 subject: "TMIS grades notification!",
-                html: "<h1>merry christmas you filthy animal</h1>" + user.firstName + " " + user.middleName + " " + user.lastName + " your parent is " + userParent.firstName + " " + userParent.middleName + " " + userParent.lastName
+                html: "<h1>merry christmas you filthy animal</h1>" + user.firstName + " " + user.middleName + " " + user.lastName + " your parent is " + userParent.firstName + " " + userParent.middleName + " " + userParent.lastName + process.env.EMAIL + process.env.EMAIL_PW
             };
     
             transporter.sendMail(gradeEncodedEmail);
