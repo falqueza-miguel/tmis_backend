@@ -1,5 +1,14 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SRV,
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PW
+    }
+});
 
 const User = require('../models/user');
 const Prereg = require('../models/prereg');
@@ -131,6 +140,18 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
         await studentinfo.save();
 
         prereg = await Prereg.findOneAndDelete({ _id: req.params.id });
+
+        userEmails = [student.email, parent.email];
+        console.log(userEmails);
+        var registrationEmail = {
+            from: process.env.EMAIL,
+            to: userEmails,
+            subject: "TMIS registration notification!",
+            html: "<h1>you are registered!</h1>" + student.firstName + " " + student.middleName + " " + student.lastName 
+        };
+
+        transporter.sendMail(registrationEmail);
+
         res.json({
             success: true,
             preregDeleted: prereg

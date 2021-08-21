@@ -1,6 +1,15 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SRV,
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PW
+    }
+});
 
 const User = require('../models/user');
 const Prereg = require('../models/prereg');
@@ -155,25 +164,45 @@ router.delete('/principal/archiveteacher/:id', isAuth, isPrincipal, async (req, 
 //MANAGE ANNOUNCEMENTS MODULE
 
 //create announcement
-router.post('/principal/createannc', isAuth, isPrincipal, (req, res) => {
+router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let annc = new Annc({
+            title: req.body.title,
+            content: req.body.content
+        });
+        await annc.save();
 
-    let annc = new Annc({
-        title: req.body.title,
-        content: req.body.content
-    });
-    annc.save()
-    .then(result => {
+        //get all emails of active students then get parents
+        let userEmails = [];
+        let students = await User.find({$and: [{ role: 6 }, { active: true }]});
+        for (student in students) {
+            let parent = await User.findOne({ student_id: students[student]._id });
+            userEmails.push(students[student].email);
+            userEmails.push(parent.email);
+        }
+
+        console.log(userEmails)
+
+        var announcementEmail = {
+            from: process.env.EMAIL,
+            to: userEmails,
+            subject: "TMIS announcement!",
+            html: "<h1>announcement!</h1>"
+        };
+
+        transporter.sendMail(announcementEmail);
+
         res.json({
             success: true,
             annc: annc
         });
-    })
-    .catch(error => {
+    }
+    catch (error) {
         res.status(500).json({
             success: false,
             message: error.message
         });
-    })
+    }   
 });
 
 //get all announcements

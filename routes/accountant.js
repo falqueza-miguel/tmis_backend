@@ -2,6 +2,15 @@ const router = require('express').Router();
 
 const User = require('../models/user');
 const Balance = require('../models/balance');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SRV,
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PW
+    }
+});
 
 const isAuth = require('../middleware/is-auth');
 const { isAccountant } = require('../middleware/is-role')
@@ -98,6 +107,7 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
         const timeElapsed = Date.now();
         const today = new Date(timeElapsed);
         let user = await User.findOne({ _id: req.params.id });
+        let userParent = await User.findOne({ student_id: req.params.id })
         let balance = await Balance.findOneAndUpdate(
             { $and: [{ _id: req.params.balanceID }, { student: user._id }] },
             { $push: {
@@ -106,7 +116,17 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
                 debit: req.body.debit,
                 credit: req.body.credit }},
             { new: true });
-        //compute in frontend
+
+    
+        var balanceEncodedEmail = {
+            from: process.env.EMAIL,
+            to: userParent.email,
+            subject: "TMIS balance notification!",
+            html: "<h1>happy new year you filthy animal</h1>" + userParent.firstName + " " + userParent.middleName + " " + userParent.lastName 
+        };
+    
+        transporter.sendMail(balanceEncodedEmail);
+        
         res.json({
             success: true,
             user: user,

@@ -212,7 +212,7 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                 from: process.env.EMAIL,
                 to: userEmails,
                 subject: "TMIS grades notification!",
-                html: "<h1>merry christmas you filthy animal</h1>" + user.firstName + " " + user.middleName + " " + user.lastName + " your parent is " + userParent.firstName + " " + userParent.middleName + " " + userParent.lastName + process.env.EMAIL + process.env.EMAIL_PW
+                html: "<h1>merry christmas you filthy animal</h1>" + user.firstName + " " + user.middleName + " " + user.lastName 
             };
     
             transporter.sendMail(gradeEncodedEmail);

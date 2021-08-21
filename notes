@@ -12,9 +12,10 @@ set password limit in reset password and set proper default password (?) ADMIN R
 
 / emails are sent to spam, find fix
 send emails for reset token (logic done, make it pretty)
-send sms and email for announcements (?)
+send emails for when registered to the school (logic done, make it pretty)
+send sms and email (logic done, make it pretty) for announcements
 send email for grade encoding (logic done, make it pretty)
-send sms and email for balance encoding (?)
+send sms and email (logic done, make it pretty) for balance encoding 
 
 use student number for students logging in (?)
 
