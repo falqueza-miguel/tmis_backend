@@ -4,11 +4,13 @@ add student info editing to registrar
 wala pa sa ayos yung authRoute response jsons
 
 / emails are sent to spam, find fix
+format phone nums in frontend
+
 send emails for reset token (logic done, make it pretty)
 send emails for when registered to the school (logic done, make it pretty)
-send sms and email (logic done, make it pretty) for announcements
+send sms (logic done, make it pretty) and email (logic done, make it pretty) for announcements
 send email for grade encoding (logic done, make it pretty)
-send sms and email (logic done, make it pretty) for balance encoding 
+send sms (logic done, make it pretty) and email (logic done, make it pretty) for balance encoding 
 
 finalize get old grade for parent and student (5:16am 19 aug 2021) (10:30pm 19 aug 2021) ( probably sa frontend )
 finalize get old balance for parent (2:30 am 20 aug 2021) ( probably sa frontend )

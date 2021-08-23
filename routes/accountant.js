@@ -1,8 +1,8 @@
 const router = require('express').Router();
-
-const User = require('../models/user');
-const Balance = require('../models/balance');
 const nodemailer = require('nodemailer');
+const accountSid = process.env.TWILIO_ACCOUNT_SID; 
+const authToken = process.env.TWILIO_AUTH_TOKEN; 
+const client = require('twilio')(accountSid, authToken); 
 
 const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SRV,
@@ -11,6 +11,9 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PW
     }
 });
+
+const User = require('../models/user');
+const Balance = require('../models/balance');
 
 const isAuth = require('../middleware/is-auth');
 const { isAccountant } = require('../middleware/is-role')
@@ -126,7 +129,18 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
         };
     
         transporter.sendMail(balanceEncodedEmail);
-        
+
+        client.messages 
+        .create({ 
+            body: 'test! again! -miguel',  // change this
+            messagingServiceSid: process.env.TWILIO_SERV_SID,      
+            to: '+63' + userParent.phoneNum 
+        }) 
+        .then(message => console.log(message.sid))
+        .catch(err => {
+            console.log(err);
+        });
+
         res.json({
             success: true,
             user: user,

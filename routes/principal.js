@@ -2,6 +2,9 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
+const accountSid = process.env.TWILIO_ACCOUNT_SID; 
+const authToken = process.env.TWILIO_AUTH_TOKEN; 
+const client = require('twilio')(accountSid, authToken); 
 
 const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SRV,
@@ -174,23 +177,41 @@ router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
 
         //get all emails of active students then get parents
         let userEmails = [];
+        let userPhoneNums = [];
         let students = await User.find({$and: [{ role: 6 }, { active: true }]});
         for (student in students) {
             let parent = await User.findOne({ student_id: students[student]._id });
             userEmails.push(students[student].email);
             userEmails.push(parent.email);
+            userPhoneNums.push(students[student].phoneNum);
+            userPhoneNums.push(parent.phoneNum);
         }
 
-        console.log(userEmails)
+        console.log(userEmails);
+        console.log(userPhoneNums);
 
         var announcementEmail = {
             from: process.env.EMAIL,
             to: userEmails,
             subject: "TMIS announcement!",
-            html: "<h1>announcement!</h1>"
+            html: "<h1>announcement!</h1>" // announcement goes here
         };
 
         transporter.sendMail(announcementEmail);
+
+        //send SMS
+        for (num in userPhoneNums) {
+        client.messages 
+        .create({ 
+            body: annc.title,  // announcement goes here
+            messagingServiceSid: process.env.TWILIO_SERV_SID,      
+            to: '+63' + userPhoneNums[num]
+        }) 
+        .then(message => console.log(message.sid))
+        .catch(err => {
+            console.log(err);
+        });
+        }
 
         res.json({
             success: true,

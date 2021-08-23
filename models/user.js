@@ -6,7 +6,7 @@ const UserSchema = new Schema({
     middleName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, unique: true, required: true },
-    phoneNum: { type: Number },
+    phoneNum: { type: String }, //for formatting
     password: { type: String, required: true }, //hashed
     role: { type: Number, required: true },
     active: { type: Boolean, required: true },
