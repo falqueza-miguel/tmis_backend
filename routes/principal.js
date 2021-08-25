@@ -23,6 +23,23 @@ const Grade = require('../models/grade');
 const isAuth = require('../middleware/is-auth');
 const { isPrincipal } = require('../middleware/is-role')
 
+//user profile page
+router.get('/principal', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: res.locals._id });
+        res.json({
+            success: true,
+            user: user
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 //MANAGE TEACHER MODULE
 
 //create teacher

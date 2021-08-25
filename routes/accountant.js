@@ -18,6 +18,23 @@ const Balance = require('../models/balance');
 const isAuth = require('../middleware/is-auth');
 const { isAccountant } = require('../middleware/is-role')
 
+//user profile page
+router.get('/accountant', isAuth, isAccountant, async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: res.locals._id });
+        res.json({
+            success: true,
+            user: user
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 //edit payment information
 
 //get all (active?) students

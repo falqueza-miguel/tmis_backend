@@ -18,6 +18,23 @@ const isAuth = require('../middleware/is-auth');
 const { isRegistrar } = require('../middleware/is-role');
 const StudentInfo = require('../models/studentinfo');
 
+//user profile page
+router.get('/registrar', isAuth, isRegistrar, async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: res.locals._id });
+        res.json({
+            success: true,
+            user: user
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 //get all preregs
 router.get('/registrar/preregs', isAuth, isRegistrar, async (req, res) => {
     try {

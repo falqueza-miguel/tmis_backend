@@ -10,6 +10,40 @@ const { isParent, isStudent, isPS } = require('../middleware/is-role')
 
 //PARENT AND STUDENT
 
+//user profile page (parent)
+router.get('/parent', isAuth, isParent, async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: res.locals._id });
+        res.json({
+            success: true,
+            user: user
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//user profile page (student)
+router.get('/student', isAuth, isStudent, async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: res.locals._id });
+        res.json({
+            success: true,
+            user: user
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 //view sched (parent)
 router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
     try {

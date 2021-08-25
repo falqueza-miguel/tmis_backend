@@ -8,6 +8,23 @@ const Prereg = require('../models/prereg');
 const isAuth = require('../middleware/is-auth');
 const { isAdmin } = require('../middleware/is-role')
 
+//user profile page
+router.get('/admin', isAuth, isAdmin, async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: res.locals._id });
+        res.json({
+            success: true,
+            user: user
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 //create user
 router.post('/admin/createuser', isAuth, isAdmin, body('email').isEmail(), (req, res) => {
 

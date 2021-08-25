@@ -16,6 +16,23 @@ const transporter = nodemailer.createTransport({
 const isAuth = require('../middleware/is-auth');
 const { isTeacher } = require('../middleware/is-role')
 
+//user profile page
+router.get('/teacher', isAuth, isTeacher, async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: res.locals._id });
+        res.json({
+            success: true,
+            user: user
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 //view teacher schedule (all section schedules) (ACTIVE ONLY)
 router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
     try {
