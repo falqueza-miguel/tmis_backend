@@ -63,6 +63,7 @@ router.post('/', body('email').isEmail(), (req, res) => {
                         role: user.role 
                         }, process.env.JWT_SECRET, { expiresIn: '1d'}); //expires in 1 day, easy code yes
                     res.cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true }); //maxAge is in miliseconds???? why???? pero ayan 1 day
+                    //res.cookie('role', user.role, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
                     return res.status(200).json({token: token, role: user.role}); // Authorization: Bearer <TOKEN> << set as header in front end
                     
                     //if password is correct, next probably see what role and redirect to new route
