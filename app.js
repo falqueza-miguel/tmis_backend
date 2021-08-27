@@ -3,13 +3,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv').config();
+const cookieParser = require("cookie-parser");
 const cors = require('cors');
+const jwt = require('express-jwt');
 
 const app = express();
 
 //middleware (ease of life)
 app.use(bodyParser.json()); //application/json, parses incoming json data
 app.use(bodyParser.urlencoded({extended: true})); //x-www-form-urlencoded, para san extended?
+app.use(cookieParser());
 app.use(cors());
 
 //connecting app to routes

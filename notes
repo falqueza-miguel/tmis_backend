@@ -3,10 +3,9 @@
 pagination (we could use a search feature too)
     admin (users!)
     registrar (!students)(!preregs)
-    principal (teachers)(sections)(anncs)
+    principal (!teachers)(!sections)(!anncs)
     teacher (!sections)
     accountant (!students)
-    double check mo later if tama lahat
 
 
 / emails are sent to spam, find fix
