@@ -1,7 +1,13 @@
 
 // requirements
-add student info editing to registrar
-wala pa sa ayos yung authRoute response jsons
+pagination (we could use a search feature too)
+    admin (users!)
+    registrar (!students)(!preregs)
+    principal (teachers)(sections)(anncs)
+    teacher (!sections)
+    accountant (!students)
+    double check mo later if tama lahat
+
 
 / emails are sent to spam, find fix
 format phone nums in frontend

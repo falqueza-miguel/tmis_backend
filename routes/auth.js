@@ -62,7 +62,7 @@ router.post('/', body('email').isEmail(), (req, res) => {
                         email: user.email, // email might not be used
                         role: user.role 
                         }, process.env.JWT_SECRET, { expiresIn: '1d'}); //probably keep _id, email, and role in jwt
-                    return res.status(200).json({ token: token }); // Authorization: Bearer <TOKEN> << set as header in front end
+                    return res.status(200).json({ token: token, role: user.role }); // Authorization: Bearer <TOKEN> << set as header in front end
                     
                     //if password is correct, next probably see what role and redirect to new route
                     //next step here
@@ -144,7 +144,7 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
 //resetting of password
 router.post('/reset/:token', (req, res) => {
     
-    const token = req.params.token;//takes token from url
+    const token = req.body.token;//takes token from body
     const newPassword = req.body.password;
     const confirmNewPassword = req.body.confirmPassword;
 
@@ -205,37 +205,37 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
     .then(userDoc => {
         if (userDoc){
             console.log('student email exists in users');
-            return res.send('email is in use!');
+            return res.send('student email exists!');
         }
         Prereg.findOne({ email: email })
         .then(userDoc => {
             if (userDoc){
                 console.log('student email exists as student in prereg')
-                return res.send('email is in use!')
+                return res.send('student email exists!')
             }
             Prereg.findOne({ parentEmail: email })
             .then(userDoc => {
                 if (userDoc){
                     console.log('student email exists as parent in prereg')
-                    return res.send('email is in use!')
+                    return res.send('student email exists!')
                 }
                 User.findOne({ email: parentEmail })//checks if parent email in form already exists in user and prereg collection
                 .then(userDoc => {
                     if (userDoc){
                         console.log('parent email exists in users')
-                        return res.send('email is in use!')
+                        return res.send('parent email exists!')
                     }
                     Prereg.findOne({ email: parentEmail })
                     .then(userDoc => {
                         if (userDoc){
                             console.log('parent email exists as student in prereg')
-                            return res.send('email is in use!')
+                            return res.send('parent email exists!')
                         }
                         Prereg.findOne({ parentEmail: parentEmail })
                         .then(userDoc => {
                             if (userDoc){
                                 console.log('parent email exists as parent in prereg')
-                                return res.send('email is in use!')
+                                return res.send('parent email exists!')
                             }
                             const prereg = new Prereg({
                                 schoolYearFrom: req.body.schoolYearFrom,

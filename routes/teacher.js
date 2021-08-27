@@ -15,6 +15,7 @@ const transporter = nodemailer.createTransport({
 
 const isAuth = require('../middleware/is-auth');
 const { isTeacher } = require('../middleware/is-role')
+const SECTIONS_PER_PAGE = 2;
 
 //user profile page
 router.get('/teacher', isAuth, isTeacher, async (req, res) => {
@@ -76,7 +77,9 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
 router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
     try {
         //find sections by email
-        let sections = await Section.find({$and:[{teachers: res.locals.email}, {active: true}]});
+        const page = req.query.page;
+        let totalSections = await Section.find({$and:[{teachers: res.locals.email}, {active: true}]}).count();
+        let sections = await Section.find({$and:[{teachers: res.locals.email}, {active: true}]}).skip((page-1)*SECTIONS_PER_PAGE).limit(SECTIONS_PER_PAGE);
         let section_ids = [];
         let section_names = [];
         let subjects = [];
@@ -100,7 +103,14 @@ router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
 
             section_ids: section_ids, // or this (or baka to, generate link with id, display name and subject)
             section_names: section_names,
-            subjects: subjects
+            subjects: subjects,
+
+            totalSections: totalSections,
+            hasNextPage: SECTIONS_PER_PAGE * page < totalSections,
+            hasPreviousPage: page > 1,
+            nextPage: parseInt(page) + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalSections/SECTIONS_PER_PAGE)        
         });
     } 
     catch (error) {

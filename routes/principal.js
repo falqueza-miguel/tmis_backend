@@ -22,6 +22,10 @@ const Grade = require('../models/grade');
 
 const isAuth = require('../middleware/is-auth');
 const { isPrincipal } = require('../middleware/is-role')
+const USERS_PER_PAGE = 2;
+const SECTIONS_PER_PAGE = 2;
+const ANNC_PER_PAGE = 2;
+
 
 //user profile page
 router.get('/principal', isAuth, isPrincipal, async (req, res) => {
@@ -108,10 +112,18 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
 //gets all active teachers
 router.get('/principal/teachers', isAuth, isPrincipal, async (req, res) => {
     try {
-        let users = await User.find({ $and:[{role: 4}, {active: true}] });//only finds active users with roles 4
+        const page = req.query.page;
+        let totalUsers = await User.find({ $and:[{role: 4}, {active: true}] }).count();
+        let users = await User.find({ $and:[{role: 4}, {active: true}] }).skip((page-1)*USERS_PER_PAGE).limit(USERS_PER_PAGE);//only finds active users with roles 4
         res.json({
             success: true,
-            users: users
+            users: users,
+            totalUsers: totalUsers,
+            hasNextPage: USERS_PER_PAGE * page < totalUsers,
+            hasPreviousPage: page > 1,
+            nextPage: parseInt(page) + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalUsers/USERS_PER_PAGE)
         });
     } 
     catch (error) {
@@ -246,10 +258,18 @@ router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
 //get all announcements
 router.get('/principal/annc', isAuth, isPrincipal, async (req, res) => {
     try {
-        let anncs = await Annc.find().sort({ createdAt: -1});
+        const page = req.query.page;
+        let totalAnncs = await Annc.find().count();
+        let anncs = await Annc.find().sort({ createdAt: -1}).skip((page-1)*ANNC_PER_PAGE).limit(ANNC_PER_PAGE);
         res.json({
             success: true,
-            anncs: anncs
+            anncs: anncs,
+            totalAnncs: totalAnncs,
+            hasNextPage: ANNC_PER_PAGE * page < totalAnncs,
+            hasPreviousPage: page > 1,
+            nextPage: parseInt(page) + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalAnncs/ANNC_PER_PAGE)
         });
     }
     catch (error) {
@@ -465,10 +485,18 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
 //get all active sections
 router.get('/principal/sections', isAuth, isPrincipal, async (req, res) => {
     try {
-        let sections = await Section.find( {active: true} );
+        const page = req.query.page;
+        let totalSections = await Section.find( {active: true} ).count();
+        let sections = await Section.find( {active: true} ).skip((page-1)*SECTIONS_PER_PAGE).limit(SECTIONS_PER_PAGE);
         res.json({
             success: true,
-            sections: sections
+            sections: sections,
+            totalSections: totalSections,
+            hasNextPage: SECTIONS_PER_PAGE * page < totalSections,
+            hasPreviousPage: page > 1,
+            nextPage: parseInt(page) + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalSections/SECTIONS_PER_PAGE)    
         });
     } 
     catch (error) {

@@ -6,7 +6,8 @@ const User = require('../models/user');
 const Prereg = require('../models/prereg');
 
 const isAuth = require('../middleware/is-auth');
-const { isAdmin } = require('../middleware/is-role')
+const { isAdmin } = require('../middleware/is-role');
+const USERS_PER_PAGE = 2;
 
 //user profile page
 router.get('/admin', isAuth, isAdmin, async (req, res) => {
@@ -91,10 +92,18 @@ router.post('/admin/createuser', isAuth, isAdmin, body('email').isEmail(), (req,
 //gets all active users
 router.get('/admin/users', isAuth, isAdmin, async (req, res) => {
     try {
-        let users = await User.find({ $and:[{$or:[{role: 0},{role: 1},{role: 2},{role: 3}]}, {active: true}] });//only finds active users with roles 0-3
+        const page = req.query.page;
+        let totalUsers = await User.find({ $and:[{$or:[{role: 0},{role: 1},{role: 2},{role: 3}]}, {active: true}] }).count();
+        let users = await User.find({ $and:[{$or:[{role: 0},{role: 1},{role: 2},{role: 3}]}, {active: true}] }).skip((page-1)*USERS_PER_PAGE).limit(USERS_PER_PAGE);
         res.json({
             success: true,
-            users: users
+            users: users,
+            totalUsers: totalUsers,
+            hasNextPage: USERS_PER_PAGE * page < totalUsers,
+            hasPreviousPage: page > 1,
+            nextPage: parseInt(page) + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalUsers/USERS_PER_PAGE)
         });
     } 
     catch (error) {

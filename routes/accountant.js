@@ -17,6 +17,7 @@ const Balance = require('../models/balance');
 
 const isAuth = require('../middleware/is-auth');
 const { isAccountant } = require('../middleware/is-role')
+const USERS_PER_PAGE = 2;
 
 //user profile page
 router.get('/accountant', isAuth, isAccountant, async (req, res) => {
@@ -37,13 +38,21 @@ router.get('/accountant', isAuth, isAccountant, async (req, res) => {
 
 //edit payment information
 
-//get all (active?) students
+//get all students
 router.get('/accountant/students', isAuth, isAccountant, async (req, res) => {
     try {
-        let users = await User.find( {role: 6} );
+        const page = req.query.page;
+        let totalUsers = await User.find( {role: 6} ).count();
+        let users = await User.find( {role: 6} ).skip((page-1)*USERS_PER_PAGE).limit(USERS_PER_PAGE);;
         res.json({
             success: true,
-            users: users
+            users: users,
+            totalUsers: totalUsers,
+            hasNextPage: USERS_PER_PAGE * page < totalUsers,
+            hasPreviousPage: page > 1,
+            nextPage: parseInt(page) + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalUsers/USERS_PER_PAGE)
         });
     } 
     catch (error) {

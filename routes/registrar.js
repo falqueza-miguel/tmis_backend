@@ -17,6 +17,8 @@ const Counter = require('../models/counter');
 const isAuth = require('../middleware/is-auth');
 const { isRegistrar } = require('../middleware/is-role');
 const StudentInfo = require('../models/studentinfo');
+const USERS_PER_PAGE = 2;
+const PREREGS_PER_PAGE = 2;
 
 //user profile page
 router.get('/registrar', isAuth, isRegistrar, async (req, res) => {
@@ -38,10 +40,18 @@ router.get('/registrar', isAuth, isRegistrar, async (req, res) => {
 //get all preregs
 router.get('/registrar/preregs', isAuth, isRegistrar, async (req, res) => {
     try {
-        let preregs = await Prereg.find();
+        const page = req.query.page;
+        let totalPreregs = await Prereg.find().count();
+        let preregs = await Prereg.find().skip((page-1)*PREREGS_PER_PAGE).limit(PREREGS_PER_PAGE);
         res.json({
             success: true,
-            preregs: preregs
+            preregs: preregs,
+            totalPreregs: totalPreregs,
+            hasNextPage: PREREGS_PER_PAGE * page < totalPreregs,
+            hasPreviousPage: page > 1,
+            nextPage: parseInt(page) + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalPreregs/PREREGS_PER_PAGE)
         });
     } 
     catch (error) {
@@ -69,11 +79,7 @@ router.get('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
     }
 });
 
-//function for student ID generation
-
-
 //register student and parent account and creates student info
-//could add student number
 router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
     try {
 
@@ -186,10 +192,18 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
 //get all active students
 router.get('/registrar/students', isAuth, isRegistrar, async (req, res) => {
     try {
-        let users = await User.find( {$and:[{role: 6}, {active: true}]} );
+        const page = req.query.page;
+        let totalUsers = await User.find( {$and:[{role: 6}, {active: true}]} ).count();
+        let users = await User.find( {$and:[{role: 6}, {active: true}]} ).skip((page-1)*USERS_PER_PAGE).limit(USERS_PER_PAGE);
         res.json({
             success: true,
-            users: users
+            users: users,
+            totalUsers: totalUsers,
+            hasNextPage: USERS_PER_PAGE * page < totalUsers,
+            hasPreviousPage: page > 1,
+            nextPage: parseInt(page) + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalUsers/USERS_PER_PAGE)
         });
     } 
     catch (error) {
