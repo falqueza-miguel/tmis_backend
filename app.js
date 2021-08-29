@@ -13,7 +13,7 @@ const app = express();
 app.use(bodyParser.json()); //application/json, parses incoming json data
 app.use(bodyParser.urlencoded({extended: true})); //x-www-form-urlencoded, para san extended?
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({ origin:true, credentials:true }));
 
 //connecting app to routes
 const authRoutes = require('./routes/auth');
