@@ -73,7 +73,10 @@ router.post('/admin/createuser', isAuth, isAdmin, body('email').isEmail(), (req,
                     return user.save();//saving user object to database
                 })
                 .then(result => {
-                    res.send('<h1>account created!</h1>');//set status code here
+                    res.json({
+                        success: true,
+                        user: user
+                    });
                 });
             })
             .catch(err => {

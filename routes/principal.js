@@ -93,7 +93,10 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
                     return user.save();//saving user object to database
                 })
                 .then(result => {
-                    res.send('<h1>account created!</h1>');//set status code here
+                    res.json({
+                        success: true,
+                        user: user
+                    });
                 });
             })
             .catch(err => {
