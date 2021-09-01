@@ -79,6 +79,23 @@ router.get('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
     }
 });
 
+//delete one prereg
+router.delete('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
+    try {
+        let prereg = await Prereg.findOneAndDelete({ _id: req.params.id });
+        res.json({
+            success: true,
+            prereg: prereg
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 //register student and parent account and creates student info
 router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
     try {
