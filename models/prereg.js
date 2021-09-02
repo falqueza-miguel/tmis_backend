@@ -38,6 +38,9 @@ const PreregSchema = new Schema({
     guardianLastName: { type: String, required: true },
     parentEmail: { type: String, unique: true, required: true },
     parentPhoneNum: { type: Number },
+    emergencyName: { type: String },
+    emergencyCellphone: { type: Number },
+    emergencyTelephone: { type: Number },
 
     //for returning students
     lastGradeLevel: { type: String },
