@@ -13,7 +13,7 @@ const StudentInfoSchema = new Schema({
 
     //student
     PSANo: { type: String },
-    LRNNo: { type: String },
+    // LRNNo: { type: String, required: true },
     //studentFirstName: { type: string, required: true },
     //studentMiddleName: { type: string, required: true },
     //studentLastName: { type: string, required: true },

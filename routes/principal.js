@@ -87,7 +87,8 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
                         phoneNum: req.body.phoneNum,
                         password: hashedPassword,
                         role: 4,
-                        active: true
+                        active: true,
+                        firstLogin: true
                     });
                     console.log('account successfully created!');
                     return user.save();//saving user object to database
@@ -350,7 +351,7 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         for (var i = 0, l = req.body.students.length; i < l; i++){
             try {
             var student = req.body.students[i];
-            let user = await User.findOne({studentNumber: student});
+            let user = await User.findOne({LRNNo: student});
             if (!user) {
                 console.log(req.body.students[i] +" doesnt exist");
                 return res.send(req.body.students[i] +" doesnt exist");
@@ -383,16 +384,16 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         }
 
         // ALPHABETIZE STUDENTS BEFORE CREATING SECTION
-        // cross link student numbers to last names and arrange accordingly
+        // cross link student LRNs to last names and arrange accordingly
 
-        let alphabetizedStudentNumbers = [];
+        let alphabetizedStudentLRNs = [];
         let alphabetizedStudentNames = [];
         let unorganizedStudentNames = [];
         // get array of student names
         for (student in req.body.students) {
             try {
-                let user = await User.findOne({studentNumber: req.body.students[student]});
-                let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.studentNumber;
+                let user = await User.findOne({LRNNo: req.body.students[student]});
+                let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
                 unorganizedStudentNames.push(fullName);
             }
             catch (error) {
@@ -403,15 +404,15 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
             }
         }
 
-        unorganizedStudentNames.sort(); // sort student names with numbers alphabetically by last name
+        unorganizedStudentNames.sort(); // sort student names with LRNs alphabetically by last name
 
-        for (student in unorganizedStudentNames){ // slices student numbers from names
+        for (student in unorganizedStudentNames){ // slices student LRNs from names
             try {
                 let name = unorganizedStudentNames[student];
-                let studName = name.slice(0, name.length - 10)
-                let studNumber = name.slice(name.length - 10);
+                let studName = name.slice(0, name.length - 12)
+                let studLRN = name.slice(name.length - 12);
                 alphabetizedStudentNames.push(studName.trim());
-                alphabetizedStudentNumbers.push(studNumber.trim());
+                alphabetizedStudentLRNs.push(studLRN.trim());
             }
             catch (error) {
                 res.status(500).json({
@@ -430,7 +431,7 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
             semester: req.body.semester,
             sectionName: req.body.sectionName,
 
-            studentNumbers: alphabetizedStudentNumbers,
+            studentLRNs: alphabetizedStudentLRNs,
             studentNames: alphabetizedStudentNames,
     
             subjects: req.body.subjects, //all three must be same length
@@ -449,10 +450,10 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         }
 
         //create grades object for each student in section object
-        for (var i = 0, l = section.studentNumbers.length; i < l; i++) {
-            var studentNumber = section.studentNumbers[i];
+        for (var i = 0, l = section.studentLRNs.length; i < l; i++) {
+            var studentLRN = section.studentLRNs[i];
             let grade = new Grade({
-                studentNumber: studentNumber,
+                studentLRN: studentLRN,
                 sectionID: section._id,
 
                 schoolYearFrom: section.schoolYearFrom,
@@ -469,7 +470,7 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
                 q3Grades: blankGrades,
                 q4Grades: blankGrades  
             });
-            console.log("created grade for " + studentNumber);
+            console.log("created grade for " + studentLRN);
             await grade.save();
         }
         res.json({

@@ -36,51 +36,67 @@ router.get('/', async (req, res) => {
 });
 
 //login form 
-router.post('/', body('email').isEmail(), (req, res) => {
-
-    const errors = validationResult(req); //validates if email is an actual email
-    if (!errors.isEmpty()){
-        console.log(errors);
-        return res.status(400).json({ errors: errors.array() });
-    }
-
+router.post('/', async (req, res) => {
+    try {
     const email = req.body.email;//inputs
     const password = req.body.password;
+    
 
-    User.findOne({email: email})//searches for user in database
-        .then(user => {
-            if (!user){//no user found
-                console.log('user doesnt exist');
-                return res.send('no user found');//response if no user found
-            }
-            bcrypt.compare(password, user.password)//checks if hashed password is same as stored in database
-            .then(result => {
-                if (result) {
-                    console.log('correct password logging you in!');
-                    const token = jwt.sign(
-                        { _id: user._id, 
-                        email: user.email, // email might not be used
-                        role: user.role 
-                        }, process.env.JWT_SECRET, { expiresIn: '1d'}); //expires in 1 day, easy code yes
-                    res.cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true }); //maxAge is in miliseconds???? why???? pero ayan 1 day
-                    //res.cookie('role', user.role, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
-                    return res.status(200).json({token: token, role: user.role}); // Authorization: Bearer <TOKEN> << set as header in front end
-                    
-                    //if password is correct, next probably see what role and redirect to new route
-                    //next step here
-
+    let user = await User.findOne({$or: [{email: email}, {studentUsername: email}]})//searches for user in database
+    
+    if (!user){//no user found
+        console.log('user doesnt exist');
+        return res.send('no user found');//response if no user found
+    }
+    let correctPassword = await bcrypt.compare(password, user.password)//checks if hashed password is same as stored in database
+    if (correctPassword) {
+        console.log('correct password logging you in!');
+        const token = jwt.sign(
+            { _id: user._id, 
+            email: user.email, // email might not be used
+            role: user.role,
+            }, process.env.JWT_SECRET, { expiresIn: '1d'}); //expires in 1 day, easy code yes
+        if (user.firstLogin) {
+            crypto.randomBytes(32, async (err, buffer) => {//creating reset token
+                if (err){
+                    console.log(err);
+                    return res.send('error creating token');//if we get an error
                 }
-                console.log('incorrect password!');
-                res.send('incorrect password!');//if passwords dont match
-            })
-            .catch(err => {
-                console.log(err);
+                var rToken = buffer.toString('hex');
+                let user = await User.findOneAndUpdate(
+                    {$or: [{email: email}, {studentUsername: email}]},
+                    {$set: {
+                        firstLogin: false,
+                        resetToken: rToken,
+                        resetTokenExpiration: Date.now() + 3600000,
+                    }},
+                    {new: true});
+
+                console.log('resettoken created!');
+                res.cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+                console.log('first time logging in! sending token!')
+                return res.status(200).json({token: token, role: user.role, user: user, firstLogin: user.firstLogin, resetToken: rToken, success: true}); 
             });
-        })
-        .catch(err => {
-            console.log(err);
+        }
+        if (!user.firstLogin) {
+            res.cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true }); //maxAge is in miliseconds???? why???? pero ayan 1 day
+            //res.cookie('role', user.role, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+            console.log('loggin in!')
+            return res.status(200).json({token: token, role: user.role, user: user, firstLogin: user.firstLogin, success: true}); 
+        }
+    }
+    else {
+    console.log('incorrect password!');
+    res.send('incorrect password!');//if passwords dont match
+    }
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
         });
-});
+    }
+}); 
 
 //reset password page / di ko sure if need?
 router.get('/forgotpassword', (req, res) => {
@@ -202,6 +218,7 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
 
     const email = req.body.email;
     const parentEmail = req.body.parentEmail;
+    const LRNNo = req.body.LRNNo;
 
     User.findOne({ email: email })//checks if student email in form already exists in user and prereg collection
     .then(userDoc => {
@@ -239,69 +256,89 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
                                 console.log('parent email exists as parent in prereg')
                                 return res.send('parent email exists!')
                             }
-                            const prereg = new Prereg({
-                                schoolYearFrom: req.body.schoolYearFrom,
-                                schoolYearTo: req.body.schoolYearTo,
-                                levelEnroll: req.body.levelEnroll,
-                                hasLRN: req.body.hasLRN,
-                                returning: req.body.returning,
-                            
-                                //student
-                                PSANo: req.body.PSANo,
-                                LRNNo: req.body.LRNNo,
-                                studentFirstName: req.body.studentFirstName,
-                                studentMiddleName: req.body.studentMiddleName,
-                                studentLastName: req.body.studentLastName,
-                                birthDate: req.body.birthDate,
-                                gender: req.body.gender,
-                                indig: req.body.indig,
-                                indigSpec: req.body.indigSpec,
-                                motherTongue: req.body.motherTongue,
-                                address1: req.body.address1,
-                                address2: req.body.address2,
-                                zipCode: req.body.zipCode,
-                                email: req.body.email,
-                                phoneNum: req.body.phoneNum,
-                            
-                                //parent/guardian
-                                motherFirstName: req.body.motherFirstName,
-                                motherMiddleName: req.body.motherMiddleName,
-                                motherLastName: req.body.motherLastName,
-                                fatherFirstName: req.body.fatherFirstName,
-                                fatherMiddleName: req.body.fatherMiddleName,
-                                fatherLastName: req.body.fatherLastName,
-                                guardianFirstName: req.body.guardianFirstName,
-                                guardianMiddleName: req.body.guardianMiddleName,
-                                guardianLastName: req.body.guardianLastName,
-                                parentEmail: req.body.parentEmail,
-                                parentPhoneNum: req.body.parentPhoneNum,
-                            
-                                //for returning students
-                                lastGradeLevel: req.body.lastGradeLevel,
-                                lastSchoolYear: req.body.lastSchoolYear,
-                                schoolName: req.body.schoolName,
-                                schoolAddress: req.body.schoolAddress,
-                            
-                                //for shs students
-                                semester: req.body.semester,
-                                track: req.body.track,
-                                strand: req.body.strand, 
-                            
-                                //prefered learning modes
-                                modularP: req.body.modularP,
-                                modularD: req.body.modularD,
-                                online: req.body.online,
-                                educTV: req.body.educTV,
-                                radioBased: req.body.radioBased,
-                                homeschool: req.body.homeschool,
-                                blended: req.body.blended,
-                                facetoface: req.body.facetoface
-                            
-                            });
-                            prereg.save()
-                            .then(result => {
-                                console.log('prereg created, database connection successful, check mongo atlas');
-                                res.send('prereg created!'); // this will be what is sent to the user, json file siguro
+                            Prereg.findOne({ LRNNo: LRNNo })
+                            .then(userDoc => {
+                                if (userDoc){
+                                    console.log('LRN exists in another prereg')
+                                    return res.send('LRN exists in another prereg')
+                                }
+                                User.findOne({ LRNNo: LRNNo })
+                                .then(userDoc => {
+                                    if (userDoc){
+                                        console.log('LRN exists in another student')
+                                        return res.send('LRN exists in another student')
+                                    }
+                                    const prereg = new Prereg({
+                                        schoolYearFrom: req.body.schoolYearFrom.trim(),
+                                        schoolYearTo: req.body.schoolYearTo.trim(),
+                                        levelEnroll: req.body.levelEnroll.trim(),
+                                        hasLRN: req.body.hasLRN.trim(),
+                                        returning: req.body.returning.trim(),
+                                    
+                                        //student
+                                        PSANo: req.body.PSANo.trim(),
+                                        LRNNo: req.body.LRNNo.trim(),
+                                        studentFirstName: req.body.studentFirstName.trim(),
+                                        studentMiddleName: req.body.studentMiddleName.trim(),
+                                        studentLastName: req.body.studentLastName.trim(),
+                                        birthDate: req.body.birthDate.trim(),
+                                        gender: req.body.gender.trim(),
+                                        indig: req.body.indig,
+                                        indigSpec: req.body.indigSpec.trim(),
+                                        motherTongue: req.body.motherTongue.trim(),
+                                        address1: req.body.address1.trim(),
+                                        address2: req.body.address2.trim(),
+                                        zipCode: req.body.zipCode.trim(),
+                                        email: req.body.email.trim(),
+                                        phoneNum: req.body.phoneNum.trim(),
+                                    
+                                        //parent/guardian
+                                        motherFirstName: req.body.motherFirstName.trim(),
+                                        motherMiddleName: req.body.motherMiddleName.trim(),
+                                        motherLastName: req.body.motherLastName.trim(),
+                                        fatherFirstName: req.body.fatherFirstName.trim(),
+                                        fatherMiddleName: req.body.fatherMiddleName.trim(),
+                                        fatherLastName: req.body.fatherLastName.trim(),
+                                        guardianFirstName: req.body.guardianFirstName.trim(),
+                                        guardianMiddleName: req.body.guardianMiddleName.trim(),
+                                        guardianLastName: req.body.guardianLastName.trim(),
+                                        parentEmail: req.body.parentEmail.trim(),
+                                        parentPhoneNum: req.body.parentPhoneNum.trim(),
+                                    
+                                        //for returning students
+                                        lastGradeLevel: req.body.lastGradeLevel.trim(),
+                                        lastSchoolYear: req.body.lastSchoolYear.trim(),
+                                        schoolName: req.body.schoolName.trim(),
+                                        schoolAddress: req.body.schoolAddress.trim(),
+                                    
+                                        //for shs students
+                                        semester: req.body.semester.trim(),
+                                        track: req.body.track.trim(),
+                                        strand: req.body.strand.trim(), 
+                                    
+                                        //prefered learning modes
+                                        modularP: req.body.modularP,
+                                        modularD: req.body.modularD,
+                                        online: req.body.online,
+                                        educTV: req.body.educTV,
+                                        radioBased: req.body.radioBased,
+                                        homeschool: req.body.homeschool,
+                                        blended: req.body.blended,
+                                        facetoface: req.body.facetoface
+                                    
+                                    });
+                                    prereg.save()
+                                    .then(result => {
+                                        console.log('prereg created, database connection successful, check mongo atlas');
+                                        res.send('prereg created!'); // this will be what is sent to the user, json file siguro
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    })
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
                             })
                             .catch(err => {
                                 console.log(err);

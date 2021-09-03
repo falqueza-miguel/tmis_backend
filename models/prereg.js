@@ -11,7 +11,7 @@ const PreregSchema = new Schema({
 
     //student
     PSANo: { type: String },
-    LRNNo: { type: String },
+    LRNNo: { type: String, required: true },
     studentFirstName: { type: String, required: true },
     studentMiddleName: { type: String, required: true },
     studentLastName: { type: String, required: true },

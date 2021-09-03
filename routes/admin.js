@@ -76,7 +76,8 @@ router.post(
                                  phoneNum: req.body.phoneNum,
                                  password: hashedPassword,
                                  role: req.body.role,
-                                 active: 1,
+                                 active: true,
+                                 firstLogin: true,
                               });
                               console.log("account successfully created!");
                               return user.save(); //saving user object to database

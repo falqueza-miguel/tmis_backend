@@ -17,8 +17,8 @@ const Counter = require('../models/counter');
 const isAuth = require('../middleware/is-auth');
 const { isRegistrar } = require('../middleware/is-role');
 const StudentInfo = require('../models/studentinfo');
-const USERS_PER_PAGE = 2;
-const PREREGS_PER_PAGE = 2;
+const USERS_PER_PAGE = 1000;
+const PREREGS_PER_PAGE = 1000;
 
 //user profile page
 router.get('/registrar', isAuth, isRegistrar, async (req, res) => {
@@ -96,6 +96,8 @@ router.delete('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) =>
     }
 });
 
+
+
 //register student and parent account and creates student info
 router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
     try {
@@ -108,6 +110,21 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
             { $inc:{sequence_value:1} },
             { new: true }
         );
+        
+        let getInitials = (name) => {
+            let initials = name.split(' ');
+            
+            if(initials.length > 1) {
+              initials = initials.shift().charAt(0) + initials.pop().charAt(0);
+            } else {
+              initials = name.substring(0, 1);
+            } 
+            return initials;
+        }
+        
+        const firstNameInitials = getInitials(prereg.studentFirstName);
+        const middleNameInitial = getInitials(prereg.studentMiddleName);
+        const studentUsername = firstNameInitials + middleNameInitial + prereg.studentLastName;
 
         let student = new User({//create student user
             firstName: prereg.studentFirstName,
@@ -115,10 +132,13 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
             lastName: prereg.studentLastName,
             email: prereg.email,
             phoneNum: prereg.phoneNum,
+            LRNNo: prereg.LRNNo,
             password: hashedPassword,
             role: 6,
             active: 1,
-            studentNumber: parseInt("" + prereg.schoolYearFrom + sequenceDocument.sequence_value) // APPEND YEARFROM BEFORE SEQUENCE_VALUE
+            studentNumber: parseInt("" + prereg.schoolYearFrom + sequenceDocument.sequence_value), // APPEND YEARFROM BEFORE SEQUENCE_VALUE
+            studentUsername: studentUsername,
+            firstLogin: true
         });
         await student.save();
 
@@ -131,7 +151,8 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
             password: hashedPassword,
             role: 5,
             active: 1,
-            student_id: student._id
+            student_id: student._id,
+            firstLogin: true
         });
         await parent.save();
 

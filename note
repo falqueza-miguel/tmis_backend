@@ -8,9 +8,6 @@ pagination (we could use a search feature too)
     accountant (!students)
 
 
-/ emails are sent to spam, find fix
-format phone nums in frontend
-
 send emails for reset token (logic done, make it pretty)
 send emails for when registered to the school (logic done, make it pretty)
 send sms (logic done, make it pretty) and email (logic done, make it pretty) for announcements
@@ -27,6 +24,7 @@ finalize login json response (not necessary atm (1:30pm 17 aug 2021))
 // optimization
 set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
 use student number for students logging in (?)
+change student input in section from studentnumber to LRN (1)
 
 // polishing
 check semicolons on if and then and catch blocks, weird
@@ -96,3 +94,4 @@ router.put('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
 });
 
 heavily modified as of commit "added yearLevel to balance object", check github for older version of notes
+

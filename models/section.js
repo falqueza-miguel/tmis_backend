@@ -9,7 +9,7 @@ const SectionSchema = new Schema({
     semester: { type: String }, //for shs only
     sectionName: { type: String, required: true },
 
-    studentNumbers: [{ type: Number, required: true }], //both must be same length and alphabetized by last name
+    studentLRNs: [{ type: Number, required: true }], //both must be same length and alphabetized by last name
     studentNames: [{ type: String, required: true }],
 
     subjects: [{ type: String, required: true }], //all three must be same length
