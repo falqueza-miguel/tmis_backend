@@ -17,7 +17,7 @@ const Balance = require('../models/balance');
 
 const isAuth = require('../middleware/is-auth');
 const { isAccountant } = require('../middleware/is-role')
-const USERS_PER_PAGE = 2;
+const USERS_PER_PAGE = 1000;
 
 //user profile page
 router.get('/accountant', isAuth, isAccountant, async (req, res) => {

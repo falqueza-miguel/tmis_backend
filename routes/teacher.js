@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 
 const isAuth = require('../middleware/is-auth');
 const { isTeacher } = require('../middleware/is-role')
-const SECTIONS_PER_PAGE = 2;
+const SECTIONS_PER_PAGE = 1000;
 
 //user profile page
 router.get('/teacher', isAuth, isTeacher, async (req, res) => {
