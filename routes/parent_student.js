@@ -51,7 +51,7 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
         console.log(parent);
         let student = await User.findOne({ _id: parent.student_id });
         console.log(student);
-        let section = await Section.findOne({$and: [{ studentNumbers: student.studentNumber }, {active: true }]});
+        let section = await Section.findOne({$and: [{ studentLRNs: student.LRNNo }, {active: true }]});
         res.json({
             success: true,
             sectionName: section.sectionName,
@@ -72,7 +72,7 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
     try {
         let student = await User.findOne({ _id: res.locals._id });
         console.log(student);
-        let section = await Section.findOne({$and: [{ studentNumbers: student.studentNumber }, {active: true }]});
+        let section = await Section.findOne({$and: [{ studentLRNs: student.LRNNo }, {active: true }]});
         res.json({
             success: true,
             sectionName: section.sectionName,
@@ -93,8 +93,8 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
     try {
         let parent = await User.findOne({ _id: res.locals._id });
         let student = await User.findOne({ _id: parent.student_id });
-        let latestGrade = await Grade.findOne({ studentNumber: student.studentNumber }).sort({ createdAt: -1 });       
-        let allGrades = await Grade.find({ studentNumber: student.studentNumber }).sort({ createdAt: -1});
+        let latestGrade = await Grade.findOne({ studentLRN: student.LRNNo }).sort({ createdAt: -1 });       
+        let allGrades = await Grade.find({ studentLRN: student.LRNNo }).sort({ createdAt: -1});
         let allGradeIDs = [];
         let allGradeTitles = [];
         for (grade in allGrades){
@@ -121,8 +121,8 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
 router.get('/student/grades', isAuth, isStudent, async (req, res) => {
     try {
         let student = await User.findOne({ _id: res.locals._id });
-        let latestGrade = await Grade.findOne({ studentNumber: student.studentNumber }).sort({ createdAt: -1 });       
-        let allGrades = await Grade.find({ studentNumber: student.studentNumber }).sort({ createdAt: -1});
+        let latestGrade = await Grade.findOne({ studentLRN: student.LRNNo }).sort({ createdAt: -1 });       
+        let allGrades = await Grade.find({ studentLRN: student.LRNNo }).sort({ createdAt: -1});
         let allGradeIDs = [];
         let allGradeTitles = [];
         for (grade in allGrades){

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const GradeSchema = new Schema({
-    studentNumber: { type: Number, required: true }, // studentNumber
+    studentLRN: { type: Number, required: true }, // LRN
     sectionID: { type: String, required: true }, // reference section _id here when creating 
 
     schoolYearFrom: { type: String, required: true }, // reference section schoolyear

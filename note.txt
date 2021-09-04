@@ -2,6 +2,7 @@
 // requirements
 could use a search feature (in frontend)
 let registrar edit student info
+teacher duplicates
 
 // SMS and EMAIL
 send emails for reset token (logic done, make it pretty)
@@ -19,7 +20,6 @@ finalize login json response (not necessary atm (1:30pm 17 aug 2021))
 
 // optimization
 set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
-change student input in section from studentnumber to LRN (1)
 
 // polishing
 check semicolons on if and then and catch blocks, weird
