@@ -272,7 +272,7 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
                                         schoolYearFrom: req.body.schoolYearFrom.trim(),
                                         schoolYearTo: req.body.schoolYearTo.trim(),
                                         levelEnroll: req.body.levelEnroll.trim(),
-                                        hasLRN: req.body.hasLRN.trim(),
+                                        hasLRN: req.body.hasLRN,
                                         returning: req.body.returning.trim(),
                                     
                                         //student

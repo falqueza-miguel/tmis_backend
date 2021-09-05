@@ -291,7 +291,7 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
             }},
             { new: true });
         // let userInfo = await StudentInfo.findOneAndUpdate(
-        //     { _id: req.params.id },
+        //     { student: req.params.id },
         //     { $set: { 
         //         schoolYearFrom: req.body.schoolYearFrom,
         //         schoolYearTo: req.body.schoolYearTo,

@@ -2,14 +2,8 @@
 // requirements
 could use a search feature (in frontend)
 let registrar edit student info
-teacher duplicates
-
-// SMS and EMAIL
-send emails for reset token (logic done, make it pretty)
-send emails for when registered to the school (logic done, make it pretty)
-send sms (logic done, make it pretty) and email (logic done, make it pretty) for announcements
-send email for grade encoding (logic done, make it pretty)
-send sms (logic done, make it pretty) and email (logic done, make it pretty) for balance encoding 
+let student see student info
+let parent see student info
 
 finalize get old grade for parent and student (5:16am 19 aug 2021) (10:30pm 19 aug 2021) ( probably sa frontend )
 finalize get old balance for parent (2:30 am 20 aug 2021) ( probably sa frontend )
@@ -17,6 +11,20 @@ finalize accountant functions (5:16am 19 aug 2021) (10:30pm 19 aug 2021) ( proba
 finalize accountant edit information page and parent payment information page (2:30 am 20 aug 2021) ( probably sa frontend )
 
 finalize login json response (not necessary atm (1:30pm 17 aug 2021))
+
+// ideas
+/housekeeping
+    registrar can set schoolYear
+        this changes all ACTIVE students sy to new sy
+        principal, accountant, prereg doesnt need schoolyear input anymore
+    registrar can promote ALL ACTIVE students year level
+
+// SMS and EMAIL
+send emails for reset token (logic done, make it pretty)
+send emails for when registered to the school (logic done, make it pretty)
+send sms (logic done, make it pretty) and email (logic done, make it pretty) for announcements
+send email for grade encoding (logic done, make it pretty)
+send sms (logic done, make it pretty) and email (logic done, make it pretty) for balance encoding 
 
 // optimization
 set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
