@@ -134,11 +134,12 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
             return user.save().then(result => {
                 console.log(result);//user object successfully has reset token and exp in database
 
+                let test = "<h1>go to this link to reset your password /reset/</h1>" + token + process.env.EMAIL + process.env.EMAIL_PW
                 const resetPasswordEmail = {
                     from: process.env.EMAIL,
                     to: user.email,
                     subject: "TMIS reset password",
-                    html: "<h1>go to this link to reset your password /reset/</h1>" + token + process.env.EMAIL + process.env.EMAIL_PW
+                    html: test
                 };
 
                 transporter.sendMail(resetPasswordEmail).then(result => {
@@ -273,7 +274,7 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
                                         schoolYearTo: req.body.schoolYearTo.trim(),
                                         levelEnroll: req.body.levelEnroll.trim(),
                                         hasLRN: req.body.hasLRN,
-                                        returning: req.body.returning.trim(),
+                                        returning: req.body.returning,
                                     
                                         //student
                                         PSANo: req.body.PSANo.trim(),
