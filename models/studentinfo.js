@@ -38,6 +38,9 @@ const StudentInfoSchema = new Schema({
     guardianFirstName: { type: String, required: true },
     guardianMiddleName: { type: String, required: true },
     guardianLastName: { type: String, required: true },
+    emergencyName: { type: String },
+    emergencyCellphone: { type: Number },
+    emergencyTelephone: { type: Number },
     //parentEmail: { type: string, unique: true, required: true },
     //parentPhoneNum: { type: number },
 

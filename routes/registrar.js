@@ -327,6 +327,9 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
         //         guardianFirstName: req.body.guardianFirstName,
         //         guardianMiddleName: req.body.guardianMiddleName,
         //         guardianLastName: req.body.guardianLastName,
+        //         emergencyName: req.body.emergencyName,
+        //         emergencyCellphone: req.body.emergencyCellphone,
+        //         emergencyTelephone: req.body.emergencyTelephone,
         //         //parentEmail: { type: string, unique: true, required: true },
         //         //parentPhoneNum: { type: number },
             
@@ -355,7 +358,7 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
             res.json({
                 success: true,
                 user: user,
-                //userInfo: userInfo
+                // userInfo: userInfo
             });
     } 
     catch (error) {
