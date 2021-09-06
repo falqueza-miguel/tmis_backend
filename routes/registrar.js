@@ -137,7 +137,7 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
             role: 6,
             active: 1,
             studentNumber: parseInt("" + prereg.schoolYearFrom + sequenceDocument.sequence_value), // APPEND YEARFROM BEFORE SEQUENCE_VALUE
-            studentUsername: studentUsername,
+            studentUsername: studentUsername.toLowerCase(),
             yearLevel: prereg.levelEnroll,
             firstLogin: true
         });
@@ -262,11 +262,11 @@ router.get('/registrar/students', isAuth, isRegistrar, async (req, res) => {
 router.get('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
     try {
         let user = await User.findOne({ _id: req.params.id });
-        let userInfo = await StudentInfo.findOne({ student: req.params.id });
+        //let userInfo = await StudentInfo.findOne({ student: req.params.id });
         res.json({
             success: true,
             user: user,
-            userInfo: userInfo
+            //userInfo: userInfo
         });
     } 
     catch (error) {
