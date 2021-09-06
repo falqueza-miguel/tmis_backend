@@ -236,7 +236,7 @@ router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
         for (num in userPhoneNums) {
         client.messages 
         .create({ 
-            body: annc.title,  // announcement goes here
+            body: 'Tierra Monte Integrated School notification. a new announcement titled: ' + annc.title + ' has been made. Please check <link here> for more information',  // announcement goes here
             messagingServiceSid: process.env.TWILIO_SERV_SID,      
             to: '+63' + userPhoneNums[num]
         }) 

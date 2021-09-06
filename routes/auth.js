@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const email = require('../emails/emails');
 
 const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SRV,
@@ -16,7 +17,6 @@ const transporter = nodemailer.createTransport({
 const Prereg = require('../models/prereg');
 const User = require('../models/user');
 const Annc = require('../models/annc');
-const user = require('../models/user');
 
 //home page / announcements
 router.get('/', async (req, res) => {
@@ -134,12 +134,13 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
             return user.save().then(result => {
                 console.log(result);//user object successfully has reset token and exp in database
 
-                let test = "<h1>go to this link to reset your password /reset/</h1>" + token + process.env.EMAIL + process.env.EMAIL_PW
+                let resetLink = token;
+                let body = email.RP1 + user.firstName + " " + user.lastName + email.RP2 + resetLink + email.RP3;
                 const resetPasswordEmail = {
                     from: process.env.EMAIL,
                     to: user.email,
                     subject: "TMIS reset password",
-                    html: test
+                    html: body
                 };
 
                 transporter.sendMail(resetPasswordEmail).then(result => {

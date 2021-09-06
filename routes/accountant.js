@@ -158,7 +158,7 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
 
         client.messages 
         .create({ 
-            body: 'test! again! -miguel',  // change this
+            body: 'Tierra Monte Integrated School notification. Your balance has been updated, please check <link here>',  // change this
             messagingServiceSid: process.env.TWILIO_SERV_SID,      
             to: '+63' + userParent.phoneNum 
         }) 
