@@ -79,11 +79,24 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
                 }     
                 return bcrypt.hash(password, 12)
                 .then(hashedPassword => {//once done hashing, 
+
+                    let capitalizeFirstLetter = (string) => {
+                        return string.charAt(0).toUpperCase() + string.slice(1);
+                    }
+
+                    let capitalizeFirstLetters = (str) => {
+                        var splitStr = str.toLowerCase().split(' ');
+                        for (var i = 0; i < splitStr.length; i++) {
+                            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+                        }
+                        return splitStr.join(' '); 
+                    }
+
                     const user = new User({//new user object
-                        firstName: req.body.firstName,
-                        middleName: req.body.middleName,
-                        lastName: req.body.lastName,
-                        email: req.body.email,
+                        firstName: capitalizeFirstLetters(req.body.firstName),
+                        middleName: capitalizeFirstLetter(req.body.middleName),
+                        lastName: capitalizeFirstLetter(req.body.lastName),
+                        email: req.body.email.toLowerCase(),
                         phoneNum: req.body.phoneNum,
                         password: hashedPassword,
                         role: 4,

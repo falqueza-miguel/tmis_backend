@@ -18,6 +18,10 @@ finalize login json response (not necessary atm (1:30pm 17 aug 2021))
         this changes all ACTIVE students sy to new sy
         principal, accountant, prereg doesnt need schoolyear input anymore
     registrar can promote ALL ACTIVE students year level
+/returning students
+    active: false
+        request for activation
+    registrar new tab for requests, unarchive
 
 // SMS and EMAIL
 send emails for reset token (logic done, make it pretty)

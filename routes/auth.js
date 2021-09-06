@@ -38,7 +38,7 @@ router.get('/', async (req, res) => {
 //login form 
 router.post('/', async (req, res) => {
     try {
-    const email = req.body.email;//inputs
+    const email = req.body.email.toLowerCase();//inputs
     const password = req.body.password;
     
 
@@ -270,6 +270,19 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
                                         console.log('LRN exists in another student')
                                         return res.send('LRN exists in another student')
                                     }
+
+                                    let capitalizeFirstLetter = (string) => {
+                                        return string.charAt(0).toUpperCase() + string.slice(1);
+                                    }
+
+                                    let capitalizeFirstLetters = (str) => {
+                                        var splitStr = str.toLowerCase().split(' ');
+                                        for (var i = 0; i < splitStr.length; i++) {
+                                            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+                                        }
+                                        return splitStr.join(' '); 
+                                    }
+
                                     const prereg = new Prereg({
                                         schoolYearFrom: req.body.schoolYearFrom.trim(),
                                         schoolYearTo: req.body.schoolYearTo.trim(),
@@ -280,31 +293,34 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
                                         //student
                                         PSANo: req.body.PSANo.trim(),
                                         LRNNo: req.body.LRNNo.trim(),
-                                        studentFirstName: req.body.studentFirstName.trim(),
-                                        studentMiddleName: req.body.studentMiddleName.trim(),
-                                        studentLastName: req.body.studentLastName.trim(),
+                                        studentFirstName: capitalizeFirstLetters(req.body.studentFirstName.trim()),
+                                        studentMiddleName: capitalizeFirstLetter(req.body.studentMiddleName.trim()),
+                                        studentLastName: capitalizeFirstLetter(req.body.studentLastName.trim()),
                                         birthDate: req.body.birthDate.trim(),
                                         gender: req.body.gender.trim(),
                                         indig: req.body.indig,
                                         indigSpec: req.body.indigSpec.trim(),
-                                        motherTongue: req.body.motherTongue.trim(),
+                                        motherTongue: capitalizeFirstLetter(req.body.motherTongue.trim()),
                                         address1: req.body.address1.trim(),
                                         address2: req.body.address2.trim(),
                                         zipCode: req.body.zipCode.trim(),
-                                        email: req.body.email.trim(),
+                                        email: req.body.email.trim().toLowerCase(),
                                         phoneNum: req.body.phoneNum.trim(),
                                     
                                         //parent/guardian
-                                        motherFirstName: req.body.motherFirstName.trim(),
-                                        motherMiddleName: req.body.motherMiddleName.trim(),
-                                        motherLastName: req.body.motherLastName.trim(),
-                                        fatherFirstName: req.body.fatherFirstName.trim(),
-                                        fatherMiddleName: req.body.fatherMiddleName.trim(),
-                                        fatherLastName: req.body.fatherLastName.trim(),
-                                        guardianFirstName: req.body.guardianFirstName.trim(),
-                                        guardianMiddleName: req.body.guardianMiddleName.trim(),
-                                        guardianLastName: req.body.guardianLastName.trim(),
-                                        parentEmail: req.body.parentEmail.trim(),
+                                        motherFirstName: capitalizeFirstLetters(req.body.motherFirstName.trim()),
+                                        motherMiddleName: capitalizeFirstLetter(req.body.motherMiddleName.trim()),
+                                        motherLastName: capitalizeFirstLetter(req.body.motherLastName.trim()),
+                                        fatherFirstName: capitalizeFirstLetters(req.body.fatherFirstName.trim()),
+                                        fatherMiddleName: capitalizeFirstLetter(req.body.fatherMiddleName.trim()),
+                                        fatherLastName: capitalizeFirstLetter(req.body.fatherLastName.trim()),
+                                        guardianFirstName: capitalizeFirstLetters(req.body.guardianFirstName.trim()),
+                                        guardianMiddleName: capitalizeFirstLetter(req.body.guardianMiddleName.trim()),
+                                        guardianLastName: capitalizeFirstLetter(req.body.guardianLastName.trim()),
+                                        emergencyName: capitalizeFirstLetters(req.body.emergencyName.trim()), //capitalize all letters
+                                        emergencyCellphone: req.body.emergencyCellphone.trim(),
+                                        emergencyTelephone: req.body.emergencyTelephone.trim(),
+                                        parentEmail: req.body.parentEmail.trim().toLowerCase(),
                                         parentPhoneNum: req.body.parentPhoneNum.trim(),
                                     
                                         //for returning students
