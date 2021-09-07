@@ -41,8 +41,8 @@ const StudentInfoSchema = new Schema({
     emergencyName: { type: String },
     emergencyCellphone: { type: Number },
     emergencyTelephone: { type: Number },
-    //parentEmail: { type: string, unique: true, required: true },
-    //parentPhoneNum: { type: number },
+    parentEmail: { type: string, unique: true, required: true },
+    parentPhoneNum: { type: number },
 
     //for returning students
     lastGradeLevel: { type: String },

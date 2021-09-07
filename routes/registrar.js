@@ -180,6 +180,8 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
             fatherFirstName: prereg.fatherFirstName,
             fatherMiddleName: prereg.fatherMiddleName,
             fatherLastName: prereg.fatherLastName,
+            email: prereg.parentEmail,
+            phoneNum: prereg.parentPhoneNum,
             guardianFirstName: prereg.guardianFirstName,
             guardianMiddleName: prereg.guardianMiddleName,
             guardianLastName: prereg.guardianLastName,
@@ -297,7 +299,7 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
             { $set: { 
                 schoolYearFrom: req.body.schoolYearFrom,
                 schoolYearTo: req.body.schoolYearTo,
-                levelEnroll: req.body.levelEnroll,
+                //levelEnroll: req.body.levelEnroll,
                 hasLRN: req.body.hasLRN,
                 returning: req.body.returning,
             
@@ -331,8 +333,8 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
                 emergencyName: req.body.emergencyName,
                 emergencyCellphone: req.body.emergencyCellphone,
                 emergencyTelephone: req.body.emergencyTelephone,
-                //parentEmail: { type: string, unique: true, required: true },
-                //parentPhoneNum: { type: number },
+                parentEmail: req.body.parentEmail,
+                parentPhoneNum: req.body.parentPhoneNum,
             
                 //for returning students
                 lastGradeLevel: req.body.lastGradeLevel,
