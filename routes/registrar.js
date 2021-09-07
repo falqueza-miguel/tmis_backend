@@ -262,11 +262,11 @@ router.get('/registrar/students', isAuth, isRegistrar, async (req, res) => {
 router.get('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
     try {
         let user = await User.findOne({ _id: req.params.id });
-        //let userInfo = await StudentInfo.findOne({ student: req.params.id });
+        let userInfo = await StudentInfo.findOne({ student: req.params.id });
         res.json({
             success: true,
             user: user,
-            //userInfo: userInfo
+            userInfo: userInfo
         });
     } 
     catch (error) {
