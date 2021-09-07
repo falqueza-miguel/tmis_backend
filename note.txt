@@ -1,6 +1,5 @@
 
 // requirements
-could use a search feature (in frontend)
 let registrar edit student info
 let student see student info
 let parent see student info

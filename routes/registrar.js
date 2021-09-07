@@ -291,74 +291,74 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
                 phoneNum: req.body.phoneNum 
             }},
             { new: true });
-        // let userInfo = await StudentInfo.findOneAndUpdate(
-        //     { student: req.params.id },
-        //     { $set: { 
-        //         schoolYearFrom: req.body.schoolYearFrom,
-        //         schoolYearTo: req.body.schoolYearTo,
-        //         levelEnroll: req.body.levelEnroll,
-        //         hasLRN: req.body.hasLRN,
-        //         returning: req.body.returning,
+        let userInfo = await StudentInfo.findOneAndUpdate(
+            { student: req.params.id },
+            { $set: { 
+                schoolYearFrom: req.body.schoolYearFrom,
+                schoolYearTo: req.body.schoolYearTo,
+                levelEnroll: req.body.levelEnroll,
+                hasLRN: req.body.hasLRN,
+                returning: req.body.returning,
             
-        //         //student
-        //         PSANo: req.body.PSANo,
-        //         LRNNo: req.body.LRNNo,
-        //         //studentFirstName: { type: string, required: true },
-        //         //studentMiddleName: { type: string, required: true },
-        //         //studentLastName: { type: string, required: true },
-        //         birthDate: req.body.birthDate,
-        //         gender: req.body.gender,
-        //         indig: req.body.indig,
-        //         indigSpec: req.body.indigSpec,
-        //         motherTongue: req.body.motherTongue,
-        //         address1: req.body.address1,
-        //         address2: req.body.address2,
-        //         zipCode: req.body.zipCode,
-        //         //email: { type: string, unique: true, required: true },
-        //         //phoneNum: { type: number },
+                //student
+                PSANo: req.body.PSANo,
+                LRNNo: req.body.LRNNo,
+                //studentFirstName: { type: string, required: true },
+                //studentMiddleName: { type: string, required: true },
+                //studentLastName: { type: string, required: true },
+                birthDate: req.body.birthDate,
+                gender: req.body.gender,
+                indig: req.body.indig,
+                indigSpec: req.body.indigSpec,
+                motherTongue: req.body.motherTongue,
+                address1: req.body.address1,
+                address2: req.body.address2,
+                zipCode: req.body.zipCode,
+                //email: { type: string, unique: true, required: true },
+                //phoneNum: { type: number },
             
-        //         //parent/guardian
-        //         motherFirstName: req.body.motherFirstName,
-        //         motherMiddleName: req.body.motherMiddleName,
-        //         motherLastName: req.body.motherLastName,
-        //         fatherFirstName: req.body.fatherFirstName,
-        //         fatherMiddleName: req.body.fatherMiddleName,
-        //         fatherLastName: req.body.fatherLastName,
-        //         guardianFirstName: req.body.guardianFirstName,
-        //         guardianMiddleName: req.body.guardianMiddleName,
-        //         guardianLastName: req.body.guardianLastName,
-        //         emergencyName: req.body.emergencyName,
-        //         emergencyCellphone: req.body.emergencyCellphone,
-        //         emergencyTelephone: req.body.emergencyTelephone,
-        //         //parentEmail: { type: string, unique: true, required: true },
-        //         //parentPhoneNum: { type: number },
+                //parent/guardian
+                motherFirstName: req.body.motherFirstName,
+                motherMiddleName: req.body.motherMiddleName,
+                motherLastName: req.body.motherLastName,
+                fatherFirstName: req.body.fatherFirstName,
+                fatherMiddleName: req.body.fatherMiddleName,
+                fatherLastName: req.body.fatherLastName,
+                guardianFirstName: req.body.guardianFirstName,
+                guardianMiddleName: req.body.guardianMiddleName,
+                guardianLastName: req.body.guardianLastName,
+                emergencyName: req.body.emergencyName,
+                emergencyCellphone: req.body.emergencyCellphone,
+                emergencyTelephone: req.body.emergencyTelephone,
+                //parentEmail: { type: string, unique: true, required: true },
+                //parentPhoneNum: { type: number },
             
-        //         //for returning students
-        //         lastGradeLevel: req.body.lastGradeLevel,
-        //         lastSchoolYear: req.body.lastSchoolYear,
-        //         schoolName: req.body.schoolName,
-        //         schoolAddress: req.body.schoolAddress,
+                //for returning students
+                lastGradeLevel: req.body.lastGradeLevel,
+                lastSchoolYear: req.body.lastSchoolYear,
+                schoolName: req.body.schoolName,
+                schoolAddress: req.body.schoolAddress,
             
-        //         //for shs students
-        //         semester: req.body.semester,
-        //         track: req.body.track,
-        //         strand: req.body.strand, 
+                //for shs students
+                semester: req.body.semester,
+                track: req.body.track,
+                strand: req.body.strand, 
             
-        //         //prefered learning modes
-        //         modularP: req.body.modularP,
-        //         modularD: req.body.modularD,
-        //         online: req.body.online,
-        //         educTV: req.body.educTV,
-        //         radioBased: req.body.radioBased,
-        //         homeschool: req.body.homeschool,
-        //         blended: req.body.blended,
-        //         facetoface: req.body.facetoface
-        //     }},
-        //     { new: true });
+                //prefered learning modes
+                modularP: req.body.modularP,
+                modularD: req.body.modularD,
+                online: req.body.online,
+                educTV: req.body.educTV,
+                radioBased: req.body.radioBased,
+                homeschool: req.body.homeschool,
+                blended: req.body.blended,
+                facetoface: req.body.facetoface
+            }},
+            { new: true });
             res.json({
                 success: true,
                 user: user,
-                // userInfo: userInfo
+                userInfo: userInfo
             });
     } 
     catch (error) {
