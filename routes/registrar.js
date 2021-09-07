@@ -288,7 +288,8 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
                 firstName: req.body.firstName,
                 middleName: req.body.middleName,
                 lastName: req.body.lastName,
-                phoneNum: req.body.phoneNum 
+                phoneNum: req.body.phoneNum,
+                LRNNo: req.body.LRNNo
             }},
             { new: true });
         let userInfo = await StudentInfo.findOneAndUpdate(
@@ -302,7 +303,7 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
             
                 //student
                 PSANo: req.body.PSANo,
-                LRNNo: req.body.LRNNo,
+                //LRNNo: req.body.LRNNo,
                 //studentFirstName: { type: string, required: true },
                 //studentMiddleName: { type: string, required: true },
                 //studentLastName: { type: string, required: true },
