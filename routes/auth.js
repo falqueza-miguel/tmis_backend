@@ -387,4 +387,19 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
     });
 });
 
+//logout
+router.post('/logout', async (req, res) => {
+try {
+    res.clearCookie('token');
+    //res.redirect('/')
+    res.json({ success: true , message: "cleared"})
+}
+catch (error) {
+    res.status(500).json({
+        success: false,
+        message: error.message
+    });
+}
+});
+
 module.exports = router;

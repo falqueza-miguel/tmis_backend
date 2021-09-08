@@ -221,29 +221,39 @@ router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
         });
         await annc.save();
 
+        if (req.body.asEmail){
         //get all emails of active students then get parents
         let userEmails = [];
-        let userPhoneNums = [];
         let students = await User.find({$and: [{ role: 6 }, { active: true }]});
         for (student in students) {
             let parent = await User.findOne({ student_id: students[student]._id });
             userEmails.push(students[student].email);
             userEmails.push(parent.email);
-            userPhoneNums.push(students[student].phoneNum);
-            userPhoneNums.push(parent.phoneNum);
         }
 
         console.log(userEmails);
-        console.log(userPhoneNums);
 
+        //send email
         var announcementEmail = {
             from: process.env.EMAIL,
             to: userEmails,
             subject: "TMIS announcement!",
             html: "<h1>announcement!</h1>" // announcement goes here
         };
-
         transporter.sendMail(announcementEmail);
+        }
+
+        if (req.body.asSMS){
+        //get all phone nums of active students then get parents
+        let userPhoneNums = [];
+        let students = await User.find({$and: [{ role: 6 }, { active: true }]});
+        for (student in students) {
+            let parent = await User.findOne({ student_id: students[student]._id });
+            userPhoneNums.push(students[student].phoneNum);
+            userPhoneNums.push(parent.phoneNum);
+        }
+
+        console.log(userPhoneNums);
 
         //send SMS
         for (num in userPhoneNums) {
@@ -257,6 +267,7 @@ router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
         .catch(err => {
             console.log(err);
         });
+        }
         }
 
         res.json({

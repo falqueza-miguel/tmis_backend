@@ -1,6 +1,5 @@
 
 // requirements
-let registrar edit student info
 let student see student info
 let parent see student info
 
@@ -10,6 +9,13 @@ finalize accountant functions (5:16am 19 aug 2021) (10:30pm 19 aug 2021) ( proba
 finalize accountant edit information page and parent payment information page (2:30 am 20 aug 2021) ( probably sa frontend )
 
 finalize login json response (not necessary atm (1:30pm 17 aug 2021))
+
+// SMS and EMAIL
+send emails for reset token (logic done, make it pretty)
+send emails for when registered to the school (logic done, make it pretty)
+send sms (logic done, make it pretty) and email (logic done, make it pretty) for announcements
+send email for grade encoding (logic done, make it pretty)
+send sms (logic done, make it pretty) and email (logic done, make it pretty) for balance encoding 
 
 // ideas
 /housekeeping
@@ -21,13 +27,6 @@ finalize login json response (not necessary atm (1:30pm 17 aug 2021))
     active: false
         request for activation
     registrar new tab for requests, unarchive
-
-// SMS and EMAIL
-send emails for reset token (logic done, make it pretty)
-send emails for when registered to the school (logic done, make it pretty)
-send sms (logic done, make it pretty) and email (logic done, make it pretty) for announcements
-send email for grade encoding (logic done, make it pretty)
-send sms (logic done, make it pretty) and email (logic done, make it pretty) for balance encoding 
 
 // optimization
 set password limit in reset password and set proper default password (?) ADMIN REGISTRAR PRINCIPAL MODULES
