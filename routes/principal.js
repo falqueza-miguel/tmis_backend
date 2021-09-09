@@ -103,13 +103,15 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
                         active: true,
                         firstLogin: true
                     });
+
                     console.log('account successfully created!');
+                    newUser = user
                     return user.save();//saving user object to database
                 })
                 .then(result => {
                     res.json({
                         success: true,
-                        user: user
+                        user: newUser
                     });
                 });
             })
