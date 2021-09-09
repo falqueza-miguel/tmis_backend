@@ -271,7 +271,7 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         console.log(userEmails);
                         var gradeEncodedEmail = {
                             from: process.env.EMAIL,
-                            to: userEmails,
+                            bcc: userEmails,
                             subject: "TMIS grades notification!",
                             html: "<h1>merry christmas you filthy animal</h1>" + user.firstName + " " + user.middleName + " " + user.lastName 
                         };

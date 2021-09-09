@@ -236,7 +236,7 @@ router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
         //send email
         var announcementEmail = {
             from: process.env.EMAIL,
-            to: userEmails,
+            bcc: userEmails,
             subject: "TMIS announcement!",
             html: "<h1>announcement!</h1>" // announcement goes here
         };
