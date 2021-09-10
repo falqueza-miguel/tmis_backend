@@ -98,6 +98,7 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
                         lastName: capitalizeFirstLetter(req.body.lastName),
                         email: req.body.email.toLowerCase(),
                         phoneNum: req.body.phoneNum,
+                        department: req.body.department,
                         password: hashedPassword,
                         role: 4,
                         active: true,
@@ -412,41 +413,41 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         // ALPHABETIZE STUDENTS BEFORE CREATING SECTION
         // cross link student LRNs to last names and arrange accordingly
 
-        let alphabetizedStudentLRNs = [];
-        let alphabetizedStudentNames = [];
-        let unorganizedStudentNames = [];
-        // get array of student names
-        for (student in req.body.students) {
-            try {
-                let user = await User.findOne({LRNNo: req.body.students[student]});
-                let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
-                unorganizedStudentNames.push(fullName);
-            }
-            catch (error) {
-                res.status(500).json({
-                    success: false,
-                    message: error.message
-                });                
-            }
-        }
+        // let alphabetizedStudentLRNs = [];
+        // let alphabetizedStudentNames = [];
+        // let unorganizedStudentNames = [];
+        // // get array of student names
+        // for (student in req.body.students) {
+        //     try {
+        //         let user = await User.findOne({LRNNo: req.body.students[student]});
+        //         let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
+        //         unorganizedStudentNames.push(fullName);
+        //     }
+        //     catch (error) {
+        //         res.status(500).json({
+        //             success: false,
+        //             message: error.message
+        //         });                
+        //     }
+        // }
 
-        unorganizedStudentNames.sort(); // sort student names with LRNs alphabetically by last name
+        // unorganizedStudentNames.sort(); // sort student names with LRNs alphabetically by last name
 
-        for (student in unorganizedStudentNames){ // slices student LRNs from names
-            try {
-                let name = unorganizedStudentNames[student];
-                let studName = name.slice(0, name.length - 12)
-                let studLRN = name.slice(name.length - 12);
-                alphabetizedStudentNames.push(studName.trim());
-                alphabetizedStudentLRNs.push(studLRN.trim());
-            }
-            catch (error) {
-                res.status(500).json({
-                    success: false,
-                    message: error.message
-                });                  
-            }
-        }
+        // for (student in unorganizedStudentNames){ // slices student LRNs from names
+        //     try {
+        //         let name = unorganizedStudentNames[student];
+        //         let studName = name.slice(0, name.length - 12)
+        //         let studLRN = name.slice(name.length - 12);
+        //         alphabetizedStudentNames.push(studName.trim());
+        //         alphabetizedStudentLRNs.push(studLRN.trim());
+        //     }
+        //     catch (error) {
+        //         res.status(500).json({
+        //             success: false,
+        //             message: error.message
+        //         });                  
+        //     }
+        // }
 
         // SECTION CREATION
         let section = new Section({ 
@@ -457,8 +458,8 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
             semester: req.body.semester,
             sectionName: req.body.sectionName,
 
-            studentLRNs: alphabetizedStudentLRNs,
-            studentNames: alphabetizedStudentNames,
+            // studentLRNs: alphabetizedStudentLRNs,
+            // studentNames: alphabetizedStudentNames,
     
             subjects: req.body.subjects, //all three must be same length
             schedule: req.body.schedule,
@@ -511,6 +512,8 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         });
     }
 });
+
+//add students to section
 
 //get all active sections
 router.get('/principal/sections', isAuth, isPrincipal, async (req, res) => {

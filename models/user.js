@@ -17,7 +17,8 @@ const UserSchema = new Schema({
     LRNNo: { type: Number }, // LRN student number
     yearLevel: { type: String },
     studentUsername: { type: String, unique: true }, //student username for login
-    firstLogin: { type: Boolean, required: true } 
+    firstLogin: { type: Boolean, required: true },
+    department: { type: String } // for teacher
 });
 
 module.exports = mongoose.model('User', UserSchema)
