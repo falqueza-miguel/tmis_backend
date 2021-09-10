@@ -129,7 +129,7 @@ router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
     }
 });
 
-//open section , show sched, list students , populate grade fields
+//open section , show sched, list students ALPHABETICALLY , populate grade fields
 router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
     try {
         let section = await Section.findOne({ _id: req.params.id });
@@ -143,29 +143,17 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                 console.log(teacherArray[subj])
                 if (teacherArray[subj] == res.locals.email){
                     console.log( res.locals.email +' teaches '+ req.query.subject);
-                    let grades = await Grade.find({ sectionID: req.params.id });
 
-                    // get teacher subject and index of subject
-                    // let teacherArray = section.teachers
-                    // let index = teacherArray.indexOf(res.locals.email);
-                    // let subject = section.subjects[index]; //subject and index
-            
-                    // get encoded grades for subject
-                    //let students = []
-                    let q1SubjGrades = []
-                    let q2SubjGrades = []
-                    let q3SubjGrades = []
-                    let q4SubjGrades = []
-                    for (grade in grades) {
+                    // alphabetize students
+                    let alphabetizedStudentLRNs = [];
+                    let alphabetizedStudentNames = [];
+                    let unorganizedStudentNames = [];
+                    // get array of student names
+                    for (student in section.studentLRNs) {
                         try {
-                            let subjectArray = grades[grade].subjects;
-                            let subjIndex = subjectArray.indexOf(subject);
-                            //let stud = section.studentLRNs[grade];
-                            //students.push(stud)
-                            q1SubjGrades.push(grades[grade].q1Grades[subjIndex]);
-                            q2SubjGrades.push(grades[grade].q2Grades[subjIndex]);
-                            q3SubjGrades.push(grades[grade].q3Grades[subjIndex]);
-                            q4SubjGrades.push(grades[grade].q4Grades[subjIndex]);     
+                            let user = await User.findOne({LRNNo: section.studentLRNs[student]});
+                            let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
+                            unorganizedStudentNames.push(fullName);
                         }
                         catch (error) {
                             res.status(500).json({
@@ -174,6 +162,62 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             });                
                         }
                     }
+
+                    unorganizedStudentNames.sort(); // sort student names with LRNs alphabetically by last name
+
+                    for (student in unorganizedStudentNames){ // slices student LRNs from names
+                        try {
+                            let name = unorganizedStudentNames[student];
+                            let studName = name.slice(0, name.length - 12)
+                            let studLRN = name.slice(name.length - 12);
+                            alphabetizedStudentNames.push(studName.trim());
+                            alphabetizedStudentLRNs.push(studLRN.trim());
+                        }
+                        catch (error) {
+                            res.status(500).json({
+                                success: false,
+                                message: error.message
+                            });                  
+                        }
+                    }
+
+                    let grades = [];
+                    for (student in alphabetizedStudentLRNs){
+                        try {
+                            let studentGrades = await Grade.find({ sectionID: req.params.id });
+                            // get encoded grades for subject
+                            //let students = []
+                            let q1SubjGrades = []
+                            let q2SubjGrades = []
+                            let q3SubjGrades = []
+                            let q4SubjGrades = []
+                            for (sGrade in studentGrades) {
+                                try {
+                                    let subjectArray = studentGrades[grade].subjects;
+                                    let subjIndex = subjectArray.indexOf(subject);
+                                    //let stud = section.studentLRNs[grade];
+                                    //students.push(stud)
+                                    q1SubjGrades.push(studentgrades[grade].q1Grades[subjIndex]);
+                                    q2SubjGrades.push(studentgrades[grade].q2Grades[subjIndex]);
+                                    q3SubjGrades.push(studentgrades[grade].q3Grades[subjIndex]);
+                                    q4SubjGrades.push(studentgrades[grade].q4Grades[subjIndex]);     
+                                }
+                                catch (error) {
+                                    res.status(500).json({
+                                        success: false,
+                                        message: error.message
+                                    });                
+                                }
+                            }
+                        }
+                        catch (error) {
+                            res.status(500).json({
+                                success: false,
+                                message: error.message
+                            });                  
+                        }
+                    }
+                    
             
                     // console.log(students);// same
                     console.log(section.studentLRNs); // same

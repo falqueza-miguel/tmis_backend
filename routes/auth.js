@@ -75,7 +75,7 @@ router.post('/', async (req, res) => {
                 console.log('resettoken created!');
                 res.cookie('token', token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
                 console.log('first time logging in! sending token!')
-                return res.status(200).json({token: token, role: user.role, user: user, firstLogin: user.firstLogin, resetToken: rToken, success: true}); 
+                return res.status(200).json({token: token, role: user.role, user: user, firstLogin: true, resetToken: rToken, success: true}); 
             });
         }
         if (!user.firstLogin) {

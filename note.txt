@@ -1,5 +1,6 @@
 
 // requirements
+changes to teacher (alphabetize students)
 let student see student info
 let parent see student info
 

@@ -655,6 +655,23 @@ router.post('/principal/sections/:id/addStudents', isAuth, isPrincipal, async (r
     }
 });
 
+//get students in section (baka di need since nandun naman na yung names ng students)
+// router.get('/principal/sections/:id/students', isAuth, isPrincipal, async (req, res) => {
+//     try {
+//         let users = await User.find( {$and:[{role: 6}, {active: true},]} )
+//         res.json({
+//             success: true,
+//             users: users,
+//         });
+//     } 
+//     catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: error.message
+//         });
+//     }
+// });
+
 //get students in yearLevel
 router.get('/principal/sections/:yearLevel', isAuth, isPrincipal, async (req, res) => {
     try {
