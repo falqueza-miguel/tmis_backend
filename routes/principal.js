@@ -655,6 +655,23 @@ router.post('/principal/sections/:id/addStudents', isAuth, isPrincipal, async (r
     }
 });
 
+//get students in yearLevel
+router.get('/principal/sections/:yearLevel', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let users = await User.find( {$and:[{role: 6}, {active: true}, {yearLevel: req.params.yearLevel}]} )
+        res.json({
+            success: true,
+            users: users,
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 //get all active sections
 router.get('/principal/sections', isAuth, isPrincipal, async (req, res) => {
     try {
