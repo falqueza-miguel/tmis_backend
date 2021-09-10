@@ -181,48 +181,34 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         }
                     }
 
-                    let alphabetizedGrades = [];
+                    let q1SubjGrades = []
+                    let q2SubjGrades = []
+                    let q3SubjGrades = []
+                    let q4SubjGrades = []
                     for (student in alphabetizedStudentLRNs){
                         try {
-                            let studentGrades = await Grade.find({ sectionID: req.params.id });
+                            let studentGrades = await Grade.findOne({$and: [ {sectionID: req.params.id} , {studentLRN: alphabetizedStudentLRNs[student]}]});
                             // get encoded grades for subject
                             //let students = []
-                            let q1SubjGrades = []
-                            let q2SubjGrades = []
-                            let q3SubjGrades = []
-                            let q4SubjGrades = []
-                            for (sGrade in studentGrades) {
-                                try {
-                                    let subjectArray = studentGrades[grade].subjects;
-                                    let subjIndex = subjectArray.indexOf(subject);
-                                    //let stud = section.studentLRNs[grade];
-                                    //students.push(stud)
-                                    q1SubjGrades.push(studentgrades[grade].q1Grades[subjIndex]);
-                                    q2SubjGrades.push(studentgrades[grade].q2Grades[subjIndex]);
-                                    q3SubjGrades.push(studentgrades[grade].q3Grades[subjIndex]);
-                                    q4SubjGrades.push(studentgrades[grade].q4Grades[subjIndex]);     
-                                }
-                                catch (error) {
-                                    res.status(500).json({
-                                        success: false,
-                                        message: error.message
-                                    });                
-                                }
-                            }
+
+                            let subjectArray = studentGrades.subjects;
+                            let subjIndex = subjectArray.indexOf(subject);
+                            //let stud = section.studentLRNs[grade];
+                            //students.push(stud)
+                            q1SubjGrades.push(studentGrades.q1Grades[subjIndex]);
+                            q2SubjGrades.push(studentGrades.q2Grades[subjIndex]);
+                            q3SubjGrades.push(studentGrades.q3Grades[subjIndex]);
+                            q4SubjGrades.push(studentGrades.q4Grades[subjIndex]);
                         }
                         catch (error) {
                             res.status(500).json({
                                 success: false,
                                 message: error.message
-                            });                  
+                            });       
                         }
                     }
                     
-            
-                    // console.log(students);// same
-                    console.log(section.studentLRNs); // same
-                    console.log(section.studentNames)
-            
+                    console.log(alphabetizedStudentNames)
                     console.log(q1SubjGrades)
                     console.log(q2SubjGrades)
                     console.log(q3SubjGrades)
@@ -231,7 +217,11 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                     return res.json({
                         success: true,
                         section: section,
-                        grades: grades
+                        alphabetizedStudentNames: alphabetizedStudentNames,
+                        q1SubjGrades: q1SubjGrades,
+                        q2SubjGrades: q2SubjGrades,
+                        q3SubjGrades: q3SubjGrades,
+                        q4SubjGrades: q4SubjGrades,
                     });
                 }
                 return res.status(500).json({
@@ -269,16 +259,53 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
             if (subjectArray[subj] == subject){
                 console.log(teacherArray[subj])
                 if (teacherArray[subj] == res.locals.email){
+
+                    // alphabetize students
+                    let alphabetizedStudentLRNs = [];
+                    let alphabetizedStudentNames = [];
+                    let unorganizedStudentNames = [];
+                    // get array of student names
+                    for (student in section.studentLRNs) {
+                        try {
+                            let user = await User.findOne({LRNNo: section.studentLRNs[student]});
+                            let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
+                            unorganizedStudentNames.push(fullName);
+                        }
+                        catch (error) {
+                            res.status(500).json({
+                                success: false,
+                                message: error.message
+                            });                
+                        }
+                    }
+
+                    unorganizedStudentNames.sort(); // sort student names with LRNs alphabetically by last name
+
+                    for (student in unorganizedStudentNames){ // slices student LRNs from names
+                        try {
+                            let name = unorganizedStudentNames[student];
+                            let studName = name.slice(0, name.length - 12)
+                            let studLRN = name.slice(name.length - 12);
+                            alphabetizedStudentNames.push(studName.trim());
+                            alphabetizedStudentLRNs.push(studLRN.trim());
+                        }
+                        catch (error) {
+                            res.status(500).json({
+                                success: false,
+                                message: error.message
+                            });                  
+                        }
+                    }
+
                     // let subject = section.subjects[index]; //subject and index
                     let q1SubjGrades = req.body.q1Grades;
                     let q2SubjGrades = req.body.q2Grades;
                     let q3SubjGrades = req.body.q3Grades;
                     let q4SubjGrades = req.body.q4Grades;
             
+                    for (student in alphabetizedStudentLRNs) {
             
-                    for (student in section.studentLRNs) {
-            
-                        let studNum = section.studentLRNs[student];
+                        let studNum = alphabetizedStudentLRNs[student];
                         let user = await User.findOne({ LRNNo: studNum });
                         let userParent = await User.findOne({ student_id: user._id })
             
