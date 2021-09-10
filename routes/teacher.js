@@ -181,7 +181,7 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         }
                     }
 
-                    let grades = [];
+                    let alphabetizedGrades = [];
                     for (student in alphabetizedStudentLRNs){
                         try {
                             let studentGrades = await Grade.find({ sectionID: req.params.id });

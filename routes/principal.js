@@ -181,7 +181,8 @@ router.put('/principal/teachers/:id', isAuth, isPrincipal, async (req, res) => {
             firstName: req.body.firstName,
             middleName: req.body.middleName,
             lastName: req.body.lastName,
-            phoneNum: req.body.phoneNum }},
+            phoneNum: req.body.phoneNum,
+            department: req.body.department }},
         { new: true });
         res.json({
             success: true,

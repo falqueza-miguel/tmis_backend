@@ -105,7 +105,7 @@ router.get('/forgotpassword', (req, res) => {
 
 //submit email for reset password
 router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
-    
+    let emailInput = req.body.email.toLowerCase();
     const errors = validationResult(req); //validates if email is an actual email
     if (!errors.isEmpty()){
         console.log(errors);
@@ -119,7 +119,7 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
         }
         console.log('token created!');
         var token = buffer.toString('hex');//token created
-        User.findOne({email: req.body.email})
+        User.findOne({email: emailInput})
         .then(user => {
             if(!user){
                 console.log('no user found!');
@@ -135,7 +135,7 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
                 console.log(result);//user object successfully has reset token and exp in database
 
                 let resetLink = token;
-                let body = email.RP1 + user.firstName + " " + user.lastName + email.RP2 + resetLink + email.RP3;
+                let body = email.RP1 + user.firstName + " " + user.lastName + email.RP2 + resetLink + email.RP3; 
                 const resetPasswordEmail = {
                     from: process.env.EMAIL,
                     to: user.email,
@@ -162,11 +162,12 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
 //need pa ba get request for '/reset/:token'?
 
 //resetting of password
-router.post('/reset/:token', (req, res) => {
+router.post('/reset/:token', async (req, res) => {
     
     const token = req.body.token;//takes token from body
     const newPassword = req.body.password;
     const confirmNewPassword = req.body.confirmPassword;
+
 
     let resetUser;
     User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})//finds user with token and checks if in time
@@ -178,6 +179,7 @@ router.post('/reset/:token', (req, res) => {
         resetUser = user;//puts user object into var for later thenfuncs
         return bcrypt.hash(newPassword, 12)    
         .then(hashedPassword =>{
+            console.log(resetUser)
             resetUser.password = hashedPassword;//puts new password in user obj
             resetUser.resetToken = undefined;//clears token and exp in user obj
             resetUser.resetTokenExpiration = undefined;
