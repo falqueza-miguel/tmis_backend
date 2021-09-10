@@ -375,22 +375,22 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
     try{
 
         // check student numbers if exists in database
-        for (var i = 0, l = req.body.students.length; i < l; i++){
-            try {
-            var student = req.body.students[i];
-            let user = await User.findOne({LRNNo: student});
-            if (!user) {
-                console.log(req.body.students[i] +" doesnt exist");
-                return res.send(req.body.students[i] +" doesnt exist");
-            }
-            }
-            catch (error) {
-                res.status(500).json({
-                    success: false,
-                    message: error.message
-                });
-            }
-        }
+        // for (var i = 0, l = req.body.students.length; i < l; i++){
+        //     try {
+        //     var student = req.body.students[i];
+        //     let user = await User.findOne({LRNNo: student});
+        //     if (!user) {
+        //         console.log(req.body.students[i] +" doesnt exist");
+        //         return res.send(req.body.students[i] +" doesnt exist");
+        //     }
+        //     }
+        //     catch (error) {
+        //         res.status(500).json({
+        //             success: false,
+        //             message: error.message
+        //         });
+        //     }
+        // }
 
         // check teacher email if exists in database
         for (var i = 0, l = req.body.teachers.length; i < l; i++){
@@ -469,29 +469,171 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         });
         await section.save();
 
-        //NA placeholder for grades
-        let blankGrades = [];
+        // //NA placeholder for grades
+        // let blankGrades = [];
+        // for (subject in section.subjects) {
+        //     let blank = "";
+        //     blankGrades.push(blank);
+        // }
+
+        // //create grades object for each student in section object
+        // for (var i = 0, l = section.studentLRNs.length; i < l; i++) {
+        //     var studentLRN = section.studentLRNs[i];
+        //     let grade = new Grade({
+        //         studentLRN: studentLRN,
+        //         sectionID: section._id,
+
+        //         schoolYearFrom: section.schoolYearFrom,
+        //         schoolYearTo: section.schoolYearTo, // reference section schoolyear
+        //         yearLevel: section.yearLevel, // reference section yearlevel
+        //         semester: section.semester,
+        //         strand: section.strand,
+        //         sectionName: section.sectionName, // reference section sectionname
+
+        //         subjects: section.subjects,
+        //         teachers: section.teachers,
+        //         q1Grades: blankGrades,
+        //         q2Grades: blankGrades,
+        //         q3Grades: blankGrades,
+        //         q4Grades: blankGrades  
+        //     });
+        //     console.log("created grade for " + studentLRN);
+        //     await grade.save();
+        // }
+        res.json({
+            success: true,
+            section: section
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//add students to section
+router.post('/principal/sections/:id/addStudents', isAuth, isPrincipal, async (req, res) => {
+    try {
+        //make sure req.body.students is an ARRAY
+
+        // check student numbers if exists in database
+        // studentsInput = [];
+        // for (student in req.body.students) {
+        //     studentsInput.push(req.body.students[student]);
+        // }
+        // console.log(studentsInput);
+
+        for (var i = 0, l = req.body.students.length; i < l; i++){
+            try {
+            var studentTest = req.body.students[i];
+            let user = await User.findOne({LRNNo: studentTest});
+            if (!user) {
+                console.log(req.body.students[i] +" doesnt exist");
+                return res.send(req.body.students[i] +" doesnt exist");
+            }
+            }
+            catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: error.message
+                });
+            }
+        }
+
+        //check if student already exists in section
+        for (var i = 0, l = testData.length; i < l; i++){
+            try {
+            var studentTest = req.body.students[i];
+            let sectionTest = await Section.findOne( {_id: req.params.id} );
+            if (sectionTest.studentLRNs.includes(studentTest)) {
+                console.log(req.body.students[i] +" is already in this section");
+                return res.send(req.body.students[i] +" is already in this section");
+            }   
+            }
+            catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: error.message
+                });
+            }
+        }
+
+        // get array of student names
+        let studentFullNames = [];
+        for (student in req.body.students) {
+            try {
+                let user = await User.findOne({LRNNo: req.body.students[student]});
+                let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
+                studentFullNames.push(fullName);
+            }
+            catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: error.message
+                });                
+            }
+        }
+
+        let studentNames = [];
+        let studentLRNs = [];
+        for (student in studentFullNames){ // slices student LRNs from names
+            try {
+                let name = studentFullNames[student];
+                let studName = name.slice(0, name.length - 12)
+                let studLRN = name.slice(name.length - 12);
+                studentNames.push(studName.trim());
+                studentLRNs.push(studLRN.trim());
+            }
+            catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: error.message
+                });                  
+            }
+        }
+
+        //get old students add new students
+        let sect = await Section.findOne( {_id: req.params.id} );
+        let oStudentLRNs = sect.studentLRNs;
+        let oStudentNames = sect.studentNames;
+        let nStudentLRNs = oStudentLRNs.concat(studentLRNs);
+        let nStudentNames = oStudentNames.concat(studentNames);
+
+        //add them to section
+        let section = await Section.findOneAndUpdate( {_id: req.params.id},
+            { $set: {
+                studentLRNs: nStudentLRNs,
+                studentNames: nStudentNames,
+            },
+        },
+        { new: true }
+        );
+
+        //create grades objects only for new students
+        let blankGrades = []; //NA placeholder for grades
         for (subject in section.subjects) {
             let blank = "";
             blankGrades.push(blank);
         }
 
         //create grades object for each student in section object
-        for (var i = 0, l = section.studentLRNs.length; i < l; i++) {
-            var studentLRN = section.studentLRNs[i];
+        for (var i = 0, l = studentLRNs.length; i < l; i++) {
+            var studentLRN = studentLRNs[i];
             let grade = new Grade({
                 studentLRN: studentLRN,
-                sectionID: section._id,
+                sectionID: sect._id,
 
-                schoolYearFrom: section.schoolYearFrom,
-                schoolYearTo: section.schoolYearTo, // reference section schoolyear
-                yearLevel: section.yearLevel, // reference section yearlevel
-                semester: section.semester,
-                strand: section.strand,
-                sectionName: section.sectionName, // reference section sectionname
+                schoolYearFrom: sect.schoolYearFrom,
+                schoolYearTo: sect.schoolYearTo, // reference section schoolyear
+                yearLevel: sect.yearLevel, // reference section yearlevel
+                semester: sect.semester,
+                strand: sect.strand,
+                sectionName: sect.sectionName, // reference section sectionname
 
-                subjects: section.subjects,
-                teachers: section.teachers,
+                subjects: sect.subjects,
+                teachers: sect.teachers,
                 q1Grades: blankGrades,
                 q2Grades: blankGrades,
                 q3Grades: blankGrades,
@@ -512,8 +654,6 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         });
     }
 });
-
-//add students to section
 
 //get all active sections
 router.get('/principal/sections', isAuth, isPrincipal, async (req, res) => {
