@@ -333,7 +333,7 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
                 emergencyName: req.body.emergencyName,
                 emergencyCellphone: req.body.emergencyCellphone,
                 emergencyTelephone: req.body.emergencyTelephone,
-                parentEmail: req.body.parentEmail,
+                //parentEmail: req.body.parentEmail,
                 parentPhoneNum: req.body.parentPhoneNum,
             
                 //for returning students
