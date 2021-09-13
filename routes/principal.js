@@ -447,6 +447,7 @@ router.post('/principal/sectionsStud/:id', isAuth, isPrincipal, async (req, res)
         //     studentsInput.push(req.body.students[student]);
         // }
         // console.log(studentsInput);
+        console.log(req.body.students);
 
         for (var i = 0, l = req.body.students.length; i < l; i++){
             try {
@@ -599,9 +600,11 @@ router.post('/principal/sectionsStud/:id', isAuth, isPrincipal, async (req, res)
 router.get('/principal/sectionAdd/:yearLevel', isAuth, isPrincipal, async (req, res) => {
     try {
         let users = await User.find( {$and:[{role: 6}, {active: true}, {yearLevel: req.params.yearLevel}]} )
+        let userCount = await User.find( {$and:[{role: 6}, {active: true}, {yearLevel: req.params.yearLevel}]} ).count()
         res.json({
             success: true,
             users: users,
+            userCount: userCount
         });
     } 
     catch (error) {
