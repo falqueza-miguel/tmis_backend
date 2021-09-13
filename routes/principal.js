@@ -375,24 +375,6 @@ router.delete('/principal/annc/:id', isAuth, isPrincipal, async (req, res) => {
 router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) => {
     try{
 
-        // check student numbers if exists in database
-        // for (var i = 0, l = req.body.students.length; i < l; i++){
-        //     try {
-        //     var student = req.body.students[i];
-        //     let user = await User.findOne({LRNNo: student});
-        //     if (!user) {
-        //         console.log(req.body.students[i] +" doesnt exist");
-        //         return res.send(req.body.students[i] +" doesnt exist");
-        //     }
-        //     }
-        //     catch (error) {
-        //         res.status(500).json({
-        //             success: false,
-        //             message: error.message
-        //         });
-        //     }
-        // }
-
         // check teacher email if exists in database
         for (var i = 0, l = req.body.teachers.length; i < l; i++){
             try {
@@ -411,45 +393,15 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
             }
         }
 
-        // ALPHABETIZE STUDENTS BEFORE CREATING SECTION
-        // cross link student LRNs to last names and arrange accordingly
-
-        // let alphabetizedStudentLRNs = [];
-        // let alphabetizedStudentNames = [];
-        // let unorganizedStudentNames = [];
-        // // get array of student names
-        // for (student in req.body.students) {
-        //     try {
-        //         let user = await User.findOne({LRNNo: req.body.students[student]});
-        //         let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
-        //         unorganizedStudentNames.push(fullName);
-        //     }
-        //     catch (error) {
-        //         res.status(500).json({
-        //             success: false,
-        //             message: error.message
-        //         });                
-        //     }
-        // }
-
-        // unorganizedStudentNames.sort(); // sort student names with LRNs alphabetically by last name
-
-        // for (student in unorganizedStudentNames){ // slices student LRNs from names
-        //     try {
-        //         let name = unorganizedStudentNames[student];
-        //         let studName = name.slice(0, name.length - 12)
-        //         let studLRN = name.slice(name.length - 12);
-        //         alphabetizedStudentNames.push(studName.trim());
-        //         alphabetizedStudentLRNs.push(studLRN.trim());
-        //     }
-        //     catch (error) {
-        //         res.status(500).json({
-        //             success: false,
-        //             message: error.message
-        //         });                  
-        //     }
-        // }
-
+        console.log(req.body.schoolYearFrom);
+        console.log(req.body.schoolYearTo);
+        console.log(req.body.yearLevel);
+        console.log(req.body.strand);
+        console.log(req.body.semester);
+        console.log(req.body.sectionName);
+        console.log(req.body.subjects);
+        console.log(req.body.teachers);
+        console.log(req.body.schedule);
         // SECTION CREATION
         let section = new Section({ 
             schoolYearFrom: req.body.schoolYearFrom,
@@ -469,38 +421,8 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
             active: true
         });
         await section.save();
+        console.log(section);
 
-        // //NA placeholder for grades
-        // let blankGrades = [];
-        // for (subject in section.subjects) {
-        //     let blank = "";
-        //     blankGrades.push(blank);
-        // }
-
-        // //create grades object for each student in section object
-        // for (var i = 0, l = section.studentLRNs.length; i < l; i++) {
-        //     var studentLRN = section.studentLRNs[i];
-        //     let grade = new Grade({
-        //         studentLRN: studentLRN,
-        //         sectionID: section._id,
-
-        //         schoolYearFrom: section.schoolYearFrom,
-        //         schoolYearTo: section.schoolYearTo, // reference section schoolyear
-        //         yearLevel: section.yearLevel, // reference section yearlevel
-        //         semester: section.semester,
-        //         strand: section.strand,
-        //         sectionName: section.sectionName, // reference section sectionname
-
-        //         subjects: section.subjects,
-        //         teachers: section.teachers,
-        //         q1Grades: blankGrades,
-        //         q2Grades: blankGrades,
-        //         q3Grades: blankGrades,
-        //         q4Grades: blankGrades  
-        //     });
-        //     console.log("created grade for " + studentLRN);
-        //     await grade.save();
-        // }
         res.json({
             success: true,
             section: section
@@ -674,7 +596,7 @@ router.post('/principal/sections/:id/addStudents', isAuth, isPrincipal, async (r
 // });
 
 //get students in yearLevel
-router.get('/principal/sections/:yearLevel', isAuth, isPrincipal, async (req, res) => {
+router.get('/principal/sections/s/:yearLevel', isAuth, isPrincipal, async (req, res) => {
     try {
         let users = await User.find( {$and:[{role: 6}, {active: true}, {yearLevel: req.params.yearLevel}]} )
         res.json({
@@ -720,6 +642,7 @@ router.get('/principal/sections', isAuth, isPrincipal, async (req, res) => {
 router.get('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
     try {
         let section = await Section.findOne( {_id: req.params.id} );
+        console.log(section)
         res.json({
             success: true,
             section: section
