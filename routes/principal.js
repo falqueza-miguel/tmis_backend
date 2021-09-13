@@ -437,7 +437,7 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
 });
 
 //add students to section
-router.post('/principal/sectionsStud/:id/', isAuth, isPrincipal, async (req, res) => {
+router.post('/principal/sectionsStud/:id', isAuth, isPrincipal, async (req, res) => {
     try {
         //make sure req.body.students is an ARRAY
 
