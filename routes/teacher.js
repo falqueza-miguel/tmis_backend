@@ -93,6 +93,7 @@ router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
         let section_ids = [];
         let section_names = [];
         let subjects = [];
+        let year_levels = [];
         //get subjects
         for (let section in sections){
             let section_id = sections[section]._id;
@@ -102,7 +103,8 @@ router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
             for (let teacher in teacherArray){
                 if (teacherArray[teacher] == res.locals.email ){
                     let subject = sections[section].subjects[teacher];
-    
+                    
+                    year_levels.push(section.yearLevel);
                     subjects.push(subject);
                     section_ids.push(section_id);
                     section_names.push(section_name);
@@ -110,13 +112,20 @@ router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
             }
         }
 
+        let sections_list = []
+        for (let sect in sections_list){
+            let sec = {
+                "name": section_names[sect],
+                "yearLevel":  year_levels[sect],
+                "subject":  subjects[sect],
+                "id": section_ids[sect]
+            }
+            sections_list.push(sec);
+        }
+
         res.json({
             success: true,
-            sections: sections, // pili nalang, this (mas simple ata to)
-
-            section_ids: section_ids, // or this (or baka to, generate link with id, display name and subject)
-            section_names: section_names,
-            subjects: subjects,
+            sections: sections_list,
 
             totalSections: totalSections,
             hasNextPage: SECTIONS_PER_PAGE * page < totalSections,
