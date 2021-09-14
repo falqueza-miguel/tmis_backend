@@ -113,7 +113,7 @@ router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
         }
 
         let sections_list = []
-        for (let sect in sections_list){
+        for (let sect in section_names){
             let sec = {
                 "name": section_names[sect],
                 "yearLevel":  year_levels[sect],
@@ -125,7 +125,7 @@ router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
 
         res.json({
             success: true,
-            sections: sections_list,
+            sections_list: sections_list,
 
             totalSections: totalSections,
             hasNextPage: SECTIONS_PER_PAGE * page < totalSections,
