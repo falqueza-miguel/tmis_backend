@@ -48,7 +48,6 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
 
             let teacherArray = sections[section].teachers;
             for (let teacher in teacherArray){
-                console.log(teacher)
                 if (teacherArray[teacher] == res.locals.email ){
                     let subject = sections[section].subjects[teacher];
                     let schedule = sections[section].schedule[teacher];
