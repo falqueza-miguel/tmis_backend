@@ -447,7 +447,7 @@ router.post('/principal/sectionsStud/:id', isAuth, isPrincipal, async (req, res)
         //     studentsInput.push(req.body.students[student]);
         // }
         // console.log(studentsInput);
-        console.log(req.body.students);
+        console.log(req.body.students.length);
 
         for (var i = 0, l = req.body.students.length; i < l; i++){
             try {
@@ -467,7 +467,7 @@ router.post('/principal/sectionsStud/:id', isAuth, isPrincipal, async (req, res)
         }
 
         //check if student already exists in section
-        for (var i = 0, l = testData.length; i < l; i++){
+        for (var i = 0, l = req.body.students.length; i < l; i++){
             try {
             var studentTest = req.body.students[i];
             let sectionTest = await Section.findOne( {_id: req.params.id} );
@@ -483,6 +483,7 @@ router.post('/principal/sectionsStud/:id', isAuth, isPrincipal, async (req, res)
                 });
             }
         }
+
 
         // get array of student names
         let studentFullNames = [];

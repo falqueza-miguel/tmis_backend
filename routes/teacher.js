@@ -60,14 +60,20 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
 
             }
         }
+    
+        let scheds = []
+        for (let sec in section_names){
+            let sched = {
+                "schedule": schedules[sec],
+                "subject":  subjects[sec],
+                "section":  section_names[sec]
+            }
+            scheds.push(sched)
+        }
 
         res.json({
             success: true,
-            sections: sections, // pili nalang, this (mas simple ata to)
-
-            section_names: section_names, // or this (or baka to, display name, subject and schedule)
-            subjects: subjects,
-            schedules: schedules
+            scheds: scheds
         });
     } 
     catch (error) {
