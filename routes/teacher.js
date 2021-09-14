@@ -228,14 +228,24 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                     console.log(q3SubjGrades)
                     console.log(q4SubjGrades)
             
+                    let students_list = []
+                    for (let student in alphabetizedStudentNames){
+                        let stud = {
+                            "name": alphabetizedStudentNames[student],
+                            "q1Grade": q1SubjGrades[student],
+                            "q2Grade": q2SubjGrades[student],
+                            "q3Grade": q3SubjGrades[student],
+                            "q4Grade": q4SubjGrades[student]
+                        }
+                        students_list.push(stud);
+                    }
+
+                    console.log(students_list)
+
                     return res.json({
                         success: true,
                         section: section,
-                        alphabetizedStudentNames: alphabetizedStudentNames,
-                        q1SubjGrades: q1SubjGrades,
-                        q2SubjGrades: q2SubjGrades,
-                        q3SubjGrades: q3SubjGrades,
-                        q4SubjGrades: q4SubjGrades,
+                        students_list: students_list
                     });
                 }
                 return res.status(500).json({
