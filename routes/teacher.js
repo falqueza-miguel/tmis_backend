@@ -103,8 +103,9 @@ router.get('/teacher/mysections', isAuth, isTeacher, async (req, res) => {
             for (let teacher in teacherArray){
                 if (teacherArray[teacher] == res.locals.email ){
                     let subject = sections[section].subjects[teacher];
+                    let yearLevel = sections[section].yearLevel;
                     
-                    year_levels.push(section.yearLevel);
+                    year_levels.push(yearLevel);
                     subjects.push(subject);
                     section_ids.push(section_id);
                     section_names.push(section_name);
