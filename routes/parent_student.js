@@ -56,6 +56,7 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
         let scheds = []
         for (schedule in section.subjects){
             let sched = {
+                "section": section.sectionName,
                 "subject": section.subjects[schedule],
                 "schedule": section.schedule[schedule],
                 "teacher": section.teachers[schedule]
@@ -65,7 +66,6 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
 
         res.json({
             success: true,
-            sectionName: section.sectionName,
             schedule: scheds
         });
     }
@@ -87,6 +87,7 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
         let scheds = []
         for (schedule in section.subjects){
             let sched = {
+                "section": section.sectionName,
                 "subject": section.subjects[schedule],
                 "schedule": section.schedule[schedule],
                 "teacher": section.teachers[schedule]
@@ -96,7 +97,6 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
 
         res.json({
             success: true,
-            sectionName: section.sectionName,
             schedule: scheds
         });
     }
@@ -115,30 +115,29 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
         let student = await User.findOne({ _id: parent.student_id });
         let latestGrade = await Grade.findOne({ studentLRN: student.LRNNo }).sort({ createdAt: -1 });       
         let allGrades = await Grade.find({ studentLRN: student.LRNNo }).sort({ createdAt: -1});
-        let allGradeIDs = [];
-        let allGradeTitles = [];
-        for (grade in allGrades){
-            allGradeIDs.push(allGrades[grade]._id);
-            allGradeTitles.push(allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName);
-        }
 
-        let latestGrades = []
-        for (subject in latestGrade.subjects){
-            let grade = {
-                "subject": latestGrade.subjects[subject],
-                "q1Grade": latestGrade.q1Grades[subject],
-                "q2Grade": latestGrade.q2Grades[subject],
-                "q3Grade": latestGrade.q3Grades[subject],
-                "q4Grade": latestGrade.q4Grades[subject],
+        let grades = [];
+        for (grade in allGrades){
+            let currentGrades = []
+            let current = allGrades[grade]
+            for (subject in current.subjects){
+                let grade = {
+                    "subject": current.subjects[subject],
+                    "q1Grade": current.q1Grades[subject],
+                    "q2Grade": current.q2Grades[subject],
+                    "q3Grade": current.q3Grades[subject],
+                    "q4Grade": current.q4Grades[subject],
+                }
+               currentGrades.push(grade)
             }
-            latestGrades.push(grade)
+            currentGrades.push(allGrades[grade]._id);
+            currentGrades.push(allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName);
+        grades.push(currentGrades)
         }
 
         res.json({
             success: true,
-            latestGrades: latestGrades,
-            allGradeIDs: allGradeIDs, //use for generating links to past grades
-            allGradeTitles: allGradeTitles
+            grades: grades,
         });
         
     }
@@ -156,30 +155,29 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
         let student = await User.findOne({ _id: res.locals._id });
         let latestGrade = await Grade.findOne({ studentLRN: student.LRNNo }).sort({ createdAt: -1 });       
         let allGrades = await Grade.find({ studentLRN: student.LRNNo }).sort({ createdAt: -1});
-        let allGradeIDs = [];
-        let allGradeTitles = [];
-        for (grade in allGrades){
-            allGradeIDs.push(allGrades[grade]._id);
-            allGradeTitles.push(allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName);
-        }
 
-        let latestGrades = []
-        for (subject in latestGrade.subjects){
-            let grade = {
-                "subject": latestGrade.subjects[subject],
-                "q1Grade": latestGrade.q1Grades[subject],
-                "q2Grade": latestGrade.q2Grades[subject],
-                "q3Grade": latestGrade.q3Grades[subject],
-                "q4Grade": latestGrade.q4Grades[subject],
+        let grades = [];
+        for (grade in allGrades){
+            let currentGrades = []
+            let current = allGrades[grade]
+            for (subject in current.subjects){
+                let grade = {
+                    "subject": current.subjects[subject],
+                    "q1Grade": current.q1Grades[subject],
+                    "q2Grade": current.q2Grades[subject],
+                    "q3Grade": current.q3Grades[subject],
+                    "q4Grade": current.q4Grades[subject],
+                }
+               currentGrades.push(grade)
             }
-            latestGrades.push(grade)
+            currentGrades.push(allGrades[grade]._id);
+            currentGrades.push(allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName);
+        grades.push(currentGrades)
         }
 
         res.json({
             success: true,
-            latestGrades: latestGrades,
-            allGradeIDs: allGradeIDs, //use for generating links to past grades
-            allGradeTitles: allGradeTitles
+            grades: grades,
         });
     }
     catch (error) {
