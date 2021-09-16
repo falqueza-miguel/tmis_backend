@@ -123,7 +123,7 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
         }
 
         let latestGrades = []
-        for (subjects in latestGrade.subjects){
+        for (subject in latestGrade.subjects){
             let grade = {
                 "subject": latestGrade.subjects[subject],
                 "q1Grade": latestGrade.q1Grades[subject],
@@ -164,7 +164,7 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
         }
 
         let latestGrades = []
-        for (subjects in latestGrade.subjects){
+        for (subject in latestGrade.subjects){
             let grade = {
                 "subject": latestGrade.subjects[subject],
                 "q1Grade": latestGrade.q1Grades[subject],
@@ -201,7 +201,7 @@ router.get('/mygrades/:id', isAuth, isParent, async (req, res) => {
         }
 
         let grades = []
-        for (subjects in grade.subjects){
+        for (subject in grade.subjects){
             let grade = {
                 "subject": latestGrade.subjects[subject],
                 "q1Grade": latestGrade.q1Grades[subject],
@@ -211,7 +211,7 @@ router.get('/mygrades/:id', isAuth, isParent, async (req, res) => {
             }
             grades.push(grade)
         }
-        
+
         res.json({
             success: true,
             grades: grades
