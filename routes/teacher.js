@@ -285,60 +285,19 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
             if (subjectArray[subj] == subject){
                 console.log(teacherArray[subj])
                 if (teacherArray[subj] == res.locals.email){
+                    
+                    students = req.body.students
 
-                    // alphabetize students
-                    let alphabetizedStudentLRNs = [];
-                    let alphabetizedStudentNames = [];
-                    let unorganizedStudentNames = [];
-                    // get array of student names
-                    for (student in section.studentLRNs) {
-                        try {
-                            let user = await User.findOne({LRNNo: section.studentLRNs[student]});
-                            let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
-                            unorganizedStudentNames.push(fullName);
-                        }
-                        catch (error) {
-                            res.status(500).json({
-                                success: false,
-                                message: error.message
-                            });                
-                        }
-                    }
-
-                    unorganizedStudentNames.sort(); // sort student names with LRNs alphabetically by last name
-
-                    for (student in unorganizedStudentNames){ // slices student LRNs from names
-                        try {
-                            let name = unorganizedStudentNames[student];
-                            let studName = name.slice(0, name.length - 12)
-                            let studLRN = name.slice(name.length - 12);
-                            alphabetizedStudentNames.push(studName.trim());
-                            alphabetizedStudentLRNs.push(studLRN.trim());
-                        }
-                        catch (error) {
-                            res.status(500).json({
-                                success: false,
-                                message: error.message
-                            });                  
-                        }
-                    }
-
-                    // let subject = section.subjects[index]; //subject and index
-                    let q1SubjGrades = req.body.q1Grades;
-                    let q2SubjGrades = req.body.q2Grades;
-                    let q3SubjGrades = req.body.q3Grades;
-                    let q4SubjGrades = req.body.q4Grades;
+                    for (student in students) {
             
-                    for (student in alphabetizedStudentLRNs) {
-            
-                        let studNum = alphabetizedStudentLRNs[student];
+                        let studNum = students[student].LRNNo;
                         let user = await User.findOne({ LRNNo: studNum });
                         let userParent = await User.findOne({ student_id: user._id })
             
-                        let q1g = q1SubjGrades[student];
-                        let q2g = q2SubjGrades[student];
-                        let q3g = q3SubjGrades[student];
-                        let q4g = q4SubjGrades[student];
+                        let q1g = students[student].Q1;
+                        let q2g = students[student].Q2;
+                        let q3g = students[student].Q3;
+                        let q4g = students[student].Q4;
             
                         let grade = await Grade.findOne({ $and: [{ sectionID: req.params.id }, { studentLRN: studNum }] });
                         let q_one = grade.q1Grades;
