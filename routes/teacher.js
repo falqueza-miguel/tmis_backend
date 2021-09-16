@@ -290,7 +290,7 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
 
                     for (student in students) {
             
-                        let studNum = students[student].LRNNo;
+                        let studNum = students[student].LRN;
                         let user = await User.findOne({ LRNNo: studNum });
                         let userParent = await User.findOne({ student_id: user._id })
             
