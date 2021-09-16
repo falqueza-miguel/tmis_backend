@@ -233,6 +233,7 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                     for (let student in alphabetizedStudentNames){
                         let stud = {
                             "name": alphabetizedStudentNames[student],
+                            "LRN": alphabetizedStudentLRNs[student],
                             "q1Grade": q1SubjGrades[student],
                             "q2Grade": q2SubjGrades[student],
                             "q3Grade": q3SubjGrades[student],
