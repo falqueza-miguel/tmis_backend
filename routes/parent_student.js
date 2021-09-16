@@ -196,6 +196,7 @@ router.get('/mygrades/:id', isAuth, isParent, async (req, res) => {
         let grade = await Grade.findOne({ _id: req.params.id });
         let parent = await User.findOne({ _id: res.locals._id })
         let student = await User.findOne({ _id: parent.student_id });
+        let allGrades = await Grade.find({ studentLRN: student.LRNNo })
         if (!grade.studentLRN == student.LRNNo){
             res.status(500).json({ success: false, message: "not your grade!"}).redirect("/");
         }
@@ -214,7 +215,8 @@ router.get('/mygrades/:id', isAuth, isParent, async (req, res) => {
 
         res.json({
             success: true,
-            grades: grades
+            grades: grades,
+            allGrades: allGrades
         });
     }
     catch (error) {
@@ -229,12 +231,25 @@ router.get('/mygrades/:id', isAuth, isStudent, async (req, res) => {
     try {
         let grade = await Grade.findOne({ _id: req.params.id });
         let user = await User.findOne({ _id: res.locals._id })
+        let allGrades = await Grade.find({ studentLRN: user.LRNNo })
         if (!grade.studentLRN == user.LRNNo){
             res.status(500).json({ success: false, message: "not your grade!"}).redirect("/");
         }
+        let grades = []
+        for (subject in grade.subjects){
+            let grade = {
+                "subject": latestGrade.subjects[subject],
+                "q1Grade": latestGrade.q1Grades[subject],
+                "q2Grade": latestGrade.q2Grades[subject],
+                "q3Grade": latestGrade.q3Grades[subject],
+                "q4Grade": latestGrade.q4Grades[subject],
+            }
+            grades.push(grade)
+        }
         res.json({
             success: true,
-            grade: grade
+            grades: grades,
+            allGrades: allGrades
         });
     }
     catch (error) {
