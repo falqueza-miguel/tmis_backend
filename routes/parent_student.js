@@ -52,11 +52,21 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
         let student = await User.findOne({ _id: parent.student_id });
         console.log(student);
         let section = await Section.findOne({$and: [{ studentLRNs: student.LRNNo }, {active: true }]});
+
+        let scheds = []
+        for (schedule in section.subjects){
+            let sched = {
+                "subject": section.subjects[schedule],
+                "schedule": section.schedule[schedule],
+                "teacher": section.teachers[schedule]
+            }
+            scheds.push(sched);
+        }
+
         res.json({
             success: true,
             sectionName: section.sectionName,
-            subjects: section.subjects,
-            schedule: section.schedule
+            schedule: scheds
         });
     }
     catch (error) {
@@ -73,11 +83,21 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
         let student = await User.findOne({ _id: res.locals._id });
         console.log(student);
         let section = await Section.findOne({$and: [{ studentLRNs: student.LRNNo }, {active: true }]});
+
+        let scheds = []
+        for (schedule in section.subjects){
+            let sched = {
+                "subject": section.subjects[schedule],
+                "schedule": section.schedule[schedule],
+                "teacher": section.teachers[schedule]
+            }
+            scheds.push(sched);
+        }
+
         res.json({
             success: true,
             sectionName: section.sectionName,
-            subjects: section.subjects,
-            schedule: section.schedule
+            schedule: scheds
         });
     }
     catch (error) {
@@ -144,8 +164,47 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
     }
 });
 
-//view old grades for parent and student
-//i think we can work something out in frontend
+//view old grades (baka pwede na extrapolate data from last page to here sa react (allGrades))
+router.get('/mygrades/:id', isAuth, isParent, async (req, res) => {
+    try {
+        let grade = await Grade.findOne({ _id: req.params.id });
+        let parent = await User.findOne({ _id: res.locals._id })
+        let student = await User.findOne({ _id: parent.student_id });
+        if (!grade.studentLRN == student.LRNNo){
+            res.status(500).json({ success: false, message: "not your grade!"}).redirect("/");
+        }
+        res.json({
+            success: true,
+            grade: grade
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+router.get('/mygrades/:id', isAuth, isStudent, async (req, res) => {
+    try {
+        let grade = await Grade.findOne({ _id: req.params.id });
+        let user = await User.findOne({ _id: res.locals._id })
+        if (!grade.studentLRN == user.LRNNo){
+            res.status(500).json({ success: false, message: "not your grade!"}).redirect("/");
+        }
+        res.json({
+            success: true,
+            grade: grade
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 //PARENT
 
