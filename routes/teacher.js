@@ -294,10 +294,10 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         let user = await User.findOne({ LRNNo: studNum });
                         let userParent = await User.findOne({ student_id: user._id })
             
-                        let q1g = students[student].Q1;
-                        let q2g = students[student].Q2;
-                        let q3g = students[student].Q3;
-                        let q4g = students[student].Q4;
+                        let q1g = students[student].q1Grade;
+                        let q2g = students[student].q2Grade;
+                        let q3g = students[student].q3Grade;
+                        let q4g = students[student].q4Grade;
             
                         let grade = await Grade.findOne({ $and: [{ sectionID: req.params.id }, { studentLRN: studNum }] });
                         let q_one = grade.q1Grades;
