@@ -121,9 +121,22 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
             allGradeIDs.push(allGrades[grade]._id);
             allGradeTitles.push(allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName);
         }
+
+        let latestGrades = []
+        for (subjects in latestGrade.subjects){
+            let grade = {
+                "subject": latestGrade.subjects[subject],
+                "q1Grade": latestGrade.q1Grades[subject],
+                "q2Grade": latestGrade.q2Grades[subject],
+                "q3Grade": latestGrade.q3Grades[subject],
+                "q4Grade": latestGrade.q4Grades[subject],
+            }
+            latestGrades.push(grade)
+        }
+
         res.json({
             success: true,
-            latestGrade: latestGrade,
+            latestGrades: latestGrades,
             allGradeIDs: allGradeIDs, //use for generating links to past grades
             allGradeTitles: allGradeTitles
         });
@@ -149,9 +162,22 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
             allGradeIDs.push(allGrades[grade]._id);
             allGradeTitles.push(allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName);
         }
+
+        let latestGrades = []
+        for (subjects in latestGrade.subjects){
+            let grade = {
+                "subject": latestGrade.subjects[subject],
+                "q1Grade": latestGrade.q1Grades[subject],
+                "q2Grade": latestGrade.q2Grades[subject],
+                "q3Grade": latestGrade.q3Grades[subject],
+                "q4Grade": latestGrade.q4Grades[subject],
+            }
+            latestGrades.push(grade)
+        }
+
         res.json({
             success: true,
-            latestGrade: latestGrade,
+            latestGrades: latestGrades,
             allGradeIDs: allGradeIDs, //use for generating links to past grades
             allGradeTitles: allGradeTitles
         });
@@ -173,9 +199,22 @@ router.get('/mygrades/:id', isAuth, isParent, async (req, res) => {
         if (!grade.studentLRN == student.LRNNo){
             res.status(500).json({ success: false, message: "not your grade!"}).redirect("/");
         }
+
+        let grades = []
+        for (subjects in grade.subjects){
+            let grade = {
+                "subject": latestGrade.subjects[subject],
+                "q1Grade": latestGrade.q1Grades[subject],
+                "q2Grade": latestGrade.q2Grades[subject],
+                "q3Grade": latestGrade.q3Grades[subject],
+                "q4Grade": latestGrade.q4Grades[subject],
+            }
+            grades.push(grade)
+        }
+        
         res.json({
             success: true,
-            grade: grade
+            grades: grades
         });
     }
     catch (error) {
