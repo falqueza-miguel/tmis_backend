@@ -127,13 +127,14 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
             }
             gradeLatest.push(grade)
         }
-        let sectInfo = {
+        let gradeLatestInfo = {
             sectionID: latestGrade._id,
             sectionName: latestGrade.schoolYearFrom + "-" + latestGrade.schoolYearTo + ", " + latestGrade.sectionName
-            }
-        gradeLatest.push(sectInfo)
-        
+        }
+
+
         let grades = [];
+        let gradesInfo = [];
         for (grade in allGrades){
             let currentGrades = []
             let current = allGrades[grade]
@@ -151,16 +152,19 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
             sectionID: allGrades[grade]._id,
             sectionName: allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName
             }
-        currentGrades.push(sectInfo)    
+        gradesInfo.push(sectInfo)    
         grades.push(currentGrades)
         }
 
+        gradesInfo.shift()
         grades.shift()
 
         res.json({
             success: true,
             gradeLatest: gradeLatest,
+            gradeLatestInfo: gradeLatestInfo,
             grades: grades,
+            gradesInfo: gradesInfo
         });
         
     }
@@ -190,13 +194,14 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
             }
             gradeLatest.push(grade)
         }
-        let sectInfo = {
+        let gradeLatestInfo = {
             sectionID: latestGrade._id,
             sectionName: latestGrade.schoolYearFrom + "-" + latestGrade.schoolYearTo + ", " + latestGrade.sectionName
-            }
-        gradeLatest.push(sectInfo)
+        }
+
 
         let grades = [];
+        let gradesInfo = [];
         for (grade in allGrades){
             let currentGrades = []
             let current = allGrades[grade]
@@ -214,16 +219,19 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
                 sectionID: allGrades[grade]._id,
                 sectionName: allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName
                 }
-            currentGrades.push(sectInfo)
+            gradesInfo.push(sectInfo)
             grades.push(currentGrades)
         }
 
+        gradesInfo.shift()
         grades.shift()
         
         res.json({
             success: true,
             gradeLatest: gradeLatest,
+            gradeLatestInfo: gradeLatestInfo,
             grades: grades,
+            gradesInfo: gradesInfo
         });
     }
     catch (error) {
