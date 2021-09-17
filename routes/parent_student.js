@@ -127,7 +127,12 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
             }
             gradeLatest.push(grade)
         }
-
+        let sectInfo = {
+            sectionID: latestGrade._id,
+            sectionName: latestGrade.schoolYearFrom + "-" + latestGrade.schoolYearTo + ", " + latestGrade.sectionName
+            }
+        gradeLatest.push(sectInfo)
+        
         let grades = [];
         for (grade in allGrades){
             let currentGrades = []
@@ -142,8 +147,11 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
                 }
                currentGrades.push(grade)
             }
-            currentGrades.push(allGrades[grade]._id);
-            currentGrades.push(allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName);
+            let sectInfo = {
+            sectionID: allGrades[grade]._id,
+            sectionName: allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName
+            }
+        currentGrades.push(sectInfo)    
         grades.push(currentGrades)
         }
 
@@ -182,6 +190,11 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
             }
             gradeLatest.push(grade)
         }
+        let sectInfo = {
+            sectionID: latestGrade._id,
+            sectionName: latestGrade.schoolYearFrom + "-" + latestGrade.schoolYearTo + ", " + latestGrade.sectionName
+            }
+        gradeLatest.push(sectInfo)
 
         let grades = [];
         for (grade in allGrades){
@@ -197,9 +210,12 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
                 }
                currentGrades.push(grade)
             }
-            currentGrades.push(allGrades[grade]._id);
-            currentGrades.push(allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName);
-        grades.push(currentGrades)
+            let sectInfo = {
+                sectionID: allGrades[grade]._id,
+                sectionName: allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName
+                }
+            currentGrades.push(sectInfo)
+            grades.push(currentGrades)
         }
 
         grades.shift()
