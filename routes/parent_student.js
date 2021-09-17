@@ -51,7 +51,7 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
         console.log(parent);
         let student = await User.findOne({ _id: parent.student_id });
         console.log(student);
-        let section = await Section.findOne({$and: [{ studentLRNs: student.LRNNo }, {active: true }]});
+        let section = await Section.findOne({$and: [{ studentLRNs: student.LRNNo }, {active: true }]}).sort({ createdAt: -1 });
 
         let scheds = []
         for (schedule in section.subjects){
@@ -82,7 +82,7 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
     try {
         let student = await User.findOne({ _id: res.locals._id });
         console.log(student);
-        let section = await Section.findOne({$and: [{ studentLRNs: student.LRNNo }, {active: true }]});
+        let section = await Section.findOne({$and: [{ studentLRNs: student.LRNNo }, {active: true }]}).sort({ createdAt: -1 });
 
         let scheds = []
         for (schedule in section.subjects){
@@ -116,6 +116,18 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
         let latestGrade = await Grade.findOne({ studentLRN: student.LRNNo }).sort({ createdAt: -1 });       
         let allGrades = await Grade.find({ studentLRN: student.LRNNo }).sort({ createdAt: -1});
 
+        let gradeLatest = []
+        for (subj in latestGrade.subjects){
+            let grade = {
+                "subject": latestGrade.subjects[subj],
+                "q1Grade": latestGrade.q1Grades[subj],
+                "q2Grade": latestGrade.q2Grades[subj],
+                "q3Grade": latestGrade.q3Grades[subj],
+                "q4Grade": latestGrade.q4Grades[subj],
+            }
+            gradeLatest.push(grade)
+        }
+
         let grades = [];
         for (grade in allGrades){
             let currentGrades = []
@@ -135,8 +147,11 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
         grades.push(currentGrades)
         }
 
+        grades.shift()
+
         res.json({
             success: true,
+            gradeLatest: gradeLatest,
             grades: grades,
         });
         
@@ -156,6 +171,18 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
         let latestGrade = await Grade.findOne({ studentLRN: student.LRNNo }).sort({ createdAt: -1 });       
         let allGrades = await Grade.find({ studentLRN: student.LRNNo }).sort({ createdAt: -1});
 
+        let gradeLatest = []
+        for (subj in latestGrade.subjects){
+            let grade = {
+                "subject": latestGrade.subjects[subj],
+                "q1Grade": latestGrade.q1Grades[subj],
+                "q2Grade": latestGrade.q2Grades[subj],
+                "q3Grade": latestGrade.q3Grades[subj],
+                "q4Grade": latestGrade.q4Grades[subj],
+            }
+            gradeLatest.push(grade)
+        }
+
         let grades = [];
         for (grade in allGrades){
             let currentGrades = []
@@ -175,8 +202,11 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
         grades.push(currentGrades)
         }
 
+        grades.shift()
+        
         res.json({
             success: true,
+            gradeLatest: gradeLatest,
             grades: grades,
         });
     }

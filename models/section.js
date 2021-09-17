@@ -17,6 +17,6 @@ const SectionSchema = new Schema({
     teachers: [{ type: String, required: true }], //teacher ids
     
     active: { type: Boolean, required: true }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Section', SectionSchema)
