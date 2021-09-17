@@ -129,7 +129,8 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
         }
         let gradeLatestInfo = {
             sectionID: latestGrade._id,
-            sectionName: latestGrade.schoolYearFrom + "-" + latestGrade.schoolYearTo + ", " + latestGrade.sectionName
+            sectionName: latestGrade.schoolYearFrom + "-" + latestGrade.schoolYearTo + ", " + latestGrade.yearLevel + " " + latestGrade.sectionName,
+            sectionYearLevel: latestGrade.yearLevel
         }
 
 
@@ -150,7 +151,8 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
             }
             let sectInfo = {
             sectionID: allGrades[grade]._id,
-            sectionName: allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName
+            sectionName: allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].yearLevel + " " + allGrades[grade].sectionName,
+            sectionYearLevel: allGrades[grade].yearLevel
             }
         gradesInfo.push(sectInfo)    
         grades.push(currentGrades)
@@ -196,7 +198,8 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
         }
         let gradeLatestInfo = {
             sectionID: latestGrade._id,
-            sectionName: latestGrade.schoolYearFrom + "-" + latestGrade.schoolYearTo + ", " + latestGrade.sectionName
+            sectionName: latestGrade.schoolYearFrom + "-" + latestGrade.schoolYearTo + ", " + latestGrade.yearLevel + " " + latestGrade.sectionName,
+            sectionYearLevel: latestGrade.yearLevel
         }
 
 
@@ -217,7 +220,8 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
             }
             let sectInfo = {
                 sectionID: allGrades[grade]._id,
-                sectionName: allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].sectionName
+                sectionName: allGrades[grade].schoolYearFrom + "-" + allGrades[grade].schoolYearTo + ", " + allGrades[grade].yearLevel + " " + allGrades[grade].sectionName,
+                sectionYearLevel: allGrades[grade].yearLevel
                 }
             gradesInfo.push(sectInfo)
             grades.push(currentGrades)
