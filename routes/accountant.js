@@ -115,7 +115,7 @@ router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (
 router.get('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
     try {
         let user = await User.findOne({ _id: req.params.id });
-        let balance = await Balance.find({$and: [{ _id: req.params.balanceID }, { student: user._id }]});
+        let balance = await Balance.findOne({$and: [{ _id: req.params.balanceID }, { student: user._id }]});
         res.json({
             success: true,
             user: user,

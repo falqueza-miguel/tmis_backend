@@ -165,35 +165,37 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                     let unorganizedStudentNames = [];
                     // get array of student names
                     for (student in section.studentLRNs) {
-                        try {
+                        // try {
                             let user = await User.findOne({LRNNo: section.studentLRNs[student]});
+                            console.log(user)
+                            console.log(section.studentLRNs)
                             let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
                             unorganizedStudentNames.push(fullName);
-                        }
-                        catch (error) {
-                            res.status(500).json({
-                                success: false,
-                                message: error.message
-                            });                
-                        }
+                        // }
+                        // catch (error) {
+                        //     res.status(500).json({
+                        //         success: false,
+                        //         message: error.message
+                        //     });                
+                        // }
                     }
 
                     unorganizedStudentNames.sort(); // sort student names with LRNs alphabetically by last name
 
                     for (student in unorganizedStudentNames){ // slices student LRNs from names
-                        try {
+                        // try {
                             let name = unorganizedStudentNames[student];
                             let studName = name.slice(0, name.length - 12)
                             let studLRN = name.slice(name.length - 12);
                             alphabetizedStudentNames.push(studName.trim());
                             alphabetizedStudentLRNs.push(studLRN.trim());
-                        }
-                        catch (error) {
-                            res.status(500).json({
-                                success: false,
-                                message: error.message
-                            });                  
-                        }
+                        // }
+                        // catch (error) {
+                        //     res.status(500).json({
+                        //         success: false,
+                        //         message: error.message
+                        //     });                  
+                        // }
                     }
 
                     let q1SubjGrades = []
@@ -201,7 +203,7 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                     let q3SubjGrades = []
                     let q4SubjGrades = []
                     for (student in alphabetizedStudentLRNs){
-                        try {
+                        // try {
                             let studentGrades = await Grade.findOne({$and: [ {sectionID: req.params.id} , {studentLRN: alphabetizedStudentLRNs[student]}]});
                             // get encoded grades for subject
                             //let students = []
@@ -214,13 +216,13 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             q2SubjGrades.push(studentGrades.q2Grades[subjIndex]);
                             q3SubjGrades.push(studentGrades.q3Grades[subjIndex]);
                             q4SubjGrades.push(studentGrades.q4Grades[subjIndex]);
-                        }
-                        catch (error) {
-                            res.status(500).json({
-                                success: false,
-                                message: error.message
-                            });       
-                        }
+                        // }
+                        // catch (error) {
+                        //     res.status(500).json({
+                        //         success: false,
+                        //         message: error.message
+                        //     });       
+                        // }
                     }
                     
                     console.log(alphabetizedStudentNames)
@@ -262,6 +264,7 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
         });
     } 
     catch (error) {
+        console.log(error)
         res.status(500).json({
             success: false,
             message: error.message
