@@ -184,4 +184,101 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
     }
 });
 
+//payment information
+
+//create payinfo
+router.post('/accountant/createpayinfo', isAuth, isAccountant, async (req, res) => {
+    try {
+        let payinfo = new Payinfo({
+            title: req.body.title,
+            content: req.body.content
+        });
+        await payinfo.save();
+        res.json({
+            success: true,
+            payinfo: payinfo
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }   
+});
+
+//get all payinfo
+router.get('/accountant/payinfo', isAuth, isAccountant, async (req, res) => {
+    try {
+        let payinfo = await Payinfo.find().sort({ createdAt: -1})
+        res.json({
+            success: true,
+            payinfo: payinfo,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//get one payinfo
+router.get('/accountant/payinfo/:id', isAuth, isAccountant, async (req, res) => {
+    try {
+        let payinfo = await Payinfo.findOne({ _id: req.params.id });
+        res.json({
+            success: true,
+            payinfo: payinfo
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
+//edit payinfo
+router.put('/accountant/payinfo/:id', isAuth, isAccountant, async (req, res) => {
+    try {
+        console.log('trying to update!');
+        let payinfo = await Payinfo.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: { 
+            title: req.body.title,
+            content: req.body.content }},
+        { new: true });
+        res.json({
+            success: true,
+            payinfo: payinfo
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
+//delete payinfo (like actually delete)
+router.delete('/accountant/payinfo/:id', isAuth, isAccountant, async (req, res) => {
+    try {
+        let payinfo = await Payinfo.findOneAndDelete( {_id: req.params.id });
+        res.json({
+            success: true,
+            payinfo: payinfo
+        })
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
 module.exports = router;

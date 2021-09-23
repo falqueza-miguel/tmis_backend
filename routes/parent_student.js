@@ -348,8 +348,23 @@ router.get('/parent/balance', isAuth, isParent, async (req, res) => {
     }
 });
 
-//view old balance for parents
-//i think we can work something out in frontend
+
+//view paymentinfo (parent) 
+router.get('/parent/payinfo', isAuth, isParent, async (req, res) => {
+    try {
+        let payinfo = await Payinfo.find().sort({ createdAt: -1})
+        res.json({
+            success: true,
+            payinfo: payinfo,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 
 module.exports = router;

@@ -1,6 +1,5 @@
 
 // requirements
-changes to teacher (alphabetize students)
 let student see student info
 let parent see student info
 
@@ -87,3 +86,4 @@ for (i in balance.transactionType) {
 bal = (bal + balance.debit[i]) - balance.credit[i]
 runBalance.push(bal)
 }
+
