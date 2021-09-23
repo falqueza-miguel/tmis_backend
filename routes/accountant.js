@@ -146,7 +146,7 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
                 credit: req.body.credit }},
             { new: true });
 
-    
+        if (req.body.asEmail){
         var balanceEncodedEmail = {
             from: process.env.EMAIL,
             to: userParent.email,
@@ -155,7 +155,9 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
         };
     
         transporter.sendMail(balanceEncodedEmail);
+        }
 
+        if (req.body.asSMS){
         client.messages 
         .create({ 
             body: 'Tierra Monte Integrated School notification. Your balance has been updated, please check <link here>',  // change this
@@ -166,6 +168,7 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
         .catch(err => {
             console.log(err);
         });
+        }
 
         res.json({
             success: true,
