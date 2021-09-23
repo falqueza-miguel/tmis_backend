@@ -116,10 +116,17 @@ router.get('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (r
     try {
         let user = await User.findOne({ _id: req.params.id });
         let balance = await Balance.findOne({$and: [{ _id: req.params.balanceID }, { student: user._id }]});
+        let bal = 0
+    let runBalance = []
+    for (i in balance.transactionType) {
+    bal = (bal + balance.debit[i]) - balance.credit[i]
+    runBalance.push(bal)
+    }
         res.json({
             success: true,
             user: user,
-            balance: balance //compute in frontend
+            balance: balance,
+            runBalance: runBalance
         });
     } 
     catch (error) {
