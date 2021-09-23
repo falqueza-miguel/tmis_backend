@@ -81,3 +81,9 @@ router.put('/principal/sections/:id', isAuth, isPrincipal, async (req, res) => {
 
 heavily modified as of commit "added yearLevel to balance object", check github for older version of notes
 
+let bal = 0
+let runBalance = []
+for (i in balance.transactionType) {
+bal = (bal + balance.debit[i]) - balance.credit[i]
+runBalance.push(bal)
+}
