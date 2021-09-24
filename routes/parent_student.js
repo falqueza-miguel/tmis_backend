@@ -325,19 +325,36 @@ router.get('/parent/balance', isAuth, isParent, async (req, res) => {
     try {
         let parent = await User.findOne({ _id: res.locals._id });
         console.log(parent);
+
         let latestBalance = await Balance.findOne({ student: parent.student_id }).sort({ createdAt: -1});
-        let allBalances = await Balance.find({ student: parent.student_id }).sort({ createdAt: -1});
-        let allBalanceIDs = [];
-        let allBalanceTitles = [];
-        for (balance in allBalances){
-            allBalanceIDs.push(allBalances[balance]._id);
-            allBalanceTitles.push(allBalances[balance].schoolYearFrom + "-" + allBalances[balance].schoolYearTo);
+        let bal = 0
+        var latestBalObject = latestBalance.toObject()
+        let runLatestBalance = []
+        for (i in latestBalance.transactionType) {
+        bal = (bal + latestBalance.debit[i]) - latestBalance.credit[i]
+        runLatestBalance.push(bal)
         }
+        latestBalObject.runBalance = runLatestBalance
+
+        let allBalances = await Balance.find({ student: parent.student_id }).sort({ createdAt: -1});
+        allBalances.shift()
+        let allBalanceObjects = []
+        for (i in allBalances){
+            let bals = 0
+            let runBalance = []
+            let balObject = allBalances[i].toObject()
+            for (i in balObject.transactionType) {
+                bals = (bals + balObject.debit[i]) - balObject.credit[i]
+                runBalance.push(bals)
+            }
+            balObject.runBalance = runBalance
+            allBalanceObjects.push(balObject)
+        }
+
         res.json({
             success: true,
-            latestBalance: latestBalance,
-            allBalanceIDs: allBalanceIDs, //use for generating links to past balances
-            allBalanceTitles: allBalanceTitles
+            latestBalance: latestBalObject,
+            allBalances: allBalanceObjects
         });
     }
     catch (error) {
