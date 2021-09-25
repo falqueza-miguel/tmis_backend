@@ -14,6 +14,7 @@ const transporter = nodemailer.createTransport({
 
 const User = require('../models/user');
 const Balance = require('../models/balance');
+const Payinfo = require('../models/payinfo');
 
 const isAuth = require('../middleware/is-auth');
 const { isAccountant } = require('../middleware/is-role')

@@ -4,6 +4,7 @@ const User = require('../models/user');
 const Section = require('../models/section');
 const Grade = require('../models/grade');
 const Balance = require('../models/balance');
+const Payinfo = require('../models/payinfo');
 
 const isAuth = require('../middleware/is-auth');
 const { isParent, isStudent, isPS } = require('../middleware/is-role')
