@@ -68,7 +68,7 @@ router.get('/accountant/students', isAuth, isAccountant, async (req, res) => {
 router.get('/accountant/students/:id', isAuth, isAccountant, async (req, res) => {
     try {
         let user = await User.findOne({ _id: req.params.id });
-        let balances = await Balance.find({ student: req.params.id })
+        let balances = await Balance.find({ student: req.params.id }).sort()
         //get balance id's probably and create a link with the id (no need to send the whole balance object in the json)
         res.json({
             success: true,
