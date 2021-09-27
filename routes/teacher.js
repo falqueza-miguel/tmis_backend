@@ -167,8 +167,8 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                     for (student in section.studentLRNs) {
                         // try {
                             let user = await User.findOne({LRNNo: section.studentLRNs[student]});
-                            console.log(user)
-                            console.log(section.studentLRNs)
+                            // console.log(user)
+                            // console.log(section.studentLRNs)
                             let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
                             unorganizedStudentNames.push(fullName);
                         // }
@@ -245,6 +245,12 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                     }
 
                     console.log(students_list)
+
+                    // students_list.sort(function(a, b) {
+                    //     var textA = a.lastName.toUpperCase();
+                    //     var textB = b.lastName.toUpperCase();
+                    //     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                    // });
 
                     return res.json({
                         success: true,
