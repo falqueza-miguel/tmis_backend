@@ -607,7 +607,7 @@ router.get('/principal/sectionAdd/:yearLevel', isAuth, isPrincipal, async (req, 
         let freshUsers = []
 
         for (user in users) {
-            if (!users[user].LRNNo.includes(sectionStudents)) {
+            if (!sectionStudents.includes(users[user].LRNNo)) {
                 freshUsers.push(users[user])
             }
         }
