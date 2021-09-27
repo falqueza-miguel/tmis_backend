@@ -355,7 +355,7 @@ router.get('/parent/balance', isAuth, isParent, async (req, res) => {
         res.json({
             success: true,
             latestBalance: latestBalObject,
-            allBalances: allBalanceObjects
+            //allBalances: allBalanceObjects
         });
     }
     catch (error) {
