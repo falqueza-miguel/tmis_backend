@@ -598,9 +598,9 @@ router.post('/principal/sectionsStud/:id', isAuth, isPrincipal, async (req, res)
 // });
 
 //get students in yearLevel
-router.get('/principal/sectionAdd/:yearLevel', isAuth, isPrincipal, async (req, res) => {
+router.get('/principal/sectionAdd/:id/:yearLevel', isAuth, isPrincipal, async (req, res) => {
     try {
-        let section = await Section.findOne( {_id: req.body._id} )
+        let section = await Section.findOne( {_id: req.params.id} )
         let users = await User.find( {$and:[{role: 6}, {active: true}, {yearLevel: req.params.yearLevel}]} )
         // let userCount = await User.find( {$and:[{role: 6}, {active: true}, {yearLevel: req.params.yearLevel}]} ).count()
         let sectionStudents = section.studentLRNs;
