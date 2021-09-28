@@ -307,18 +307,23 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         let q2g = students[student].q2Grade;
                         let q3g = students[student].q3Grade;
                         let q4g = students[student].q4Grade;
+                        let compg = students[student].computedGrade;
+                        let rems = students[students].gradeRemark;
             
                         let grade = await Grade.findOne({ $and: [{ sectionID: req.params.id }, { studentLRN: studNum }] });
                         let q_one = grade.q1Grades;
                         let q_two = grade.q2Grades;
                         let q_three = grade.q3Grades;
                         let q_four = grade.q4Grades;
-                        
+                        let c_grade = grade.computedGrades;
+                        let g_remark = grade.remarks;
             
                         q_one.splice(subj, 1, q1g);
                         q_two.splice(subj, 1, q2g);
                         q_three.splice(subj, 1, q3g);
                         q_four.splice(subj, 1, q4g);
+                        c_grade.splice(subj, 1, compg);
+                        g_remark.splice(subj, 1, rems);
             
             
                         await Grade.findOneAndUpdate(
@@ -327,7 +332,9 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                                 q1Grades: q_one,
                                 q2Grades: q_two,
                                 q3Grades: q_three,
-                                q4Grades: q_four
+                                q4Grades: q_four,
+                                computedGrades: c_grade,
+                                remarks: g_remark
                             }},
                             { new: true });
                         console.log(grade);

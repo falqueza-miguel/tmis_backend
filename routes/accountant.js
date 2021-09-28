@@ -118,6 +118,7 @@ router.get('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (r
         let user = await User.findOne({ _id: req.params.id });
         let balance = await Balance.findOne({$and: [{ _id: req.params.balanceID }, { student: user._id }]});
         let bal = 0
+
     var balanceObject = balance.toObject()
     let runBalance = []
     for (i in balance.transactionType) {
@@ -125,6 +126,46 @@ router.get('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (r
     runBalance.push(bal)
     }
     balanceObject.runBalance = runBalance
+
+    let payment = 0
+    let scheduleAmount = []
+    let schedulePeriod = []
+    if (balanceObject.paymentTerms.toUpperCase() == "YEARLY"){
+        for (i in balanceObject.transactionType){
+            if (balanceObject.transactionType[i] == "TUITION" && balanceObject.debit[i] > 0){
+                payment = payment + balanceObject.debit[i]
+            }
+        }
+        scheduleAmount.push(payment)
+        schedulePeriod.push("Y1")
+    } else if (balanceObject.paymentTerms.toUpperCase() == "QUARTERLY"){
+        for (i in balanceObject.transactionType){
+            if (balanceObject.transactionType[i] == "TUITION" && balanceObject.debit[i] > 0){
+                payment = payment + balanceObject.debit[i]
+            }
+        }
+        payment = payment / 4
+        for (let i = 0; i < 4; i++) {
+            let shift = parseFloat(i) + parseFloat(1)
+            scheduleAmount.push(payment)
+            schedulePeriod.push("Q"+shift)
+        }
+    } else if (balanceObject.paymentTerms.toUpperCase() == "MONTHLY"){
+        for (i in balanceObject.transactionType){
+            if (balanceObject.transactionType[i] == "TUITION" && balanceObject.debit[i] > 0){
+                payment = payment + balanceObject.debit[i]
+            }
+        }
+        payment = payment / 10
+        for (let i = 0; i < 10; i++) {
+            let shift = parseFloat(i) + parseFloat(1)
+            scheduleAmount.push(payment)
+            schedulePeriod.push("M"+shift)
+        }
+    }
+    balanceObject.scheduleAmount = scheduleAmount
+    balanceObject.schedulePeriod = schedulePeriod
+
         res.json({
             success: true,
             user: user,
@@ -150,7 +191,7 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
             { $and: [{ _id: req.params.balanceID }, { student: user._id }] },
             { $push: {
                 transactionDate: today.toLocaleDateString(),
-                transactionType: req.body.transactionType,
+                transactionType: req.body.transactionType.toUpperCase(),
                 debit: req.body.debit,
                 credit: req.body.credit }},
             { new: true });

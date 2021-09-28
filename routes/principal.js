@@ -562,7 +562,9 @@ router.post('/principal/sectionsStud/:id', isAuth, isPrincipal, async (req, res)
                 q1Grades: blankGrades,
                 q2Grades: blankGrades,
                 q3Grades: blankGrades,
-                q4Grades: blankGrades  
+                q4Grades: blankGrades,
+                computedGrades: blankGrades,
+                remarks: blankGrades
             });
             console.log("created grade for " + studentLRN);
             await grade.save();
