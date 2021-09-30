@@ -203,6 +203,8 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                     let q2SubjGrades = []
                     let q3SubjGrades = []
                     let q4SubjGrades = []
+                    let finalSubjGrades = []
+                    let subjRemarks = []
                     for (student in alphabetizedStudentLRNs){
                         // try {
                             let studentGrades = await Grade.findOne({$and: [ {sectionID: req.params.id} , {studentLRN: alphabetizedStudentLRNs[student]}]});
@@ -217,6 +219,8 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             q2SubjGrades.push(studentGrades.q2Grades[subjIndex]);
                             q3SubjGrades.push(studentGrades.q3Grades[subjIndex]);
                             q4SubjGrades.push(studentGrades.q4Grades[subjIndex]);
+                            finalSubjGrades.push(studentGrades.computedGrades[subjIndex]);
+                            subjRemarks.push(studentGrades.remarks[subjIndex]);
                         // }
                         // catch (error) {
                         //     res.status(500).json({
@@ -240,7 +244,9 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             "q1Grade": q1SubjGrades[student],
                             "q2Grade": q2SubjGrades[student],
                             "q3Grade": q3SubjGrades[student],
-                            "q4Grade": q4SubjGrades[student]
+                            "q4Grade": q4SubjGrades[student],
+                            "computedGrade": finalSubjGrades[student],
+                            "remarks": subjRemarks[student],
                         }
                         students_list.push(stud);
                     }
