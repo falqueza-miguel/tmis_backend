@@ -219,7 +219,7 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             q2SubjGrades.push(studentGrades.q2Grades[subjIndex]);
                             q3SubjGrades.push(studentGrades.q3Grades[subjIndex]);
                             q4SubjGrades.push(studentGrades.q4Grades[subjIndex]);
-                            finalSubjGrades.push(studentGrades.computedGrade[subjIndex]);
+                            finalSubjGrades.push(studentGrades.computedGrades[subjIndex]);
                             subjRemarks.push(studentGrades.remarks[subjIndex]);
                         // }
                         // catch (error) {
@@ -314,7 +314,7 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         let q2g = students[student].q2Grade;
                         let q3g = students[student].q3Grade;
                         let q4g = students[student].q4Grade;
-                        let compg = students[student].computedGrades;
+                        let compg = students[student].computedGrade;
                         let rems = students[student].remarks;
                         console.log("student")
                         let grade = await Grade.findOne({ $and: [{ sectionID: req.params.id }, { studentLRN: studNum }] });
