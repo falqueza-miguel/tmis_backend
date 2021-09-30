@@ -219,7 +219,7 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             q2SubjGrades.push(studentGrades.q2Grades[subjIndex]);
                             q3SubjGrades.push(studentGrades.q3Grades[subjIndex]);
                             q4SubjGrades.push(studentGrades.q4Grades[subjIndex]);
-                            finalSubjGrades.push(studentGrades.computedGrades[subjIndex]);
+                            finalSubjGrades.push(studentGrades.computedGrade[subjIndex]);
                             subjRemarks.push(studentGrades.remarks[subjIndex]);
                         // }
                         // catch (error) {
