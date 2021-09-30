@@ -169,6 +169,7 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             let user = await User.findOne({LRNNo: section.studentLRNs[student]});
                             // console.log(user)
                             // console.log(section.studentLRNs)
+                            console.log(section.studentLRNs[student])
                             let fullName = user.lastName + ", " + user.firstName + " " + user.middleName + " " + user.LRNNo;
                             unorganizedStudentNames.push(fullName);
                         // }
@@ -307,8 +308,8 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         let q2g = students[student].q2Grade;
                         let q3g = students[student].q3Grade;
                         let q4g = students[student].q4Grade;
-                        let compg = students[student].computedGrade;
-                        let rems = students[students].gradeRemark;
+                        let compg = students[student].computedGrades;
+                        let rems = students[students].remarks;
             
                         let grade = await Grade.findOne({ $and: [{ sectionID: req.params.id }, { studentLRN: studNum }] });
                         let q_one = grade.q1Grades;

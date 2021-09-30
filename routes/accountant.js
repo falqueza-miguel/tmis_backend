@@ -234,6 +234,24 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
     }
 });
 
+//delete balance (like actually delete)
+router.delete('/accountant/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: req.params.id });
+        let balance = await Balance.findOneAndDelete({$and: [{ _id: req.params.balanceID }, { student: user._id }]});
+        res.json({
+            success: true,
+            balance: balance
+        })
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
 //payment information
 
 //create payinfo
