@@ -125,6 +125,8 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
                 "q2Grade": latestGrade.q2Grades[subj],
                 "q3Grade": latestGrade.q3Grades[subj],
                 "q4Grade": latestGrade.q4Grades[subj],
+                "computedGrade": lastestGrade.computedGrades[subj],
+                "remark": lastestGrade.remarks[subj],
             }
             gradeLatest.push(grade)
         }
@@ -194,6 +196,8 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
                 "q2Grade": latestGrade.q2Grades[subj],
                 "q3Grade": latestGrade.q3Grades[subj],
                 "q4Grade": latestGrade.q4Grades[subj],
+                "computedGrade": lastestGrade.computedGrades[subj],
+                "remark": lastestGrade.remarks[subj],
             }
             gradeLatest.push(grade)
         }
