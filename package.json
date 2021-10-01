@@ -3,8 +3,14 @@
   "version": "1.0.0",
   "description": "backend for tmis school management system",
   "main": "index.js",
+  "engines": {
+    "node": "14.17.3"
+  },
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "build": "cd client && npm run build",
+    "install-client": "cd client && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build"
   },
   "author": "",
   "license": "ISC",

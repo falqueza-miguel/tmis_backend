@@ -125,8 +125,8 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
                 "q2Grade": latestGrade.q2Grades[subj],
                 "q3Grade": latestGrade.q3Grades[subj],
                 "q4Grade": latestGrade.q4Grades[subj],
-                "computedGrade": lastestGrade.computedGrades[subj],
-                "remark": lastestGrade.remarks[subj],
+                "computedGrade": latestGrade.computedGrades[subj],
+                "remark": latestGrade.remarks[subj],
             }
             gradeLatest.push(grade)
         }
@@ -163,7 +163,7 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
 
         gradesInfo.shift()
         grades.shift()
-
+        console.log(gradeLatest)
         res.json({
             success: true,
             gradeLatest: gradeLatest,
@@ -187,7 +187,7 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
         let student = await User.findOne({ _id: res.locals._id });
         let latestGrade = await Grade.findOne({ studentLRN: student.LRNNo }).sort({ createdAt: -1 });       
         let allGrades = await Grade.find({ studentLRN: student.LRNNo }).sort({ createdAt: -1});
-
+        console.log(latestGrade)
         let gradeLatest = []
         for (subj in latestGrade.subjects){
             let grade = {
@@ -196,8 +196,8 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
                 "q2Grade": latestGrade.q2Grades[subj],
                 "q3Grade": latestGrade.q3Grades[subj],
                 "q4Grade": latestGrade.q4Grades[subj],
-                "computedGrade": lastestGrade.computedGrades[subj],
-                "remark": lastestGrade.remarks[subj],
+                "computedGrade": latestGrade.computedGrades[subj],
+                "remark": latestGrade.remarks[subj],
             }
             gradeLatest.push(grade)
         }
@@ -234,7 +234,7 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
 
         gradesInfo.shift()
         grades.shift()
-        
+        console.log(gradeLatest)
         res.json({
             success: true,
             gradeLatest: gradeLatest,
