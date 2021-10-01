@@ -333,10 +333,11 @@ router.put('/accountant/payinfo/:id', isAuth, isAccountant, async (req, res) => 
 });
 
 //delete payinfo (like actually delete)
-router.delete('/accountant/payinfo/:id', isAuth, isAccountant, async (req, res) => {
+router.get('/accountant/delete/:id', isAuth, isAccountant, async (req, res) => {
     try {
         console.log("hi")
-        let payinfo = await Payinfo.findOneAndDelete( {_id: req.params.id });
+        console.log(req.params.id)
+        let payinfo = await Payinfo.findOneAndDelete({ _id: req.params.id });
         res.json({
             success: true,
             payinfo: payinfo
