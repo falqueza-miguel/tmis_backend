@@ -135,7 +135,7 @@ router.post('/forgotpassword', body('email').isEmail(), (req, res) => {
                 console.log(result);//user object successfully has reset token and exp in database
 
                 let resetLink = token;
-                let body = email.RP1 + user.firstName + " " + user.lastName + email.RP2 + resetLink + email.RP3; 
+                let body = email.RP1 + user.firstName + " " + user.lastName + "," + email.RP2 + '<a href="' + token + '">this link </a>' + email.RP3; 
                 const resetPasswordEmail = {
                     from: process.env.EMAIL,
                     to: user.email,

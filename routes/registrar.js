@@ -214,7 +214,7 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
             from: process.env.EMAIL,
             to: userEmails,
             subject: "TMIS registration notification!",
-            html: "<h1>you are registered!</h1>" + student.firstName + " " + student.middleName + " " + student.lastName 
+            html: "Hi," + " " + student.lastName + " " + student.firstName + " " + student.middleName.charAt(0) + ".<br /><br />You have been registered to Tierra Monte Integrated School"
         };
 
         transporter.sendMail(registrationEmail);
@@ -291,7 +291,8 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
                 middleName: req.body.middleName,
                 lastName: req.body.lastName,
                 phoneNum: req.body.phoneNum,
-                LRNNo: req.body.LRNNo
+                LRNNo: req.body.LRNNo,
+                yearLevel: req.body.levelEnroll
             }},
             { new: true });
         let userInfo = await StudentInfo.findOneAndUpdate(

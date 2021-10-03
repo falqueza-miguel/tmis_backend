@@ -165,6 +165,7 @@ router.get('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (r
     }
     balanceObject.scheduleAmount = scheduleAmount
     balanceObject.schedulePeriod = schedulePeriod
+    console.log(balanceObject)
 
         res.json({
             success: true,
@@ -201,7 +202,7 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
             from: process.env.EMAIL,
             to: userParent.email,
             subject: "TMIS balance notification!",
-            html: "<h1>happy new year you filthy animal</h1>" + userParent.firstName + " " + userParent.middleName + " " + userParent.lastName 
+            html: "Your balance has been updated, you may view it by logging in our website here"
         };
     
         transporter.sendMail(balanceEncodedEmail);

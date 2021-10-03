@@ -3,19 +3,19 @@
 let student see student info
 let parent see student info
 
-finalize get old grade for parent and student (5:16am 19 aug 2021) (10:30pm 19 aug 2021) ( probably sa frontend )
-finalize get old balance for parent (2:30 am 20 aug 2021) ( probably sa frontend )
-finalize accountant functions (5:16am 19 aug 2021) (10:30pm 19 aug 2021) ( probably sa frontend )
-finalize accountant edit information page and parent payment information page (2:30 am 20 aug 2021) ( probably sa frontend )
-
 finalize login json response (not necessary atm (1:30pm 17 aug 2021))
 
 // SMS and EMAIL
 send emails for reset token (logic done, make it pretty)
+email.RP1 + user.firstName + " " + user.lastName + "," + email.RP2 + '<a href="' + token + '">this link </a>' + email.RP3; 
 send emails for when registered to the school (logic done, make it pretty)
+"Hi" + " " + student.lastName + " " + student.firstName + " " + student.middleName.charAt(0) + ".<br /><br />You have been registered to Tierra Monte Integrated school"
 send sms (logic done, make it pretty) and email (logic done, make it pretty) for announcements
+"A new announcement has been posted! you may view it by visiting our website here"
 send email for grade encoding (logic done, make it pretty)
+"Your grade has been updated, you may view it by logging in our website here"
 send sms (logic done, make it pretty) and email (logic done, make it pretty) for balance encoding 
+"Your balance has been updated, you may view it by logging in our website here"
 
 // ideas
 /housekeeping

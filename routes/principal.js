@@ -242,7 +242,7 @@ router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
             from: process.env.EMAIL,
             bcc: userEmails,
             subject: "TMIS announcement!",
-            html: "<h1>announcement!</h1>" // announcement goes here
+            html: "A new announcement has been posted! you may view it by visiting our website here"
         };
         transporter.sendMail(announcementEmail);
         }
