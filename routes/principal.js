@@ -135,9 +135,17 @@ router.get('/principal/teachers', isAuth, isPrincipal, async (req, res) => {
         const page = req.query.page;
         let totalUsers = await User.find({ $and:[{role: 4}, {active: true}] }).count();
         let users = await User.find({ $and:[{role: 4}, {active: true}] }).skip((page-1)*USERS_PER_PAGE).limit(USERS_PER_PAGE);//only finds active users with roles 4
+        let departments = [];
+        for (user in users) {
+            if (!departments.includes(users[user].department)){
+                departments.push(users[user].department)
+            }
+        }
+        console.log(departments)
         res.json({
             success: true,
             users: users,
+            departments: departments,
             totalUsers: totalUsers,
             hasNextPage: USERS_PER_PAGE * page < totalUsers,
             hasPreviousPage: page > 1,
