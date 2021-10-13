@@ -64,10 +64,13 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
             }
             scheds.push(sched);
         }
-
+        let title = {
+            "yearLevel": section.yearLevel,
+            "section": section.sectionName,
+        }
         res.json({
             success: true,
-            section: section,
+            title: title,
             schedule: scheds
         });
     }
@@ -96,10 +99,13 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
             }
             scheds.push(sched);
         }
-
+        let title = {
+            "yearLevel": section.yearLevel,
+            "section": section.sectionName,
+        }
         res.json({
             success: true,
-            section: section,
+            title: title,
             schedule: scheds
         });
     }
