@@ -42,6 +42,7 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
         let section_names = [];
         let subjects = [];
         let schedules = [];
+        let yearLevels = []
         //get subjects
         for (let section in sections){
             let section_name = sections[section].sectionName;
@@ -51,7 +52,9 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
                 if (teacherArray[teacher] == res.locals.email ){
                     let subject = sections[section].subjects[teacher];
                     let schedule = sections[section].schedule[teacher];
-        
+                    let yearLevel = sections[section].yearLevel;
+
+                    yearLevels.push(yearLevel);
                     subjects.push(subject);
                     schedules.push(schedule);
                     section_names.push(section_name);
@@ -65,7 +68,8 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
             let sched = {
                 "schedule": schedules[sec],
                 "subject":  subjects[sec],
-                "section":  section_names[sec]
+                "section":  section_names[sec],
+                "yearLevel":  yearLevels[sec]
             }
             scheds.push(sched)
         }
