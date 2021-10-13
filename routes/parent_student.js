@@ -67,6 +67,7 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
 
         res.json({
             success: true,
+            section: section,
             schedule: scheds
         });
     }
@@ -98,6 +99,7 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
 
         res.json({
             success: true,
+            section: section,
             schedule: scheds
         });
     }
