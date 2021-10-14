@@ -349,7 +349,8 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             }},
                             { new: true });
                         console.log(grade);
-            
+                        
+                        if (req.body.asEmail){
                         userEmails = [user.email, userParent.email];
                         console.log(userEmails);
                         var gradeEncodedEmail = {
@@ -360,6 +361,7 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         };
                 
                         transporter.sendMail(gradeEncodedEmail);
+                    }
                     }
             
                     return res.json({
