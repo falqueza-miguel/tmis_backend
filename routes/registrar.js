@@ -202,7 +202,8 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
             radioBased: prereg.radioBased,
             homeschool: prereg.homeschool,
             blended: prereg.blended,
-            facetoface: prereg.facetoface
+            facetoface: prereg.facetoface,
+            notes: prereg.notes
         });
         await studentinfo.save();
 
@@ -356,7 +357,8 @@ router.put('/registrar/students/:id', isAuth, isRegistrar, async (req, res) => {
                 radioBased: req.body.radioBased,
                 homeschool: req.body.homeschool,
                 blended: req.body.blended,
-                facetoface: req.body.facetoface
+                facetoface: req.body.facetoface,
+                notes: req.body.notes
             }},
             { new: true });
             res.json({

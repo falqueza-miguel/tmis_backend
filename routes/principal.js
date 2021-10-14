@@ -162,6 +162,33 @@ router.get('/principal/teachers', isAuth, isPrincipal, async (req, res) => {
     }
 });
 
+//gets list of teacher names and email
+router.get('/principal/teacherList', isAuth, isPrincipal, async (req, res) => {
+    try {
+        const page = req.query.page;
+        let users = await User.find({ $and:[{role: 4}, {active: true}] });//only finds active users with roles 4
+        let teachers = [];
+        for (user in users){
+            let fullname = users[user].lastName + ", " + users[user].firstName;
+            let teacher = {
+                email: users[user].email,
+                name: fullname
+            }
+            teachers.push(teacher);
+        }
+        res.json({
+            success: true,
+            teachers: teachers
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 //get one teacher
 router.get('/principal/teachers/:id', isAuth, isPrincipal, async (req, res) => {
     try {

@@ -63,7 +63,9 @@ const StudentInfoSchema = new Schema({
     radioBased: { type: Boolean },
     homeschool: { type: Boolean },
     blended: { type: Boolean },
-    facetoface: { type: Boolean }
+    facetoface: { type: Boolean },
+
+    notes: { type: String }
 
 });
 

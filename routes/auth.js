@@ -344,7 +344,9 @@ router.post('/prereg', body('email').isEmail(), body('parentEmail').isEmail(), (
                                         radioBased: req.body.radioBased,
                                         homeschool: req.body.homeschool,
                                         blended: req.body.blended,
-                                        facetoface: req.body.facetoface
+                                        facetoface: req.body.facetoface,
+
+                                        notes: req.body.notes
                                     
                                     });
                                     prereg.save()
