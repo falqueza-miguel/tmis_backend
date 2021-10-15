@@ -233,6 +233,141 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
     }
 });
 
+//register student and parent account and creates student info
+router.post('/registrar/massApprove', isAuth, isRegistrar, async (req, res) => {
+    try {
+        let preregArray = req.body.preregs
+        for (item in preregArray) {
+        let password = "password"; // DEFAULT PASSWORD
+        let hashedPassword = await bcrypt.hash(password, 12);
+        let prereg = await Prereg.findOne({ _id: preregArray[item]._id });//look for prereg id
+        let sequenceDocument = await Counter.findOneAndUpdate( //student id counter (START WITH 111110)
+            { counter: true },
+            { $inc:{sequence_value:1} },
+            { new: true }
+        );
+        
+        let getInitials = (name) => {
+            let initials = name.split(' ');
+            
+            if(initials.length > 1) {
+              initials = initials.shift().charAt(0) + initials.pop().charAt(0);
+            } else {
+              initials = name.substring(0, 1);
+            } 
+            return initials;
+        }
+        
+        let firstNameInitials = getInitials(prereg.studentFirstName);
+        let middleNameInitial = getInitials(prereg.studentMiddleName);
+        let studentUsername = firstNameInitials + middleNameInitial + prereg.studentLastName;
+
+        let student = new User({//create student user
+            firstName: prereg.studentFirstName,
+            middleName: prereg.studentMiddleName,
+            lastName: prereg.studentLastName,
+            email: prereg.email,
+            phoneNum: prereg.phoneNum,
+            LRNNo: prereg.LRNNo,
+            password: hashedPassword,
+            role: 6,
+            active: 1,
+            studentNumber: parseInt("" + prereg.schoolYearFrom + sequenceDocument.sequence_value), // APPEND YEARFROM BEFORE SEQUENCE_VALUE
+            studentUsername: studentUsername.toLowerCase(),
+            yearLevel: prereg.levelEnroll,
+            firstLogin: true
+        });
+        await student.save();
+
+        let parent = new User({//create parent user (uses mother name)
+            firstName: prereg.motherFirstName,
+            middleName: prereg.motherMiddleName,
+            lastName: prereg.motherLastName,
+            email: prereg.parentEmail,
+            phoneNum: prereg.parentPhoneNum,
+            password: hashedPassword,
+            role: 5,
+            active: 1,
+            student_id: student._id,
+            firstLogin: true
+        });
+        await parent.save();
+
+        let studentinfo = new StudentInfo({
+            student: student._id,
+            schoolYearFrom: prereg.schoolYearFrom,
+            schoolYearTo: prereg.schoolYearTo,
+            //levelEnroll: prereg.levelEnroll,
+            hasLRN: prereg.hasLRN,
+            returning: prereg.returning,
+            PSANo: prereg.PSANo,
+            LRNNo: prereg.LRNNo,
+            birthDate: prereg.birthDate,
+            gender: prereg.gender,
+            indig: prereg.indig,
+            indigSpec: prereg.indigSpec,
+            motherTongue: prereg.motherTongue,
+            address1: prereg.address1,
+            address2: prereg.address2,
+            zipCode: prereg.zipCode,
+            motherFirstName: prereg.motherFirstName,
+            motherMiddleName: prereg.motherMiddleName,
+            motherLastName: prereg.motherLastName,
+            fatherFirstName: prereg.fatherFirstName,
+            fatherMiddleName: prereg.fatherMiddleName,
+            fatherLastName: prereg.fatherLastName,
+            parentEmail: prereg.parentEmail,
+            parentPhoneNum: prereg.parentPhoneNum,
+            guardianFirstName: prereg.guardianFirstName,
+            guardianMiddleName: prereg.guardianMiddleName,
+            guardianLastName: prereg.guardianLastName,
+            emergencyName: prereg.emergencyName,
+            emergencyCellphone: prereg.emergencyCellphone,
+            emergencyTelephone: prereg.emergencyTelephone,
+            lastGradeLevel: prereg.lastGradeLevel,
+            lastSchoolYear: prereg.lastSchoolYear,
+            schoolName: prereg.schoolName,
+            schoolAddress: prereg.schoolAddress,
+            semester: prereg.semester,
+            track: prereg.track,
+            strand: prereg.strand, 
+            modularP: prereg.modularP,
+            modularD: prereg.modularD,
+            online: prereg.online,
+            educTV: prereg.educTV,
+            radioBased: prereg.radioBased,
+            homeschool: prereg.homeschool,
+            blended: prereg.blended,
+            facetoface: prereg.facetoface,
+            notes: prereg.notes
+        });
+        await studentinfo.save();
+
+        prereg = await Prereg.findOneAndDelete({ _id: preregArray[item]._id });
+
+        userEmails = [student.email, parent.email];
+        console.log(userEmails);
+        var registrationEmail = {
+            from: process.env.EMAIL,
+            to: userEmails,
+            subject: "TMIS registration notification!",
+            html: "Hi," + " " + student.lastName + " " + student.firstName + " " + student.middleName.charAt(0) + ".<br /><br />You have been registered to Tierra Monte Integrated School"
+        };
+
+        transporter.sendMail(registrationEmail);
+        }
+        res.json({
+            success: true,
+        });
+        
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 //get all active students
 router.get('/registrar/students', isAuth, isRegistrar, async (req, res) => {
