@@ -237,10 +237,11 @@ router.post('/registrar/preregs/:id', isAuth, isRegistrar, async (req, res) => {
 router.post('/registrar/massApprove', isAuth, isRegistrar, async (req, res) => {
     try {
         let preregArray = req.body.preregs
+        console.log(preregArray)
         for (item in preregArray) {
         let password = "password"; // DEFAULT PASSWORD
         let hashedPassword = await bcrypt.hash(password, 12);
-        let prereg = await Prereg.findOne({ _id: preregArray[item]._id });//look for prereg id
+        let prereg = await Prereg.findOne({ _id: preregArray[item] });//look for prereg id
         let sequenceDocument = await Counter.findOneAndUpdate( //student id counter (START WITH 111110)
             { counter: true },
             { $inc:{sequence_value:1} },
@@ -343,7 +344,7 @@ router.post('/registrar/massApprove', isAuth, isRegistrar, async (req, res) => {
         });
         await studentinfo.save();
 
-        prereg = await Prereg.findOneAndDelete({ _id: preregArray[item]._id });
+        prereg = await Prereg.findOneAndDelete({ _id: preregArray[item] });
 
         userEmails = [student.email, parent.email];
         console.log(userEmails);
