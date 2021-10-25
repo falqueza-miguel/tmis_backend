@@ -528,4 +528,26 @@ router.delete('/registrar/students/:id', isAuth, isRegistrar, async (req, res) =
     }
 });
 
+//mass promote
+router.get('/registrar/promoteStudents/', isAuth, isRegistrar, async (req, res) => {
+    try {
+        console.log("it works, uncomment mo and wag pindutin unless necessary")
+        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "12"}]}, {active: false});
+        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "11"}]}, {yearLevel: "12"});
+        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "10"}]}, {yearLevel: "11"});
+        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "9"}]}, {yearLevel: "10"});
+        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "8"}]}, {yearLevel: "9"});
+        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "7"}]}, {yearLevel: "8"});
+        res.json({
+            success: true,
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 module.exports = router;
+
