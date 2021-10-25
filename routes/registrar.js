@@ -531,13 +531,36 @@ router.delete('/registrar/students/:id', isAuth, isRegistrar, async (req, res) =
 //mass promote
 router.get('/registrar/promoteStudents/', isAuth, isRegistrar, async (req, res) => {
     try {
-        console.log("it works, uncomment mo and wag pindutin unless necessary")
-        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "12"}]}, {active: false});
-        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "11"}]}, {yearLevel: "12"});
-        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "10"}]}, {yearLevel: "11"});
-        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "9"}]}, {yearLevel: "10"});
-        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "8"}]}, {yearLevel: "9"});
-        await User.updateMany({$and:[{role: 6}, {active: true}, {yearLevel: "7"}]}, {yearLevel: "8"});
+        studentIDs = req.body.IDs;
+        for (id in studentIDs){
+            let user = await User.findOne({ _id: studentIDs[id] });
+            switch (user.yearLevel) {
+                case "7":
+                    user.yearLevel = "8";
+                    user.save();
+                    break;
+                case "8":
+                    user.yearLevel = "9";
+                    user.save();
+                    break;
+                case "9":
+                    user.yearLevel = "10";
+                    user.save();
+                    break;
+                case "10":
+                    user.yearLevel = "11";
+                    user.save();
+                    break;
+                case "11":
+                    user.yearLevel = "12";
+                    user.save();
+                    break;
+                case "12":
+                    user.active = false;
+                    user.save();
+                    break;    
+            }
+        }
         res.json({
             success: true,
         });
@@ -549,5 +572,6 @@ router.get('/registrar/promoteStudents/', isAuth, isRegistrar, async (req, res) 
         });
     }
 });
+
 module.exports = router;
 
