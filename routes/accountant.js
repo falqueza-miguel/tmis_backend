@@ -15,6 +15,7 @@ const transporter = nodemailer.createTransport({
 const User = require('../models/user');
 const Balance = require('../models/balance');
 const Payinfo = require('../models/payinfo');
+const Tuition = require('../models/tuition');
 
 const isAuth = require('../middleware/is-auth');
 const { isAccountant } = require('../middleware/is-role')
@@ -369,6 +370,51 @@ router.get('/accountant/delete/:id', isAuth, isAccountant, async (req, res) => {
         res.json({
             success: true,
             payinfo: payinfo
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
+//get tuition
+router.get('/accountant/tuition', isAuth, isAccountant, async (req, res) => {
+    try {
+        let tuition = await Tuition.findOne({ tuition: true });
+        console.log("works");
+        res.json({
+            success: true,
+            tuition: tuition
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
+//update tuition
+router.post('/accountant/tuitionUpdate', isAuth, isAccountant, async (req, res) => {
+    try {
+        let tuition = await Tuition.findOneAndUpdate(
+            { tuition: true },
+            { $set: {
+                grade7: req.body.grade7,
+                grade8: req.body.grade8,
+                grade9: req.body.grade9,
+                grade10: req.body.grade10,
+                grade11: req.body.grade11,
+                grade12: req.body.grade12 }},
+            { new: true });
+        console.log("works2");
+        res.json({
+            success: true,
+            tuition: tuition
         });
     }
     catch (error) {
