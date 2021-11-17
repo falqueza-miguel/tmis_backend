@@ -56,12 +56,15 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
 
         let scheds = []
         for (schedule in section.subjects){
+            let teacher = await User.findOne({email: section.teachers[schedule]})
+            let name = teacher.lastName + " " + teacher.firstName
             let sched = {
                 "yearLevel": section.yearLevel,
                 "section": section.sectionName,
                 "subject": section.subjects[schedule],
                 "schedule": section.schedule[schedule],
-                "teacher": section.teachers[schedule]
+                "teacher": section.teachers[schedule],
+                "name": name
             }
             scheds.push(sched);
         }
@@ -92,12 +95,15 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
 
         let scheds = []
         for (schedule in section.subjects){
+            let teacher = await User.findOne({email: section.teachers[schedule]})
+            let name = teacher.lastName + " " + teacher.firstName
             let sched = {
                 "yearLevel": section.yearLevel,
                 "section": section.sectionName,
                 "subject": section.subjects[schedule],
                 "schedule": section.schedule[schedule],
-                "teacher": section.teachers[schedule]
+                "teacher": section.teachers[schedule],
+                "name": name
             }
             scheds.push(sched);
         }
