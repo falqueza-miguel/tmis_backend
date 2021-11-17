@@ -2,23 +2,18 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
 const accountSid = process.env.TWILIO_ACCOUNT_SID; 
 const authToken = process.env.TWILIO_AUTH_TOKEN; 
 const client = require('twilio')(accountSid, authToken); 
-
-const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SRV,
-    auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PW
-    }
-});
 
 const User = require('../models/user');
 const Prereg = require('../models/prereg');
 const Annc = require('../models/annc');
 const Section = require('../models/section');
 const Grade = require('../models/grade');
+const Studentinfo = require('../models/studentinfo');
 
 const isAuth = require('../middleware/is-auth');
 const { isPrincipal } = require('../middleware/is-role')
@@ -92,13 +87,15 @@ router.post('/principal/createteacher', isAuth, isPrincipal, body('email').isEma
                         return splitStr.join(' '); 
                     }
 
+                    let dept = req.body.department.trim().toLowerCase();
+
                     const user = new User({//new user object
                         firstName: capitalizeFirstLetters(req.body.firstName),
                         middleName: capitalizeFirstLetter(req.body.middleName),
                         lastName: capitalizeFirstLetter(req.body.lastName),
                         email: req.body.email.toLowerCase(),
                         phoneNum: req.body.phoneNum,
-                        department: req.body.department,
+                        department: capitalizeFirstLetter(dept),
                         password: hashedPassword,
                         role: 4,
                         active: true,
@@ -135,6 +132,7 @@ router.get('/principal/teachers', isAuth, isPrincipal, async (req, res) => {
         const page = req.query.page;
         let totalUsers = await User.find({ $and:[{role: 4}, {active: true}] }).count();
         let users = await User.find({ $and:[{role: 4}, {active: true}] }).skip((page-1)*USERS_PER_PAGE).limit(USERS_PER_PAGE);//only finds active users with roles 4
+
         let departments = [];
         for (user in users) {
             if (!departments.includes(users[user].department)){
@@ -263,21 +261,51 @@ router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
         if (req.body.asEmail){
         //get all emails of active students then get parents
         let userEmails = [];
+        let teachers = await User.find({$and: [{ role: 4 }, { active: true }]});
         let students = await User.find({$and: [{ role: 6 }, { active: true }]});
         for (student in students) {
             let parent = await User.findOne({ student_id: students[student]._id });
             userEmails.push(students[student].email);
             userEmails.push(parent.email);
         }
+        for (teacher in teachers) {
+            userEmails.push(teachers[teacher].email);
+        }
 
         console.log(userEmails);
 
+        const oauth2Client = new OAuth2(
+            process.env.CLIENT_ID, // ClientID
+            process.env.CLIENT_SECRET, // Client Secret
+            "https://developers.google.com/oauthplayground" // Redirect URL
+        );
+            
+        oauth2Client.setCredentials({
+            refresh_token: process.env.REFRESH_TOKEN
+        });
+        const accessToken = oauth2Client.getAccessToken()
+
+        const transporter = nodemailer.createTransport({
+            service: process.env.EMAIL_SRV,
+            auth: {
+                type: "OAuth2",
+                user: process.env.EMAIL,
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                refreshToken: process.env.REFRESH_TOKEN,
+                accessToken: accessToken
+            },
+            tls: {
+                rejectUnauthorized: false
+              }
+        });
+        
         //send email
         var announcementEmail = {
             from: process.env.EMAIL,
             bcc: userEmails,
             subject: "TMIS announcement!",
-            html: "A new announcement has been posted! you may view it by visiting our website here"
+            html: "A new announcement has been posted! you may view it by visiting our website "+'<a href="' + process.env.WEBSITE  +'">here</a>' + "."
         };
         transporter.sendMail(announcementEmail);
         }
@@ -285,13 +313,16 @@ router.post('/principal/createannc', isAuth, isPrincipal, async (req, res) => {
         if (req.body.asSMS){
         //get all phone nums of active students then get parents
         let userPhoneNums = [];
+        let teachers = await User.find({$and: [{ role: 4 }, { active: true }]});
         let students = await User.find({$and: [{ role: 6 }, { active: true }]});
         for (student in students) {
-            let parent = await User.findOne({ student_id: students[student]._id });
+            let parent = await Studentinfo.findOne({ student: students[student]._id });
             userPhoneNums.push(students[student].phoneNum);
-            userPhoneNums.push(parent.phoneNum);
+            userPhoneNums.push(parent.parentPhoneNum);
         }
-
+        for (teacher in teachers) {
+            userPhoneNums.push(teachers[teacher].phoneNum);
+        }
         console.log(userPhoneNums);
 
         //send SMS
@@ -410,15 +441,18 @@ router.delete('/principal/annc/:id', isAuth, isPrincipal, async (req, res) => {
 router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) => {
     try{
 
+        let teachers = []
         // check teacher email if exists in database
         for (var i = 0, l = req.body.teachers.length; i < l; i++){
             try {
             var teacher = req.body.teachers[i];
-            let user = await User.findOne({email: teacher});
+            let user = await User.findOne({email: teacher.toLowerCase()});
             if (!user) {
                 console.log(req.body.teachers[i] +" doesnt exist");
-                return res.send(req.body.teachers[i] +" doesnt exist");
+                return res.send(req.body.teachers[i] +" doesnt exist at index: "+i);
             }
+            let teach = req.body.teachers[i].toLowerCase();
+            teachers.push(teach);
             }
             catch (error) {
                 res.status(500).json({
@@ -435,8 +469,17 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
         console.log(req.body.semester);
         console.log(req.body.sectionName);
         console.log(req.body.subjects);
-        console.log(req.body.teachers);
+        console.log(teachers);
         console.log(req.body.schedule);
+
+        let subjs = req.body.subjects;
+        let secSubjects = []
+        for (subj in subjs){
+            let s = subjs[subj];
+            s.trim();
+            secSubjects.push(s);
+        }
+
         // SECTION CREATION
         let section = new Section({ 
             schoolYearFrom: req.body.schoolYearFrom,
@@ -449,9 +492,9 @@ router.post('/principal/createsection', isAuth, isPrincipal, async (req, res) =>
             // studentLRNs: alphabetizedStudentLRNs,
             // studentNames: alphabetizedStudentNames,
     
-            subjects: req.body.subjects, //all three must be same length
+            subjects: secSubjects, //all three must be same length
             schedule: req.body.schedule,
-            teachers: req.body.teachers, // emails
+            teachers: teachers, // emails
         
             active: true
         });
@@ -599,6 +642,7 @@ router.post('/principal/sectionsStud/:id', isAuth, isPrincipal, async (req, res)
                 q3Grades: blankGrades,
                 q4Grades: blankGrades,
                 computedGrades: blankGrades,
+                finalGrades: blankGrades,
                 remarks: blankGrades
             });
             console.log("created grade for " + studentLRN);
@@ -716,6 +760,53 @@ router.delete('/principal/sections/:id', isAuth, isPrincipal, async (req, res) =
         res.json({
             success: true,
             section: section
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//get user counts
+router.get('/principal/userCount', isAuth, isPrincipal, async (req, res) => {
+    try {
+        //all users
+        let totalUsers = await User.find().count();
+        let totalAdmins = await User.find( { role: 0 } ).count();
+        let totalPrincipals = await User.find( { role: 1 } ).count();
+        let totalAccountants = await User.find( { role: 2 } ).count();
+        let totalRegistrars = await User.find( { role: 3 } ).count();
+        let totalTeachers = await User.find( { role: 4 } ).count();
+        //let totalParents = await User.find( { role: 5 } ).count();
+        let totalStudents = await User.find( { role: 6 } ).count();
+        
+        let totalSections = await Section.find().count(); //all sections
+
+
+        //active users
+        let activeUsers = await User.find( {active: true }).count();
+        let activeAdmins = await User.find({$and: [{ role: 0 }, { active: true }]}).count();
+        let activePrincipals = await User.find({$and: [{ role: 1 }, { active: true }]}).count();
+        let activeAccountants = await User.find({$and: [{ role: 2 }, { active: true }]}).count();
+        let activeRegistrars = await User.find({$and: [{ role: 3 }, { active: true }]}).count();
+        let activeTeachers = await User.find({$and: [{ role: 4 }, { active: true }]}).count();
+        //let activeParents = await User.find({$and: [{ role: 5 }, { active: true }]}).count();
+        let activeStudents = await User.find({$and: [{ role: 6 }, { active: true }]}).count();
+        
+        let activeSections = await Section.find( { active: true } ).count(); //active sections
+
+    
+        //percentages active
+        let percentUsersActive = (activeUsers/totalUsers)*100;
+        let percentStudentsActive = (activeStudents/totalStudents)*100; 
+        let percentTeachersActive = (activeTeachers/totalTeachers)*100;
+
+
+        res.json({
+            success: true
         });
     } 
     catch (error) {

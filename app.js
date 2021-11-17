@@ -6,6 +6,7 @@ const dotenv = require('dotenv').config();
 const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const jwt = require('express-jwt');
+var session = require('express-session');
 
 const app = express();
 
@@ -14,6 +15,15 @@ app.use(bodyParser.json()); //application/json, parses incoming json data
 app.use(bodyParser.urlencoded({extended: true})); //x-www-form-urlencoded, para san extended?
 app.use(cookieParser());
 app.use(cors({ origin:true, credentials:true }));
+app.enable('trust proxy', 1);
+app.use(session({
+    secret: 'secret',
+    proxy: true,
+    // cookie: {
+    //     sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', // must be 'none' to enable cross-site delivery
+    //     secure: process.env.NODE_ENV === "production", // must be true if sameSite='none'
+    //   }
+}));
 
 //connecting app to routes
 const authRoutes = require('./routes/auth');
@@ -38,11 +48,12 @@ app.use((req, res) => {
     res.status(404).send('<h1>error 404</h1>');
 });
 
+
 //connect to database and fires up server
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true , useUnifiedTopology: true })
 .then(result => {
     console.log('connected to database!');
-    app.listen(4000); //request listener, only fires when successfully connected to database
+    app.listen(process.env.PORT); //request listener, only fires when successfully connected to database
 }).catch(err => {
     console.log(err);
 });

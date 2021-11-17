@@ -1,16 +1,10 @@
 const router = require('express').Router();
 const nodemailer = require('nodemailer');
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
 const accountSid = process.env.TWILIO_ACCOUNT_SID; 
 const authToken = process.env.TWILIO_AUTH_TOKEN; 
 const client = require('twilio')(accountSid, authToken); 
-
-const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SRV,
-    auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PW
-    }
-});
 
 const User = require('../models/user');
 const Balance = require('../models/balance');
@@ -88,19 +82,81 @@ router.get('/accountant/students/:id', isAuth, isAccountant, async (req, res) =>
 //new balance
 router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (req, res) => {
     try {
+        let tuition = await Tuition.findOne({ tuition: true });
+        console.log(tuition);
+        let tuit = 0
+        const timeElapsed = Date.now();
+        const today = new Date(timeElapsed);
+        yearLevel = req.body.yearLevel
+        //check grade level
+        //add tuition to balance
+        console.log(yearLevel);
+
+        if (yearLevel == 7){
+            tuit = tuition.grade7;
+        } else if (yearLevel == 8){
+            tuit = tuition.grade8;
+        } else if (yearLevel == 9){
+            tuit = tuition.grade9;
+        } else if (yearLevel == 10){
+            tuit = tuition.grade10;
+        } else if (yearLevel == 11){
+            tuit = tuition.grade11;
+        } else if (yearLevel == 12){
+            tuit = tuition.grade12;
+        }
+
+        console.log(tuit);
+        let transacDate = [];
+        let transacType = [];
+        let de = [];
+        let cr = [];
+        
+        //check if an existing balance exists
+        let prevBal = await Balance.findOne({ student: req.params.id }).sort({ createdAt: -1 })
+        console.log(prevBal);
+        console.log(prevBal !== null);
+        //compute running balance of prev
+        if (prevBal !== null) {
+            console.log("hi");
+            let bal = 0;
+            let runBalance = [];
+            for (i in prevBal.transactionType) {
+                console.log(i)
+                bal = (bal + prevBal.debit[i]) - prevBal.credit[i]
+                runBalance.push(bal)
+            }
+            console.log(prevBal.transactionDate[prevBal.transactionDate.length - 1]);
+            //add old balance to new (BEG BAL)
+            transacDate.push(prevBal.transactionDate[prevBal.transactionDate.length - 1]);
+            transacType.push("BEG BAL");
+            de.push(runBalance[runBalance.length - 1]);
+            cr.push(0);
+        }
+        console.log("1");
+        transacDate.push(today.toLocaleDateString());
+        transacType.push("TUITION");
+        de.push(tuit);
+        cr.push(0);
+        console.log("2");
         let balance = new Balance({
             schoolYearFrom : req.body.schoolYearFrom,
             schoolYearTo : req.body.schoolYearTo,
-            yearLevel : req.body.yearLevel,
+            yearLevel : yearLevel,
             semester : req.body.semester,
         
             student : req.params.id, //student _id
         
             paymentTerms: req.body.paymentTerms,
-            modeOfPayment: req.body.modeOfPayment
+            modeOfPayment: req.body.modeOfPayment,
         
+            transactionDate: transacDate,
+            transactionType: transacType,
+            debit: de,
+            credit: cr
         });
         await balance.save();
+        console.log("3");
         res.json({
             success: true,
         });
@@ -199,11 +255,38 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
             { new: true });
 
         if (req.body.asEmail){
+
+        const oauth2Client = new OAuth2(
+            process.env.CLIENT_ID, // ClientID
+            process.env.CLIENT_SECRET, // Client Secret
+            "https://developers.google.com/oauthplayground" // Redirect URL
+        );
+            
+        oauth2Client.setCredentials({
+            refresh_token: process.env.REFRESH_TOKEN
+        });
+        const accessToken = oauth2Client.getAccessToken()
+
+        const transporter = nodemailer.createTransport({
+            service: process.env.EMAIL_SRV,
+            auth: {
+                type: "OAuth2",
+                user: process.env.EMAIL,
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                refreshToken: process.env.REFRESH_TOKEN,
+                accessToken: accessToken
+            },
+            tls: {
+                rejectUnauthorized: false
+              }
+        });
+        
         var balanceEncodedEmail = {
             from: process.env.EMAIL,
             to: userParent.email,
             subject: "TMIS balance notification!",
-            html: "Your balance has been updated, you may view it by logging in our website here"
+            html: "Your balance has been updated, you may view it by logging in our website "+'<a href="' + process.env.WEBSITE  +'">here</a>' + "."
         };
     
         transporter.sendMail(balanceEncodedEmail);
@@ -237,19 +320,16 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
 });
 
 //delete transaction (like actually delete)
-router.delete('/accountant/delTransaction/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
+router.post('/accountant/delTransaction/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
     try {
         let index = req.body.index;
         let user = await User.findOne({ _id: req.params.id });
-        console.log(user);
         let balance = await Balance.findOne({$and: [{ _id: req.params.balanceID }, { student: user._id }]});
-        console.log(balance._id);
         balance.transactionDate.splice(index, 1);
         balance.transactionType.splice(index, 1);
         balance.debit.splice(index, 1);
         balance.credit.splice(index, 1);
         await balance.save();
-        //delete items in index
         res.json({
             success: true,
             balance: balance
@@ -280,6 +360,9 @@ router.delete('/accountant/:id/:balanceID', isAuth, isAccountant, async (req, re
         });
     }    
 });
+
+
+
 
 //payment information
 
@@ -384,7 +467,6 @@ router.get('/accountant/delete/:id', isAuth, isAccountant, async (req, res) => {
 router.get('/accountant/tuition', isAuth, isAccountant, async (req, res) => {
     try {
         let tuition = await Tuition.findOne({ tuition: true });
-        console.log("works");
         res.json({
             success: true,
             tuition: tuition
@@ -411,7 +493,6 @@ router.post('/accountant/tuitionUpdate', isAuth, isAccountant, async (req, res) 
                 grade11: req.body.grade11,
                 grade12: req.body.grade12 }},
             { new: true });
-        console.log("works2");
         res.json({
             success: true,
             tuition: tuition

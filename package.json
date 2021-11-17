@@ -7,10 +7,7 @@
     "node": "14.17.3"
   },
   "scripts": {
-    "start": "nodemon app.js",
-    "build": "cd client && npm run build",
-    "install-client": "cd client && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build"
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,10 +21,11 @@
     "express-jwt": "^6.1.0",
     "express-session": "^1.17.2",
     "express-validator": "^6.12.1",
+    "googleapis": "^88.2.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.1.0",
     "mongoose": "^5.13.5",
-    "nodemailer": "^6.6.3",
+    "nodemailer": "^6.6.5",
     "nodemon": "^2.0.12",
     "twilio": "^3.67.0"
   }

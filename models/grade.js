@@ -19,6 +19,7 @@ const GradeSchema = new Schema({
     q3Grades: [{ type: String }],
     q4Grades: [{ type: String }],
     computedGrades: [{ type: String }],
+    finalGrades: [{ type: String }],
     remarks: [{ type: String }],
 }, { timestamps: true });
 

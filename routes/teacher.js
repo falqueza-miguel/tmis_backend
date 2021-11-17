@@ -4,14 +4,8 @@ const User = require('../models/user');
 const Section = require('../models/section');
 const Grade = require('../models/grade');
 const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SRV,
-    auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PW
-    }
-});
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
 
 const isAuth = require('../middleware/is-auth');
 const { isTeacher } = require('../middleware/is-role')
@@ -42,7 +36,7 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
         let section_names = [];
         let subjects = [];
         let schedules = [];
-        let yearLevels = []
+        let yearLevels = [];
         //get subjects
         for (let section in sections){
             let section_name = sections[section].sectionName;
@@ -54,10 +48,10 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
                     let schedule = sections[section].schedule[teacher];
                     let yearLevel = sections[section].yearLevel;
 
-                    yearLevels.push(yearLevel);
                     subjects.push(subject);
                     schedules.push(schedule);
                     section_names.push(section_name);
+                    yearLevels.push(yearLevel);
                 }
 
             }
@@ -69,7 +63,7 @@ router.get('/teacher/myschedule', isAuth, isTeacher, async (req, res) => {
                 "schedule": schedules[sec],
                 "subject":  subjects[sec],
                 "section":  section_names[sec],
-                "yearLevel":  yearLevels[sec]
+                "yearLevel": yearLevels[sec]
             }
             scheds.push(sched)
         }
@@ -349,15 +343,41 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             }},
                             { new: true });
                         console.log(grade);
-                        
+            
                         if (req.body.asEmail){
+                        const oauth2Client = new OAuth2(
+                            process.env.CLIENT_ID, // ClientID
+                            process.env.CLIENT_SECRET, // Client Secret
+                            "https://developers.google.com/oauthplayground" // Redirect URL
+                        );
+                            
+                        oauth2Client.setCredentials({
+                            refresh_token: process.env.REFRESH_TOKEN
+                        });
+                        const accessToken = oauth2Client.getAccessToken()
+                
+                        const transporter = nodemailer.createTransport({
+                            service: process.env.EMAIL_SRV,
+                            auth: {
+                                type: "OAuth2",
+                                user: process.env.EMAIL,
+                                clientId: process.env.CLIENT_ID,
+                                clientSecret: process.env.CLIENT_SECRET,
+                                refreshToken: process.env.REFRESH_TOKEN,
+                                accessToken: accessToken
+                            },
+                            tls: {
+                                rejectUnauthorized: false
+                              }
+                        });
+                        
                         userEmails = [user.email, userParent.email];
                         console.log(userEmails);
                         var gradeEncodedEmail = {
                             from: process.env.EMAIL,
                             bcc: userEmails,
                             subject: "TMIS grades notification!",
-                            html: "Your grade has been updated, you may view it by logging in our website here"
+                            html: "Your grade has been updated, you may view it by logging in our website "+'<a href="' + process.env.WEBSITE  +'">here</a>' + "."
                         };
                 
                         transporter.sendMail(gradeEncodedEmail);

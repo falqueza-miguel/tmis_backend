@@ -57,6 +57,7 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
         let scheds = []
         for (schedule in section.subjects){
             let sched = {
+                "yearLevel": section.yearLevel,
                 "section": section.sectionName,
                 "subject": section.subjects[schedule],
                 "schedule": section.schedule[schedule],
@@ -70,8 +71,8 @@ router.get('/parent/schedule', isAuth, isParent, async (req, res) => {
         }
         res.json({
             success: true,
-            title: title,
-            schedule: scheds
+            schedule: scheds,
+            title: title
         });
     }
     catch (error) {
@@ -92,6 +93,7 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
         let scheds = []
         for (schedule in section.subjects){
             let sched = {
+                "yearLevel": section.yearLevel,
                 "section": section.sectionName,
                 "subject": section.subjects[schedule],
                 "schedule": section.schedule[schedule],
@@ -105,8 +107,8 @@ router.get('/student/schedule', isAuth, isStudent, async (req, res) => {
         }
         res.json({
             success: true,
-            title: title,
-            schedule: scheds
+            schedule: scheds,
+            title: title
         });
     }
     catch (error) {
@@ -157,6 +159,8 @@ router.get('/parent/grades', isAuth, isParent, async (req, res) => {
                     "q2Grade": current.q2Grades[subject],
                     "q3Grade": current.q3Grades[subject],
                     "q4Grade": current.q4Grades[subject],
+                    "computedGrade": current.computedGrades[subject],
+                    "remark": current.remarks[subject],
                 }
                currentGrades.push(grade)
             }
@@ -228,6 +232,8 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
                     "q2Grade": current.q2Grades[subject],
                     "q3Grade": current.q3Grades[subject],
                     "q4Grade": current.q4Grades[subject],
+                    "computedGrade": current.computedGrades[subject],
+                    "remark": current.remarks[subject],
                 }
                currentGrades.push(grade)
             }
@@ -243,6 +249,7 @@ router.get('/student/grades', isAuth, isStudent, async (req, res) => {
         gradesInfo.shift()
         grades.shift()
         console.log(gradeLatest)
+        console.log(grades)
         res.json({
             success: true,
             gradeLatest: gradeLatest,
