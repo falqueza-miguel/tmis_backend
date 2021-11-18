@@ -869,6 +869,8 @@ router.post('/principal/newSubj', isAuth, isPrincipal, async (req, res) => {
     }
 });
 
+//SECTION CREATION DROPDOWNS
+
 //get user counts
 router.get('/principal/userCount', isAuth, isPrincipal, async (req, res) => {
     try {
