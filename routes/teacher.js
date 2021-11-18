@@ -201,6 +201,7 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                     let q2SubjGrades = []
                     let q3SubjGrades = []
                     let q4SubjGrades = []
+                    let compSubjGrades = []
                     let finalSubjGrades = []
                     let subjRemarks = []
                     for (student in alphabetizedStudentLRNs){
@@ -217,7 +218,8 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             q2SubjGrades.push(studentGrades.q2Grades[subjIndex]);
                             q3SubjGrades.push(studentGrades.q3Grades[subjIndex]);
                             q4SubjGrades.push(studentGrades.q4Grades[subjIndex]);
-                            finalSubjGrades.push(studentGrades.computedGrades[subjIndex]);
+                            compSubjGrades.push(studentGrades.computedGrades[subjIndex]);
+                            finalSubjGrades.push(studentGrades.finalGrades[subjIndex]);
                             subjRemarks.push(studentGrades.remarks[subjIndex]);
                         // }
                         // catch (error) {
@@ -243,7 +245,8 @@ router.get('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                             "q2Grade": q2SubjGrades[student],
                             "q3Grade": q3SubjGrades[student],
                             "q4Grade": q4SubjGrades[student],
-                            "computedGrade": finalSubjGrades[student],
+                            "computedGrade": compSubjGrades[student],
+                            "finalGrade": finalSubjGrades[student],
                             "remarks": subjRemarks[student],
                         }
                         students_list.push(stud);
@@ -313,6 +316,7 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         let q3g = students[student].q3Grade;
                         let q4g = students[student].q4Grade;
                         let compg = students[student].computedGrade;
+                        let final = students[student].finalGrade;
                         let rems = students[student].remarks;
                         console.log("student")
                         let grade = await Grade.findOne({ $and: [{ sectionID: req.params.id }, { studentLRN: studNum }] });
@@ -321,6 +325,7 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         let q_three = grade.q3Grades;
                         let q_four = grade.q4Grades;
                         let c_grade = grade.computedGrades;
+                        let f_grade = grade.finalGrades;
                         let g_remark = grade.remarks;
             
                         q_one.splice(subj, 1, q1g);
@@ -328,6 +333,7 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                         q_three.splice(subj, 1, q3g);
                         q_four.splice(subj, 1, q4g);
                         c_grade.splice(subj, 1, compg);
+                        f_grade.splice(subj, 1, final);
                         g_remark.splice(subj, 1, rems);
             
             
@@ -339,6 +345,7 @@ router.post('/teacher/mysections/:id', isAuth, isTeacher, async (req, res) => {
                                 q3Grades: q_three,
                                 q4Grades: q_four,
                                 computedGrades: c_grade,
+                                finalGrades: f_grade,
                                 remarks: g_remark
                             }},
                             { new: true });
