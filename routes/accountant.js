@@ -319,6 +319,29 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
     }
 });
 
+//edit transaction
+router.post('/accountant/delTransaction/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
+    try {
+        let index = req.body.index;
+        let user = await User.findOne({ _id: req.params.id });
+        let balance = await Balance.findOne({$and: [{ _id: req.params.balanceID }, { student: user._id }]});
+        balance.transactionType.splice(index, 1, req.body.transacType);
+        balance.debit.splice(index, 1, req.body.debit);
+        balance.credit.splice(index, 1, req.body.credit);
+        await balance.save();
+        res.json({
+            success: true,
+            balance: balance
+        })
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
+
 //delete transaction (like actually delete)
 router.post('/accountant/delTransaction/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
     try {
