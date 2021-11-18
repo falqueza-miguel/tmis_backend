@@ -13,6 +13,7 @@ const Prereg = require('../models/prereg');
 const Annc = require('../models/annc');
 const Section = require('../models/section');
 const Grade = require('../models/grade');
+const Subject = require('../models/subject');
 const Studentinfo = require('../models/studentinfo');
 
 const isAuth = require('../middleware/is-auth');
@@ -760,6 +761,104 @@ router.delete('/principal/sections/:id', isAuth, isPrincipal, async (req, res) =
         res.json({
             success: true,
             section: section
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//SUBJECTS
+
+//get all subject lists
+router.get('/principal/levels/:grade', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let subjectsList = await Subject.find();
+        res.json({
+            success: true,
+            subjectsList: subjectsList
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+
+//open specific subject list
+router.get('/principal/subjects/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let subjects = await Subject.findOne( {_id: req.params.id} );
+        res.json({
+            success: true,
+            subjects: subjects
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//edit subjects list 
+router.put('/principal/editSubj/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let subject = await Subject.findOneAndUpdate(
+            { _id: req.params.id },
+            { $set: { 
+                subjects: req.body.subjects }},
+            { new: true });
+        res.json({
+            success: true,
+            subjects: subjects
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//delete subjects list
+router.delete('/principal/delSubj/:id', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let subjects = await Subject.findOneAndDelete( {_id: req.params.id} );
+        res.json({
+            success: true,
+            subjects: subjects
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+//add new subject list
+router.post('/principal/newSubj', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let subject = new Subject({
+            gradeLevel: req.body.gradeLevel,
+            strand: req.body.strand,
+            semester: req.body.semester,
+            subjects: req.body.subjects
+        });
+        await subject.save();
+        res.json({
+            success: true,
+            subject: subject
         });
     } 
     catch (error) {
