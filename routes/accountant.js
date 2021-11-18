@@ -320,7 +320,7 @@ router.post('/accountant/students/:id/:balanceID', isAuth, isAccountant, async (
 });
 
 //edit transaction
-router.post('/accountant/delTransaction/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
+router.post('/accountant/editTransaction/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
     try {
         let index = req.body.index;
         let user = await User.findOne({ _id: req.params.id });
