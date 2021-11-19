@@ -853,7 +853,7 @@ router.post('/principal/newSubj', isAuth, isPrincipal, async (req, res) => {
         if (search == null){
         let subject = new Subject({
             gradeLevel: req.body.gradeLevel,
-            strand: req.body.strand.toUpperCase(),
+            strand: req.body.strand.trim().toUpperCase(),
             semester: req.body.semester,
         });
         await subject.save();
