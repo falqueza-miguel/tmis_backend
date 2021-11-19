@@ -774,7 +774,7 @@ router.delete('/principal/sections/:id', isAuth, isPrincipal, async (req, res) =
 //SUBJECTS
 
 //get all subject lists
-router.get('/principal/levels/:grade', isAuth, isPrincipal, async (req, res) => {
+router.get('/principal/levels', isAuth, isPrincipal, async (req, res) => {
     try {
         let subjectsList = await Subject.find();
         res.json({
