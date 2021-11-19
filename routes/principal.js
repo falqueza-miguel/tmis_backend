@@ -927,7 +927,9 @@ router.get('/principal/subjectsData', isAuth, isPrincipal, async (req, res) => {
             g9: grade9,
             g10: grade10,
             g11: grade11,
+            g11strands: g11strands,
             g12: grade12,
+            g12strands: g12strands
         });
     } 
     catch (error) {
