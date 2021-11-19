@@ -811,10 +811,17 @@ router.get('/principal/subjects/:id', isAuth, isPrincipal, async (req, res) => {
 //edit subjects list 
 router.put('/principal/editSubj/:id', isAuth, isPrincipal, async (req, res) => {
     try {
+        let subjs = req.body.subjects;
+        let s = []
+        for (i in subjs){
+            let item = subjs[i];
+            item.trim();
+            s.push(item);
+        }
         let subjects = await Subject.findOneAndUpdate(
             { _id: req.params.id },
             { $set: { 
-                subjects: req.body.subjects }},
+                subjects: s }},
             { new: true });
         res.json({
             success: true,
