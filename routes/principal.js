@@ -853,7 +853,6 @@ router.post('/principal/newSubj', isAuth, isPrincipal, async (req, res) => {
             gradeLevel: req.body.gradeLevel,
             strand: req.body.strand,
             semester: req.body.semester,
-            subjects: req.body.subjects
         });
         await subject.save();
         res.json({
@@ -870,6 +869,71 @@ router.post('/principal/newSubj', isAuth, isPrincipal, async (req, res) => {
 });
 
 //SECTION CREATION DROPDOWNS
+router.get('/principal/subjectsData', isAuth, isPrincipal, async (req, res) => {
+    try {
+        let g7 = await Subject.findOne( {gradeLevel: 7} );
+        let g8 = await Subject.findOne( {gradeLevel: 8} );
+        let g9 = await Subject.findOne( {gradeLevel: 9} );
+        let g10 = await Subject.findOne( {gradeLevel: 10} );
+        let g11 = await Subject.find( {gradeLevel: 11} );
+        let g12 = await Subject.find( {gradeLevel: 12} );
+
+        let grade7 = g7.subjects;
+        let grade8 = g8.subjects;
+        let grade9 = g9.subjects;
+        let grade10 = g10.subjects;
+        let g11strands = [];
+        let g12strands = [];
+        for (i in g11){
+            if (!g11strands.includes(g11[i].strand)){
+                g11strands.push(g11[i].strand);
+            }
+        }
+        for (i in g12){
+            if (!g12strands.includes(g12[i].strand)){
+                g12strands.push(g12[i].strand);
+            }
+        }
+        let grade11 = [];
+        let grade12 = [];
+        for (i in g11strands){
+            let g11sem1 = await Subject.findOne( {$and: [{ gradeLevel: 11 }, { strand: g11strands[i] }, { semester: "1st" }]} )
+            let g11sem2 = await Subject.findOne( {$and: [{ gradeLevel: 11 }, { strand: g11strands[i] }, { semester: "2nd" }]} )
+            let strand = {
+                strand: g11strands[i],
+                sem1subjects: g11sem1.subjects,
+                sem2subjects: g11sem2.subjects
+            }
+            grade11.push(strand);
+        }
+        for (i in g12strands){
+            let g12sem1 = await Subject.findOne( {$and: [{ gradeLevel: 12 }, { strand: g12strands[i] }, { semester: "1st" }]} )
+            let g12sem2 = await Subject.findOne( {$and: [{ gradeLevel: 12 }, { strand: g12strands[i] }, { semester: "2nd" }]} )
+            let strand = {
+                strand: g12strands[i],
+                sem1subjects: g12sem1.subjects,
+                sem2subjects: g12sem2.subjects
+            }
+            grade11.push(strand);
+        }
+        res.json({
+            success: true,
+            g7: grade7,
+            g8: grade8,
+            g9: grade9,
+            g10: grade10,
+            g11: grade11,
+            g12: grade12,
+        });
+    } 
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 
 //get user counts
 router.get('/principal/userCount', isAuth, isPrincipal, async (req, res) => {
