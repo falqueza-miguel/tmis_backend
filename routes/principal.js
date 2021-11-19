@@ -849,14 +849,18 @@ router.delete('/principal/delSubj/:id', isAuth, isPrincipal, async (req, res) =>
 //add new subject list
 router.post('/principal/newSubj', isAuth, isPrincipal, async (req, res) => {
     try {
+        let search = await Subject.findOne( {$and: [{ gradeLevel: req.body.gradeLevel }, { strand: req.body.strand.toUpperCase() }, { semester: req.body.semester }]})
+        if (search == null){
         let subject = new Subject({
             gradeLevel: req.body.gradeLevel,
             strand: req.body.strand.toUpperCase(),
             semester: req.body.semester,
         });
         await subject.save();
+        }
         res.json({
             success: true,
+            search: search,
             subject: subject
         });
     } 
