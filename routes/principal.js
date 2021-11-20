@@ -858,7 +858,8 @@ router.post('/principal/newSubj', isAuth, isPrincipal, async (req, res) => {
     try {
         let search = await Subject.findOne( {$and: [{ gradeLevel: req.body.gradeLevel }, { strand: req.body.strand.toUpperCase() }, { semester: req.body.semester }]})
         console.log(search)
-        if (!search == null){
+        console.log(search!==null)
+        if (search !== null){
             console.log("already exists")
             return res.send("already exists")
         }
