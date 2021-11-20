@@ -857,14 +857,19 @@ router.delete('/principal/delSubj/:id', isAuth, isPrincipal, async (req, res) =>
 router.post('/principal/newSubj', isAuth, isPrincipal, async (req, res) => {
     try {
         let search = await Subject.findOne( {$and: [{ gradeLevel: req.body.gradeLevel }, { strand: req.body.strand.toUpperCase() }, { semester: req.body.semester }]})
-        if (search == null){
+        console.log(search)
+        if (!search == null){
+            console.log("already exists")
+            return res.send("already exists")
+        }
+        let subjects = []
         let subject = new Subject({
             gradeLevel: req.body.gradeLevel,
             strand: req.body.strand.trim().toUpperCase(),
             semester: req.body.semester,
+            subjects: subjects
         });
         await subject.save();
-        }
         res.json({
             success: true,
             search: search,
@@ -910,20 +915,36 @@ router.get('/principal/subjectsData', isAuth, isPrincipal, async (req, res) => {
         for (i in g11strands){
             let g11sem1 = await Subject.findOne( {$and: [{ gradeLevel: 11 }, { strand: g11strands[i] }, { semester: "1st" }]} )
             let g11sem2 = await Subject.findOne( {$and: [{ gradeLevel: 11 }, { strand: g11strands[i] }, { semester: "2nd" }]} )
+            let sem1g11 = []
+            let sem2g11 = []
+            if (!g11sem1 == null){
+                sem1g11 = g11sem1.subjects
+            }
+            if (!g11sem2 == null){
+                sem2g11 = g11sem2.subjects
+            }
             let strand = {
                 strand: g11strands[i],
-                sem1subjects: g11sem1.subjects,
-                sem2subjects: g11sem2.subjects
+                sem1subjects: sem1g11,
+                sem2subjects: sem2g11
             }
             grade11.push(strand);
         }
         for (i in g12strands){
             let g12sem1 = await Subject.findOne( {$and: [{ gradeLevel: 12 }, { strand: g12strands[i] }, { semester: "1st" }]} )
             let g12sem2 = await Subject.findOne( {$and: [{ gradeLevel: 12 }, { strand: g12strands[i] }, { semester: "2nd" }]} )
+            let sem1g12 = []
+            let sem2g12 = []
+            if (!g12sem1 == null){
+                sem1g12 = g12sem1.subjects
+            }
+            if (!g12sem2 == null){
+                sem2g12 = g12sem2.subjects
+            }
             let strand = {
                 strand: g12strands[i],
-                sem1subjects: g12sem1.subjects,
-                sem2subjects: g12sem2.subjects
+                sem1subjects: sem1g12,
+                sem2subjects: sem2g12
             }
             grade11.push(strand);
         }
