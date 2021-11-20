@@ -139,6 +139,23 @@ router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (
         de.push(tuit);
         cr.push(0);
         console.log("2");
+        
+        let blank = "";
+        paid = [];
+        paidWhen = [];
+        if (req.body.paymentTerms.toUpperCase() == "YEARLY"){
+
+        } else if (req.body.paymentTerms.toUpperCase() == "QUARTERLY"){
+            for (let i = 0; i < 4; i++) {
+                paid.push(false);
+                paidWhen.push(blank);
+            }
+        } else if (req.body.paymentTerms.toUpperCase() == "MONTHLY"){
+            for (let i = 0; i < 10; i++) {
+                paid.push(false);
+                paidWhen.push(blank);
+            }
+        }
         let balance = new Balance({
             schoolYearFrom : req.body.schoolYearFrom,
             schoolYearTo : req.body.schoolYearTo,
@@ -147,13 +164,16 @@ router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (
         
             student : req.params.id, //student _id
         
-            paymentTerms: req.body.paymentTerms,
+            paymentTerms: req.body.paymentTerms.toUpperCase(),
             modeOfPayment: req.body.modeOfPayment,
         
             transactionDate: transacDate,
             transactionType: transacType,
             debit: de,
-            credit: cr
+            credit: cr,
+
+            paid: paid,
+            paidWhen: paidWhen
         });
         await balance.save();
         console.log("3");
@@ -384,7 +404,27 @@ router.delete('/accountant/:id/:balanceID', isAuth, isAccountant, async (req, re
     }    
 });
 
-
+//update schedule
+router.put('/accountant/updateSched/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
+    try {
+        let balance = await Balance.findOneAndUpdate(
+            {$and: [{ _id: req.params.balanceID }, { student: user._id }]},
+            { $set: { 
+                paid: req.body.paid,
+                paidWhen: req.body.paidWhen }},
+            { new: true });
+        res.json({
+            success: true,
+            balance: balance
+        })
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 
 //payment information

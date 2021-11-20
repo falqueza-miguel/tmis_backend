@@ -15,7 +15,10 @@ const BalanceSchema = new Schema({
     transactionDate: { type: Array },
     transactionType: { type: Array },
     debit: { type: Array },
-    credit: { type: Array }
+    credit: { type: Array },
+
+    paid: { type: Array },
+    paidWhen: { type: Array }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Balance', BalanceSchema)
