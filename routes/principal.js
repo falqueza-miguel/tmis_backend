@@ -918,10 +918,10 @@ router.get('/principal/subjectsData', isAuth, isPrincipal, async (req, res) => {
             let g11sem2 = await Subject.findOne( {$and: [{ gradeLevel: 11 }, { strand: g11strands[i] }, { semester: "2nd" }]} )
             let sem1g11 = []
             let sem2g11 = []
-            if (!g11sem1 == null){
+            if (g11sem1 !== null){
                 sem1g11 = g11sem1.subjects
             }
-            if (!g11sem2 == null){
+            if (g11sem2 !== null){
                 sem2g11 = g11sem2.subjects
             }
             let strand = {
@@ -936,10 +936,10 @@ router.get('/principal/subjectsData', isAuth, isPrincipal, async (req, res) => {
             let g12sem2 = await Subject.findOne( {$and: [{ gradeLevel: 12 }, { strand: g12strands[i] }, { semester: "2nd" }]} )
             let sem1g12 = []
             let sem2g12 = []
-            if (!g12sem1 == null){
+            if (g12sem1 !== null){
                 sem1g12 = g12sem1.subjects
             }
-            if (!g12sem2 == null){
+            if (g12sem2 !== null){
                 sem2g12 = g12sem2.subjects
             }
             let strand = {
