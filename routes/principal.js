@@ -916,11 +916,16 @@ router.get('/principal/subjectsData', isAuth, isPrincipal, async (req, res) => {
         for (i in g11strands){
             let g11sem1 = await Subject.findOne( {$and: [{ gradeLevel: 11 }, { strand: g11strands[i] }, { semester: "1st" }]} )
             let g11sem2 = await Subject.findOne( {$and: [{ gradeLevel: 11 }, { strand: g11strands[i] }, { semester: "2nd" }]} )
+            console.log("g11");
+            console.log(g11sem1);
+            console.log(g11sem2);
             let sem1g11 = []
             let sem2g11 = []
+            console.log(g11sem1 !== null);
             if (g11sem1 !== null){
                 sem1g11 = g11sem1.subjects
             }
+            console.log(g11sem2 !== null);
             if (g11sem2 !== null){
                 sem2g11 = g11sem2.subjects
             }
@@ -929,16 +934,23 @@ router.get('/principal/subjectsData', isAuth, isPrincipal, async (req, res) => {
                 sem1subjects: sem1g11,
                 sem2subjects: sem2g11
             }
+            console.log(strand);
             grade11.push(strand);
         }
+        console.log(grade11);
         for (i in g12strands){
             let g12sem1 = await Subject.findOne( {$and: [{ gradeLevel: 12 }, { strand: g12strands[i] }, { semester: "1st" }]} )
             let g12sem2 = await Subject.findOne( {$and: [{ gradeLevel: 12 }, { strand: g12strands[i] }, { semester: "2nd" }]} )
+            console.log("g12");
+            console.log(g12sem1);
+            console.log(g12sem2);
             let sem1g12 = []
             let sem2g12 = []
+            console.log(g12sem1 !== null);
             if (g12sem1 !== null){
                 sem1g12 = g12sem1.subjects
             }
+            console.log(g12sem2 !== null);
             if (g12sem2 !== null){
                 sem2g12 = g12sem2.subjects
             }
@@ -947,8 +959,10 @@ router.get('/principal/subjectsData', isAuth, isPrincipal, async (req, res) => {
                 sem1subjects: sem1g12,
                 sem2subjects: sem2g12
             }
-            grade11.push(strand);
+            console.log(strand);
+            grade12.push(strand);
         }
+        console.log(grade12);
         res.json({
             success: true,
             g7: grade7,
