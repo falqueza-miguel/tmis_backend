@@ -554,10 +554,11 @@ router.put('/accountant/updateSched/:id/:balanceID', isAuth, isAccountant, async
     try {
         let balance = await Balance.findOneAndUpdate(
             {$and: [{ _id: req.params.balanceID }, { student: req.params._id }]},
-            { $push: { 
+            { $set: { 
                 paid: req.body.paid,
                 paidWhen: req.body.paidWhen }},
             { new: true });
+        console.log(balance);
         res.json({
             success: true,
             balance: balance
