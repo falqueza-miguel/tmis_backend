@@ -553,7 +553,7 @@ router.delete('/accountant/:id/:balanceID', isAuth, isAccountant, async (req, re
 router.put('/accountant/updateSched/:id/:balanceID', isAuth, isAccountant, async (req, res) => {
     try {
         let balance = await Balance.findOneAndUpdate(
-            {$and: [{ _id: req.params.balanceID }, { student: req.params._id }]},
+            {$and: [{ _id: req.params.balanceID }, { student: req.params.id }]},
             { $set: { 
                 paid: req.body.paid,
                 paidWhen: req.body.paidWhen }},
