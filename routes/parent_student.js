@@ -366,6 +366,46 @@ router.get('/parent/balance', isAuth, isParent, async (req, res) => {
         }
         latestBalObject.runBalance = runLatestBalance
 
+        let payment = 0
+        let scheduleAmount = []
+        let schedulePeriod = []
+        if (latestBalObject.paymentTerms.toUpperCase() == "YEARLY"){
+            for (i in latestBalObject.transactionType){
+                if (latestBalObject.transactionType[i] == "TUITION" && latestBalObject.debit[i] > 0){
+                    payment = payment + latestBalObject.debit[i]
+                }
+            }
+            scheduleAmount.push(payment)
+            schedulePeriod.push("Y1")
+        } else if (latestBalObject.paymentTerms.toUpperCase() == "QUARTERLY"){
+            for (i in latestBalObject.transactionType){
+                if (latestBalObject.transactionType[i] == "TUITION" && latestBalObject.debit[i] > 0){
+                    payment = payment + latestBalObject.debit[i]
+                }
+            }
+            payment = payment / 4
+            for (let i = 0; i < 4; i++) {
+                let shift = parseFloat(i) + parseFloat(1)
+                scheduleAmount.push(payment)
+                schedulePeriod.push("Q"+shift)
+            }
+        } else if (latestBalObject.paymentTerms.toUpperCase() == "MONTHLY"){
+            for (i in latestBalObject.transactionType){
+                if (latestBalObject.transactionType[i] == "TUITION" && latestBalObject.debit[i] > 0){
+                    payment = payment + latestBalObject.debit[i]
+                }
+            }
+            payment = payment / 10
+            for (let i = 0; i < 10; i++) {
+                let shift = parseFloat(i) + parseFloat(1)
+                scheduleAmount.push(payment)
+                schedulePeriod.push("M"+shift)
+            }
+        }
+        latestBalObject.scheduleAmount = scheduleAmount
+        latestBalObject.schedulePeriod = schedulePeriod
+        console.log(latestBalObject)
+
         let allBalances = await Balance.find({ student: parent.student_id }).sort({ createdAt: -1});
         allBalances.shift()
         let allBalanceObjects = []

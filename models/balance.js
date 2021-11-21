@@ -18,7 +18,11 @@ const BalanceSchema = new Schema({
     credit: { type: Array },
 
     paid: { type: Array },
-    paidWhen: { type: Array }
+    paidWhen: { type: Array },
+
+    emailSched: [{type: String}],
+    emailSent: [{type: Boolean}],
+    emailDone: { type: Boolean }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Balance', BalanceSchema)

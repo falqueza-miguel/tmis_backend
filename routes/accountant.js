@@ -83,6 +83,7 @@ router.get('/accountant/students/:id', isAuth, isAccountant, async (req, res) =>
 router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (req, res) => {
     try {
         let tuition = await Tuition.findOne({ tuition: true });
+        let userParent = await User.findOne({ student_id: req.params.id })
         console.log(tuition);
         let tuit = 0
         const timeElapsed = Date.now();
@@ -141,10 +142,11 @@ router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (
         console.log("2");
         
         let blank = "";
-        paid = [];
-        paidWhen = [];
+        let paid = [];
+        let paidWhen = [];
         if (req.body.paymentTerms.toUpperCase() == "YEARLY"){
-
+            paid.push(false);
+            paidWhen.push(blank);
         } else if (req.body.paymentTerms.toUpperCase() == "QUARTERLY"){
             for (let i = 0; i < 4; i++) {
                 paid.push(false);
@@ -156,6 +158,8 @@ router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (
                 paidWhen.push(blank);
             }
         }
+        let terms = req.body.paymentTerms.toUpperCase()
+        
         let balance = new Balance({
             schoolYearFrom : req.body.schoolYearFrom,
             schoolYearTo : req.body.schoolYearTo,
@@ -164,7 +168,7 @@ router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (
         
             student : req.params.id, //student _id
         
-            paymentTerms: req.body.paymentTerms.toUpperCase(),
+            paymentTerms: terms,
             modeOfPayment: req.body.modeOfPayment,
         
             transactionDate: transacDate,
@@ -175,8 +179,149 @@ router.post('/accountant/students/:id/newbalance', isAuth, isAccountant, async (
             paid: paid,
             paidWhen: paidWhen
         });
-        await balance.save();
+        console.log(balance)
+        // await balance.save();
         console.log("3");
+
+        var balanceObject = balance.toObject()
+
+        let now = new Date()
+        let year = now.getUTCFullYear();
+        let month = now.getUTCMonth();
+        let date = now.getUTCDate();
+        console.log(year);
+        console.log(month);
+        console.log(date);
+        console.log(now);
+        // now.setMonth(now.getMonth()+1);
+        // year = now.getUTCFullYear();
+        // month = now.getUTCMonth();
+        // date = now.getUTCDate();
+        // console.log(now)
+        // console.log(year);
+        // console.log(month);
+        // console.log(date);
+
+        let emailString = ""
+        let payment = 0
+        let scheduleAmount = []
+        let schedulePeriod = []
+        let emailSched = []
+        if (terms == "YEARLY"){
+            for (i in balanceObject.transactionType){
+                if (balanceObject.transactionType[i] == "TUITION" && balanceObject.debit[i] > 0){
+                    payment = payment + balanceObject.debit[i]
+                }
+            }
+            emailString = emailString + "Payment 1: P" + payment + "<br>"
+            scheduleAmount.push(payment)
+            schedulePeriod.push("Y1")
+            balance.emailSched = [now]
+            balance.emailSent = [true];
+            balance.emailDone = true;
+        } else if (terms == "QUARTERLY"){
+            for (i in balanceObject.transactionType){
+                if (balanceObject.transactionType[i] == "TUITION" && balanceObject.debit[i] > 0){
+                    payment = payment + balanceObject.debit[i]
+                }
+            }
+            payment = payment / 4
+            for (let i = 0; i < 4; i++) {
+                let shift = parseFloat(i) + parseFloat(1)
+                emailString = emailString + "Payment " + shift + ": P" + payment + "<br>"
+                scheduleAmount.push(payment)
+                schedulePeriod.push("Q"+shift)
+            }
+            let now = new Date();
+            emailSched.push(now);
+            for (let i = 0; i < 3; i++){
+                let now = new Date();
+                let q = (i+1)*3;
+                console.log(q);
+                now.setMonth(now.getMonth()+q);
+                console.log(now)
+                emailSched.push(now);
+            }
+            balance.emailSent = [true, false, false, false];
+            balance.emailDone = false;
+            balance.emailSched = emailSched
+        } else if (terms == "MONTHLY"){
+            for (i in balanceObject.transactionType){
+                if (balanceObject.transactionType[i] == "TUITION" && balanceObject.debit[i] > 0){
+                    payment = payment + balanceObject.debit[i]
+                }
+            }
+            payment = payment / 10
+            for (let i = 0; i < 10; i++) {
+                let shift = parseFloat(i) + parseFloat(1)
+                emailString = emailString + "Payment " + shift + ": P" + payment + "<br>"
+                scheduleAmount.push(payment)
+                schedulePeriod.push("M"+shift)
+            }
+            let now = new Date();
+            emailSched.push(now);
+            for (let i = 0; i < 9; i++){
+                let now = new Date();
+                let m = i+1;
+                console.log(m);
+                now.setMonth(now.getMonth()+m);
+                console.log(now)
+                emailSched.push(now);
+            }
+            balance.emailSent = [true, false, false, false, false, false, false, false, false, false];
+            balance.emailDone = false;
+            balance.emailSched = emailSched;
+        }
+        balanceObject.scheduleAmount = scheduleAmount
+        balanceObject.schedulePeriod = schedulePeriod
+        console.log(balance)
+        console.log(emailString)
+
+        await balance.save();
+
+        const oauth2Client = new OAuth2(
+            process.env.CLIENT_ID, // ClientID
+            process.env.CLIENT_SECRET, // Client Secret
+            "https://developers.google.com/oauthplayground" // Redirect URL
+        );
+        
+        oauth2Client.setCredentials({
+            refresh_token: process.env.REFRESH_TOKEN
+        });
+        const accessToken = oauth2Client.getAccessToken()
+
+        const transporter = nodemailer.createTransport({
+            service: process.env.EMAIL_SRV,
+            auth: {
+                type: "OAuth2",
+                user: process.env.EMAIL,
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                refreshToken: process.env.REFRESH_TOKEN,
+                accessToken: accessToken
+            },
+            tls: {
+                rejectUnauthorized: false
+              }
+        });
+        
+        var balanceEncodedEmail = {
+            from: process.env.EMAIL,
+            to: userParent.email,
+            subject: "TMIS Balance Encoded notification!",
+            html: "Your balance has been encoded, you may view our payment information by logging in our website "+'<a href="' + process.env.WEBSITE  +'">here</a>' + ".<br><br>Payment Schedule:<br>"+emailString
+        };
+
+        var paymentNoticeEmail = {
+            from: process.env.EMAIL,
+            to: userParent.email,
+            subject: "TMIS payment notice notification!",
+            html: "You are almost due for payment!, you may view your balance details and our payment information by logging in our website "+'<a href="' + process.env.WEBSITE  +'">here</a>' + "."
+        };
+    
+        transporter.sendMail(balanceEncodedEmail);
+        transporter.sendMail(paymentNoticeEmail);
+
         res.json({
             success: true,
         });
@@ -569,4 +714,83 @@ router.post('/accountant/tuitionUpdate', isAuth, isAccountant, async (req, res) 
     }    
 });
 
+//simulate node-cron
+router.get('/accountant/simulate', isAuth, isAccountant, async (req, res) => {
+    try {
+        console.log('running a task every day at 1 am');
+        let today = new Date();
+        let balance = await Balance.find({emailDone: false})
+        for (i in balance){
+            for (j in balance[i].emailSent){
+                if (balance[i].emailSent[j] == false){
+                    console.log(balance[i].emailSched[j]);
+                    let sched = new Date(balance[i].emailSched[j]);
+                    if (sched.toDateString()==today.toDateString()){
+                        const oauth2Client = new OAuth2(
+                            process.env.CLIENT_ID, // ClientID
+                            process.env.CLIENT_SECRET, // Client Secret
+                            "https://developers.google.com/oauthplayground" // Redirect URL
+                        );
+                        
+                        oauth2Client.setCredentials({
+                            refresh_token: process.env.REFRESH_TOKEN
+                        });
+                        const accessToken = oauth2Client.getAccessToken()
+                
+                        const transporter = nodemailer.createTransport({
+                            service: process.env.EMAIL_SRV,
+                            auth: {
+                                type: "OAuth2",
+                                user: process.env.EMAIL,
+                                clientId: process.env.CLIENT_ID,
+                                clientSecret: process.env.CLIENT_SECRET,
+                                refreshToken: process.env.REFRESH_TOKEN,
+                                accessToken: accessToken
+                            },
+                            tls: {
+                                rejectUnauthorized: false
+                              }
+                        });
+                        let userParent = await User.findOne({ student_id: balance[i].student })
+                        var paymentNoticeEmail = {
+                            from: process.env.EMAIL,
+                            to: userParent.email,
+                            subject: "TMIS payment notice notification!",
+                            html: "You are almost due for payment!, you may view your balance details and our payment information by logging in our website "+'<a href="' + process.env.WEBSITE  +'">here</a>' + "."
+                        };
+                        console.log(userParent.email)
+                        transporter.sendMail(paymentNoticeEmail);
+                        balance[i].emailSent[j] = true;
+                        let sent = balance[i].emailSent
+                        let done = false;
+                        console.log(balance[i].emailSent)
+                        let check = balance[i].emailSent[balance[i].emailSent.length - 1]
+                        console.log(check)
+                        if (check==true){
+                            done = true;
+                        }
+                        await Balance.findOneAndUpdate(
+                            { _id: balance[i]._id }, 
+                            { $set: { 
+                                emailSent: sent,
+                                emailDone: done
+                            }},
+                            { new: true });
+                    }
+                    break;
+                }
+    
+            }
+        }
+        res.json({
+            success: true,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }    
+});
 module.exports = router;
